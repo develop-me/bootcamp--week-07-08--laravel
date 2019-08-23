@@ -1,0 +1,169 @@
+\section{How the Web Works}
+
+\textbf{HyperText Transfer Protocol} is what the World Wide Web is built upon.
+\\
+
+Fundamentally it's just sending some text\footnote{This is no longer true with HTTP 2.0, which uses a binary format.}, with a \textbf{well defined format} (or \textbf{standard}), that the browser knows how to interpret into a web page.
+\\
+
+By default, a server will listen on \textbf{port 80} for anything that looks like HTTP. If it receives a valid HTTP request then it will return a HTTP response.
+\\
+
+In fact, we can manually type in HTTP requests:
+
+\begin{minted}{bash}
+    # make a direct connection to the CERN server on port 80
+    telnet info.cern.ch 80
+\end{minted}
+
+Type in the following exactly and press return twice:
+
+\begin{minted}{http}
+    GET /hypertext/WWW/TheProject.html HTTP/1.1
+    Host: info.cern.ch
+\end{minted}
+
+You should get back a valid HTTP response.
+\\
+
+You just connected to a server at CERN, had a chat with it, and asked it to give you back a webpage. Because you said the right thing, it obliged and gave you a response.
+
+\begin{infobox}{The Internet vs. The Web}
+    The ``internet'' and the ``world wide web'' are, historically, not the same thing.
+    \\
+
+    The internet started off as ARPANet in the late 60s. It was a way of connecting together government computers and universities in a way where it wasn't necessary that every ``node'' in the network needed to be connected directly.
+    \\
+
+    \img{12cm}{01/img/arpa-net}{1em}{The internet was so small in 1977 that you could map every computer connected to it on a piece of A4 (\href{http://som.csudh.edu/fac/lpress/history/arpamaps/}{source})}
+
+    Things like e-mail, IRC, newsgroups, and bulletin boards all existed before the web.
+    \\
+
+    The ``World Wide Web'' was invented in 1989 by Sir Tim Berners Lee, who was working at CERN at the time. He wanted to create a way so that you could click on a reference in a research paper an be taken directly to the referenced paper - what we'd now call a link. He didn't expect this to have much use outside of academia.
+\end{infobox}
+
+
+\pagebreak
+
+
+\section{Requests}
+
+An HTTP request, at its most minimal, will generally consist of the following:
+
+\begin{minted}{http}
+    GET /api/articles HTTP/1.1
+    Host: restful.training
+    Accept: application/json
+    Accept-Encoding: gzip, deflate
+\end{minted}
+
+\begin{enumerate}[leftmargin=*]
+    \item \texttt{GET}: the HTTP method
+    \item \texttt{/api/articles}: the URI fragment
+    \item \texttt{HTTP/1.1}: the HTTP version
+    \item \texttt{Host:}: the server hostname header
+    \item \texttt{Accept:}: the accept header - what format to return
+    \item \texttt{Accept-Encoding:}: the accept encoding header - can we handle gzipped files?
+\end{enumerate}
+
+We can see all of this and more for every single request in the Network panel of Developer Tools.
+
+
+\subsection{Methods}
+
+The \href{https://www.w3.org/Protocols/rfc2616/rfc2616.txt}{HTTP standard} lists a number of \textbf{methods} that can be used:
+
+\begin{itemize}
+    \item \texttt{OPTIONS}
+    \item \texttt{GET}
+    \item \texttt{HEAD}
+    \item \texttt{POST}
+    \item \texttt{PUT}
+    \item \texttt{DELETE}
+    \item \texttt{TRACE}
+    \item \texttt{CONNECT}
+\end{itemize}
+
+Browsers typically only use the \texttt{GET} and \texttt{POST} methods: when you view a webpage you are making a \texttt{GET} request; when you submit a form you are making a \texttt{POST} request.
+\\
+
+The other methods largely went unused until RESTful APIs came along.
+
+\section{Responses}
+
+A typical response:\footnote{You can use \texttt{curl -i http://example.com} to see the response for any page.}
+
+\begin{minted}{http}
+    HTTP/1.1 200 OK
+    Content-Encoding: gzip
+    Content-Length: 183
+    Content-Type: application/json; charset=UTF-8
+    Connection: Closed
+
+    [
+        {
+            "id": 1,
+            "name": "Alice",
+            "won": 0,
+            "lost": 0,
+            "created_at": "2017-07-04 16:03:11",
+            "updated_at": "2017-07-04 16:03:11"
+        }
+    ]
+\end{minted}
+
+\begin{itemize}[leftmargin=*]
+    \item \texttt{HTTP/1.1}: the HTTP version
+    \item \texttt{200 OK}: the HTTP status code and message
+    \item \texttt{Content-Encoding:}: the content encoding header
+    \item \texttt{Content-Length:}: the content length header
+    \item \texttt{Content-Type:}: the content type/character encoding header
+    \item \texttt{Connection:}: the connection header
+\end{itemize}
+
+Then two line breaks, followed by the body (HTML or JSON).
+
+
+\pagebreak
+
+
+\subsection{Status Codes}
+
+The HTTP spec also defines a number of ``status codes'' which have specific meanings:
+
+\begin{itemize}
+    \item \texttt{2xx}: Success
+        \begin{itemize}
+            \item \texttt{200}: OK
+            \item \texttt{201}: Created
+            \item \texttt{204}: No Content
+        \end{itemize}
+
+    \item \texttt{3xx}: Redirect
+
+    \item \texttt{4xx}: Client Error
+        \begin{itemize}
+            \item \texttt{400}: Bad Request
+            \item \texttt{401}: Unauthorised
+            \item \texttt{403}: Forbidden
+            \item \texttt{404}: Not Found
+            \item \texttt{405}: Method Not Allowed
+            \item \texttt{422}: Unprocessable Entity
+            \item \texttt{429}: Too Many Requests
+            \item \texttt{418}: I'm a Teapot\footnote{As per \href{https://tools.ietf.org/html/rfc2324\#section-2.3.2}{RFC 2324 Hyper Text Coffee Pot Control Protocol}: Any attempt to brew coffee with a teapot should result in the error code ``418 I'm a teapot''. The resulting entity body MAY be short and stout.}
+        \end{itemize}
+
+    \item \texttt{5xx}: Server Error
+\end{itemize}
+
+
+\section{Additional Resources}
+
+\begin{itemize}[leftmargin=*]
+    \item \href{https://twobithistory.org/2018/06/10/birth-of-the-web.html}{The World Wide Web and Its Inventor}
+    \item \href{https://www.charlesproxy.com}{Charles Proxy}: view all the HTTP requests on your computer
+    \item \href{https://www.youtube.com/watch?v=6iYfvshY4e0}{What is Internet Anyway? An Internaut's Guide}
+    \item \href{https://evertpot.com/http/451-unavailable-for-legal-reasons}{451: Unavailable for Legal Reasons}
+    \item \href{https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/418}{418: I'm a Teapot}
+\end{itemize}

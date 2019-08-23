@@ -1,0 +1,66 @@
+% setup the document
+\documentclass[b5paper,openany]{book}
+
+% setup variables ------------------------------
+
+% your name
+\newcommand\instructor{Mark Wales \& Peter Thomas}
+
+% the week number
+\newcommand\weekno{8}
+
+% week main title
+\newcommand\maintitle{APIs}
+
+% week subtitle
+\newcommand\subtitle{with Laravel}
+
+% link to notes - relative to github.com/develop-me/
+\newcommand\github{week-08--laravel-api/blob/master/notes/}
+
+% setup functions, styling, etc.
+\input{../../templates/template.tex}
+
+% the structure of the document
+\begin{document}
+
+% render the title page (uses variables above)
+\tp
+
+\quotepage{Failure is simply the opportunity to begin again, this time more intelligently}{Henry Ford}
+
+\tableofcontents
+
+\input{../../templates/preface.tex}
+
+\chapter{HTTP}
+\input{01/01-http.tex}
+
+\chapter{RESTful APIs}
+\input{01/02-apis.tex}
+
+\chapter{Basic API}
+\input{01/03-basic-api.tex}
+
+\chapter{API Details}
+\input{01/04-resources-cors.tex}
+
+\chapter{Test Driven Development}
+\input{02/01-tdd.tex}
+
+\chapter{Advanced Database Structures}
+\input{02/02-many-to-many.tex}
+
+\chapter{Authentication}
+\input{03/01-authentication.tex}
+
+\chapter{Deployment}
+\input{04/01-deployment.tex}
+
+\nchapter{Glossary}
+\input{glossary.tex}
+
+
+\input{../../templates/colophon.tex}
+
+\end{document}

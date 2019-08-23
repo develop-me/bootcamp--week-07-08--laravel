@@ -1,0 +1,463 @@
+There are many ways to deploy your Laravel API; many of them highly automated, efficient and pain free.
+\\
+
+We won't be using any of those.
+\\
+
+Even though it's a slighly more involved process, we're going to use an AWS Linux server for the following reasons:
+
+\begin{itemize}
+    \item It's free (up to a point)
+    \item It looks and feels like your Vagrant box
+    \item It can be setup to use the same stack as your Vagrant box
+\end{itemize}
+
+AWS (Amazon Web Services) provides a dizzying array of cloud-computing services on a pay as you go basis. These include computing, storage, networking, and databases. The most popular of these include Elastic Cloud Computing (EC2) and Simple Storage Service (S3).
+\\
+
+A good proportion of the internet runs on AWS. It powers Netflix, Adobe, Airbnb, IMDb, Slack, and many other major websites.
+
+\section{SSH}
+
+SSH (Secure SHell) enables secure system administration and file transfers over insecure networks. You've already used it in when you added an SSH key to Git.
+\\
+
+SSH takes advantage of public-key cryptography. You create a ``public'' SSH key which lives on the server. When you try to connect to the server it uses the public key to encrypt a message, which can only be decrypted with the ``private'' SSH key, which lives on your machine (\textbf{Never share a private SSH key!}). The message contains a ``symmetric'' encryption key that can then be used for the remainder of the communications. If the user doesn't have the right private key then they can't decrypt the message and they won't be able to login.\footnote{This is a massive simplification, but the general gist is right}
+\\
+
+Once a secure connection is created you can use SSH to run commands on a remote machine (usually a server) just as if you are running them on your local machine.
+
+\footnotetext{It was actually invented first by Clifford Cocks in 1973, but he was working for GCHQ at the time, so this wasn't public knowledge until 1997}
+
+\begin{infobox}{Public-Key Cryptography}
+    Before the mid-70s the only way to encrypt a message was for both the sender and receiver to agree on an encryption key in advance (\textit{symmetric key cryptography}). This has the obvious issue that at some point the encryption key needs to be shared and if someone intercepts it then the whole system is somewhat pointless.
+    \\
+
+    In 1977\footnotemark Ron Rivest, Adi Shamir, and Leonard Adleman (RSA) came up with a system whereby a ``public'' key could be shared, but this can only be used to \textit{encrypt} the data. To \textit{decrypt} the data you would need the ``private'' key.
+    \\
+
+    This takes advantage of the idea that certain mathematical operations are easy to do in one direction but not the other. For example, it's easy to multiply together two large prime numbers:
+
+    \begin{minted}{text}
+         2833419889721787128217599 × 195845982777569926302400511
+    \end{minted}
+
+    However, given only the result of the multiplication, it's very hard to work out what those two numbers were (if they are both prime then it's guaranteed there will only be one correct answer):
+
+    \begin{minted}{text}
+        554913902924077201755461386242561041733898456793089
+    \end{minted}
+
+    The public key is like the result of the multiplication and the private key is knowing which two numbers you multiplied to get there. So we can share the public key (the result) without worrying about anyone working out what the private key is.
+    \\
+
+    The actual process involves \textit{much} larger numbers than the ones above (1,024 bit encryption, considered quite weak, involves numbers with 300+ digits). It also involves modulus (\texttt{\%}), because modulus is great.
+\end{infobox}
+
+
+
+\section{Working With EC2}
+
+Elastic Cloud Computing is a service that allows you to spin up virtual computers to deploy your applications, rather than having to invest in hardware. They are ``elastic'' as they can be configured to scale up or down depending on traffic.
+\\
+
+Before we begin we'll need:
+
+\begin{itemize}
+    \item An AWS account
+    \item An EC2 SSH key pair
+\end{itemize}
+
+To create an EC2 SSH key pair follow the instructions in \href{https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-key-pairs.html#having-ec2-create-your-key-pair}{this document}. Make sure you create it in your home region (e.g. \texttt{EU-London}).
+
+\subsection{Launching the Server}
+
+To launch your server just follow these simple and easy to remember steps:
+
+\begin{itemize}
+    \item Login to AWS, go to ``EC2'', and make sure you're on the ``EU London'' region (in the top right).
+    \item Launch Instance
+    \item Choose: ``Amazon Linux AMI 2018.03.0 (HVM), SSD Volume Type - ami-01419b804382064e4''
+    \item Choose: ``T2.micro''
+    \item Go to ``Add Tags''
+        \begin{itemize}
+            \item Add the tag: \texttt{key=Name value=my-server-name}. This is so you can identify it in the dashboard.
+        \end{itemize}
+    \item Go to ``Configure Security Group''
+        \begin{itemize}
+            \item Add rule and select HTTP. This enables the sending and receiving of data via HTTP.
+        \end{itemize}
+    \item Click ``Launch''
+    \item Select your existing key-pair
+    \item Go back to the EC2 dashboard and you should see this server loading up
+\end{itemize}
+
+\subsection{Accessing the server}
+
+You should now be able to SSH into your server from your computer:
+
+\begin{minted}{bash}
+    ssh username@domain.of.your.instance
+\end{minted}
+
+For an Amazon Linux instance the username is \texttt{ec2-user} and the domain can be found by clicking on your instance in the EC2 dashboard and copying the Public DNS (IPv4). It should something look like this:
+
+\begin{minted}{bash}
+    ssh ec2-user@ec2-3-8-39-24.eu-west-2.compute.amazonaws.com
+\end{minted}
+
+\begin{infobox}{Non-Standard SSH Key}
+    If the SSH key-pair you've used to authenticate with diverges from the usual id\_rsa naming you can specify the exact name of your key pair using the \texttt{-i} flag:
+
+    \begin{minted}{bash}
+        ssh -i ~/.ssh/aws-key-pair.pem ec2-user@ec2-3-8-125-57.eu-west-2.compute.amazonaws.com
+    \end{minted}
+\end{infobox}
+
+\pagebreak
+
+\subsection{Setting Up the Server}
+
+You will need to install the following software packages on the server:
+
+\begin{itemize}
+    \item \textbf{Apache}: HTTP server software
+    \item \textbf{MySQL}: database management system
+    \item \textbf{PHP}: programming language
+    \item \textbf{Git}: file management
+    \item \textbf{Composer}: PHP package manager
+    \item \textbf{SSH Keys}: for authentication
+\end{itemize}
+
+First update \texttt{yum}, used for installing Linux packages, so that it has the most up to date package versions:
+
+\begin{minted}{bash}
+    sudo yum update -y
+\end{minted}
+
+Next, install Apache, PHP and MySQL:
+
+\begin{minted}{bash}
+    sudo yum install -y httpd24 php72 mysql56-server php72-mysqlnd
+\end{minted}
+
+You'll also need to install a PHP package used by Laravel:
+
+\begin{minted}{bash}
+    sudo yum install php72-mbstring
+\end{minted}
+
+Next, install Git:
+
+\begin{minted}{bash}
+    sudo yum install git
+\end{minted}
+
+And finally install Composer:
+
+\begin{minted}{bash}
+    # navigate to the home directory
+    cd ~
+    # download and run the composer install script
+    sudo curl -sS https://getcomposer.org/installer | sudo php
+    # move the composer.phar file to the right location
+    sudo mv composer.phar /usr/local/bin/composer
+    # setup a shortcut so that you can use it in any directory
+    sudo ln -s /usr/local/bin/composer /usr/bin/composer
+\end{minted}
+
+Start Apache and configure it so it always starts on boot:
+
+\begin{minted}{bash}
+    sudo service httpd start
+    sudo chkconfig httpd on
+\end{minted}
+
+To make sure everything is working visit your server in the browser (copy the ``Public DNS (IPv4)'' from the EC2 dashboard). You should see an Apache test page.
+
+\subsection{Ownership}
+
+By default, your files are served from the directory: \texttt{/var/www/html}. This is like your \texttt{public} directory in a Vagrant box.
+\\
+
+Try creating a file in \texttt{/var/www/html}:
+
+\begin{minted}{bash}
+    cd /var/www/html
+    touch index.html
+\end{minted}
+
+You should get the message \texttt{touch: cannot touch `index.html': Permission denied}.
+\\
+
+This is because, by default, all files on the server are owned by the \texttt{root} user.
+\\
+
+Let's take ownership of this directory: so that we can make changes:
+
+\begin{minted}{bash}
+    sudo chown -R ec2-user /var/www/html/
+\end{minted}
+
+To check it's working, create an index page on your server:
+
+\begin{minted}{bash}
+    touch index.html
+\end{minted}
+
+Then open the file in a code editor. We're editing it on the server, so we'll need to use a command-line text editor. Nano is probably the least baffling one to start with:
+
+\begin{minted}{bash}
+    nano index.html
+\end{minted}
+
+In Nano add some basic HTML:
+
+\begin{minted}{html}
+    <h1>Hello, world!</h1>
+\end{minted}
+
+Then press \texttt{Ctrl+o} to save and then \texttt{Ctrl+x} to exit.
+\\
+
+Once again, check your server in the browser. You should now see ``Hello, World!'', as Apache is serving up your \texttt{index.html} file.
+\\
+
+Finally, remove the \texttt{index.html} file:
+
+\begin{minted}{bash}
+    rm index.html
+\end{minted}
+
+
+\section{Deployment}
+
+We're going to deploy files to the server using Git. We'll setup a new set of SSH keys, this time on the server. We'll give the public key to GitHub and then we'll be able to access our GitHub repositories from the server.
+
+
+\subsection{Generating Server SSH Keys}
+
+Create a key on the server (hit \texttt{Enter} at all prompts):
+
+\begin{minted}{bash}
+    ssh-keygen -t rsa -b 4096 -C "<your_email_address>"
+\end{minted}
+
+Substitute the email for the best email to contact you on. This helps your successor when they come to clean up random keys left on the server.
+
+\pagebreak
+
+You should now be able to see this key-pair in the directory:
+
+\begin{minted}{bash}
+    cd ~/.ssh && ls
+\end{minted}
+
+Start \texttt{ssh-agent}:
+
+\begin{minted}{bash}
+    eval "$(ssh-agent -s)"
+\end{minted}
+
+Then add the private key to \texttt{ssh-agent}:
+
+\begin{minted}{bash}
+    ssh-add ~/.ssh/id_rsa
+\end{minted}
+
+Echo out your public key:
+
+\begin{minted}{bash}
+    cat ~/.ssh/id_rsa.pub
+\end{minted}
+
+Then select the output and copy to the clipboard.
+\\
+
+In GitHub, go to top right profile picture, click ``Settings'', in the side bar click ``SSH and GPG Keys''. Then click on ``New SSH Key'' and paste in the key. Give it a sensible title about where this lives, such as the name of the server.
+\\
+
+You should now be able to connect to Git from the server.
+
+
+\subsection{Copy Your Repository to the Server}
+
+On your repository, go to clone or download and, as usual, copy the code (ensure it says clone with SSH):
+
+\begin{minted}{bash}
+    cd /var/www/html
+    git init
+    git remote add origin git@github.com:your-name/repo-name.git
+    git fetch
+    git checkout master
+    sudo composer install
+\end{minted}
+
+
+\begin{infobox}{Memory Issues}
+    If you get an error message to say you've run out of memory, try stopping Apache, run composer again then restart Apache:
+
+    \begin{minted}{bash}
+        sudo service httpd stop
+        sudo composer install
+        sudo service httpd start
+    \end{minted}
+\end{infobox}
+
+
+\subsection{Setting Up Laravel}
+
+Your Laravel project is served out of the \texttt{/var/www/html/public} directory, whereas your server is setup to look for an index page in \texttt{/var/www/html}. So, we need to tell the server where the project root is.
+\\
+
+Open the Apache config file in a text editor:
+
+\begin{minted}{bash}
+    sudo nano /etc/httpd/conf/httpd.conf
+\end{minted}
+
+Scroll down to \texttt{DocumentRoot} and change it to:
+
+\begin{minted}{apache}
+    DocumentRoot "/var/www/html/public"
+\end{minted}
+
+We'll also need to update the \texttt{<Directory>} entry:
+
+\begin{minted}{apache}
+    # Further relax access to the default document root:
+    <Directory "/var/www/html/public">
+        # …etc.
+        AllowOverride All
+\end{minted}
+
+Now reboot Apache:
+
+\begin{minted}{bash}
+    sudo service httpd restart
+\end{minted}
+
+Once again check the page in your browser. The Apache test message should have disappeared and everything should be broken. Congratulations, you have made progress!
+\\
+
+You're getting an error because you are missing the \texttt{.env} file that contains your Laravel configuration. Create a new \texttt{.env} file and paste the contents of your existing \texttt{.env} into it:
+
+\begin{minted}{bash}
+    sudo nano /var/www/html/.env
+\end{minted}
+
+
+Check the page in your browser. The page should now display a \textit{Laravel} error message. This is because Laravel writes logs about it's activity. All of the files in \texttt{/var/www/html} belong to you, so Apache is unable to write into the logs.
+\\
+
+Give Apache permission to write in this directory:
+
+\begin{minted}{bash}
+    setfacl -R -m u:apache:rwX storage/
+    sudo chmod -R 777 storage/*
+\end{minted}
+
+Check the page in your browser again and you should now see the Laravel homepage.
+
+
+\section{Setting Up the Database}
+
+You'll need to start the MySQL client:
+
+\begin{minted}{bash}
+    sudo service mysqld start
+\end{minted}
+
+Then configure MySQL and setup a password:
+
+\begin{minted}{bash}
+    sudo mysql_secure_installation
+\end{minted}
+
+Press enter when asked about the current password. Type \texttt{Y} to set a new password and enter and re-enter to confirm, then answer \texttt{Y} to all further questions.
+
+\pagebreak
+
+We should set MySQL to start at every boot:
+
+\begin{minted}{bash}
+    sudo chkconfig mysqld on
+\end{minted}
+
+Now we can access MySQL:
+
+\begin{minted}{bash}
+    mysql -u root -p
+\end{minted}
+
+And create a new database:
+
+\begin{minted}{mysql}
+    CREATE DATABASE laravel;
+    exit;
+\end{minted}
+
+\subsection{Configure Laravel}
+
+Update your \texttt{.env} file with the details of your database (the name of the database and password you created as well as changing user to root):
+
+\begin{minted}{bash}
+    sudo nano .env
+\end{minted}
+
+\begin{minted}{ini}
+    DB_DATABASE=laravel
+    DB_USERNAME=root
+    DB_PASSWORD=root
+\end{minted}
+
+Now, use \texttt{artisan} to setup the correct structure for the database:
+
+\begin{minted}{bash}
+    php artisan migrate
+\end{minted}
+
+Success, everything is setup! You should now be able to make calls to your API.
+
+\pagebreak
+
+\begin{infobox}{Maximum Key Length Exceeded}
+    If you get a \texttt{Maximum key length exceeded} error you can override this in\\ \texttt{app/Provider/AppServiceProvider.js}:
+
+    \begin{minted}{bash}
+        sudo nano /var/www/html/app/Providers/AppServiceProvider.php
+    \end{minted}
+
+    Add the following code to the top of the file:
+
+    \begin{minted}{php}
+        use Illuminate\Support\Facades\Schema;
+    \end{minted}
+
+    And add the following code in the boot method:
+
+    \begin{minted}{php}
+        public function boot()
+        {
+            Schema::defaultStringLength(191);
+        }
+    \end{minted}
+
+    In MySQL delete the database and start again:
+
+    \begin{minted}{bash}
+        mysql -u root -p
+    \end{minted}
+
+    \begin{minted}{mysql}
+        CREATE DATABASE laravel;
+        DROP DATABASE laravel;
+        exit;
+    \end{minted}
+
+    Then use \texttt{artisan} to migrate your database:
+
+    \begin{minted}{bash}
+        php artisan migrate
+    \end{minted}
+\end{infobox}
