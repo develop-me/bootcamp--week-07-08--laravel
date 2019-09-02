@@ -1,0 +1,62 @@
+\section{Routing}
+
+Routing is the process of determining what code should be run based on the given URL. This is a concept you'll come across a lot when developing websites. In fact, we'll come across it again next week when we look at React.
+\\
+
+When a user loads a page in a Laravel app, after setting everything up, Laravel has a look to see if the URL matches any of the defined \textbf{routes} (which live in the \texttt{routes} directory). A route represents a specific URL and HTTP method combination. If Laravel finds a match it then runs the code that the route points to.
+\\
+
+First, let's add a route to handle \texttt{POST} events sent to \texttt{/articles}. This will point to code that handles creating a new article.
+
+\pagebreak
+
+Add a \texttt{POST} route for \texttt{/articles} to \texttt{routes/api.php}:
+
+\stdinputminted[firstline=3]{php}{02/figures/03/01-route-post.php}
+
+We use the \texttt{\$router} object, which is provided to use by Laravel. It has methods for each of the HTTP methods (e.g. \texttt{\$router->get()}, \texttt{\$router->post()}, etc.). These methods take a URL fragment as the first argument and a controller  method as a second argument (we'll get to these in a second). So the code above says ``If the user makes a \texttt{POST} request to \texttt{/articles}, run the \texttt{store()} method of the \texttt{Articles} controller.
+
+
+
+\section{Controllers}
+
+\textbf{Controller} is another term that comes up a lot in software development. A controller's job is to bring together all the other bits of code that make up an app: to \textit{control} what happens. In Laravel, controllers are called by the router: they take the request, do whatever it is that needs doing, and then return a response.
+\\
+
+Run the following inside your Vagrant box to create an Articles controller:
+
+\begin{minted}{bash}
+    artisan make:controller Articles
+\end{minted}
+
+This will create a file (\texttt{app/Http/Controllers/Articles.php}), which contains the boilerplate for a controller.
+
+
+
+\section{Route Model Binding}
+
+What if we try to update \texttt{/articles/34849}? Currently we'll get a 500 error as there is no article with ID 34849. But a 500 error is of no use to the client making API requests: it just tells them that you've got a bug in your code.
+\\
+
+If an article doesn't exist then we should return a 404 status. The client \textit{can} do something with this as it has a very specific meaning: the thing you requested doesn't exist.
+\\
+
+This is such a common issue when building websites/APIs, that Laravel has support for it baked-in. We can use \textbf{Route Model Binding} to ask Laravel to find the appropriate article for us and, if it doesn't find one, return a 404 status automatically.
+\\
+
+We do it using PHP type-hinting. Rather than accepting the standard URL parameter argument, we use type-hinting to say to Laravel ``Give us an \texttt{Article} instead''. Laravel does a little bit of magic\footnote{People often complain if frameworks do too much ``magic''. Rails is famous for it. The type-hinting trick is the only case I'm aware of where Laravel can really be accused of it. It's using \href{https://www.culttt.com/2014/07/02/reflection-php}{Reflection} to do this, which is when a programming language looks at its own code and works things out from it. It's probably not something you'll need to use much.} and tries to find the article. If it finds it then it passes in the article object instead of the URL parameter; if it can't find it then it returns a 404 response immediately and doesn't even run the controller code.
+\\
+
+To get this working, all we need to do is update all the places in our controller where we accepted the URL parameter \texttt{\$id} to ask for an \texttt{Article} instead. We can then get rid of all the calls to \texttt{Article::find()}, as Laravel will have already done that for us:
+
+\phpinputminted{02/figures/03/02-route-model-binding}
+
+
+
+\section{Additional Resources}
+
+\begin{itemize}[leftmargin=*]
+    \item \href{https://laravel.com/docs/master/routing}{Routing}
+    \item \href{http://laravel.com/docs/master/controllers}{Controllers}
+    \item \href{https://laraveldaily.com/how-to-structure-routes-in-large-laravel-projects/}{How to Structure Routes in Large Laravel Apps}
+\end{itemize}

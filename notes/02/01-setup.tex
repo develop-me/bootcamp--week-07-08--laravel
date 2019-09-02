@@ -1,0 +1,145 @@
+\section{What is Laravel?}
+
+Laravel is a \textit{modern} PHP framework designed for building database-driven websites and APIs. The ``modern'' bit is important, as many popular PHP frameworks have codebases that go back to the pre-2010 PHP days, when everything was horrible.
+\\
+
+Laravel was created by a chap called Taylor Otwell, who was previously a .NET developer. .NET had a lot of nice ideas, but at the time you had to pay a lot of money to use any of it. So he decided to create a PHP framework based on some of the better ideas.
+\\
+
+One of the core ideas behind Laravel is that it should be built on pre-existing libraries. Rather than having to write \textit{all} of the code from scratch, Laravel just joins together the best libraries and provides a wrapper for them so that everything is consistent. That means the more complicated bits of code (like file systems management or routing) are written by specialists in those areas.
+\\
+
+The other key idea behind Laravel is that it should make building websites and APIs as frictionless as possible. If there's a common thing that lots of sites need to do, then Laravel will have a quick and easy way to do it. This means that, once you get used to it, you can get an API up and running in a few minutes.
+\\
+
+Here are some of the key features of Laravel:
+
+\begin{itemize}
+    \item \textbf{Homestead}: a Vagrant configuration specifically designed for Laravel development
+    \item \textbf{Eloquent ORM}: an incredibly simple way to work with databases
+    \item \texttt{artisan}: a command line tool for doing all of the most common Laravel tasks
+    \item \textbf{Database migrations}: a quick and easy way to create and update database structures
+    \item \textbf{Scheduling} and \textbf{Job Queues}: easily setup tasks to run at a later point
+    \item Very good documentation: well written documentation is really important when using a framework
+    \item \href{https://laracasts.com}{Laracasts}: hundreds of hours of videos and an active community of developers
+\end{itemize}
+
+
+\begin{infobox}{Why Not Node?}
+    It's become very trendy to use Node to make APIs.
+    \\
+
+    However, there is no established framework (or combination of libraries) in the Node ecosystem that provide anything close to what Laravel offers. This means that two seemingly similar Node APIs might be written completely differently. There are also certain essential bits of tooling, like database migrations, that are not well supported. In fact, Node is in a very similar sort of position to where PHP was pre-Laravel: lots of options, but none of them quite offering everything that you need. Give it a few more years and this will almost certainly change.
+    \\
+
+    So why is Node so popular for building APIs? Companies think ``We've got front-end developers who can already write JavaScript, let's use them to write the back-end too!''. This is wrong-headed for two reasons: firstly, back-end code has very little in common with front-end code. Secondly, if you really have to do this, you'd be much better getting developers to learn a new programming language, like PHP, Ruby, or C\#, and using frameworks like Laravel, Ruby on Rails, or .NET. It turns out most the energy comes with learning the framework rather than the programming language, so you'd be better using a framework that does most the work for you.
+    \\
+
+    That's not to say Node doesn't have its uses. It's great for doing stuff with web-sockets and streaming data (trying to use PHP for those is horrible). And if you enjoy functional programming then Node lets you write largely functional code (again not something PHP is good for). Personally, if I'm going to be writing object-oriented code anyway, I'd always go for Laravel.
+\end{infobox}
+
+
+\section{Setup}
+
+Laravel provides an installer app that lets you create the scaffolding for a Laravel app. You'll need to install it using the following command:
+
+\begin{minted}{bash}
+    composer global require laravel/installer
+\end{minted}
+
+This adds the Laravel installer package to your computer so that you can run it from any directory. You only need to set this up on your computer once.
+
+
+\section{Creating a Project}
+
+To create a new Laravel project run:
+
+\begin{minted}{bash}
+    laravel new project-name
+\end{minted}
+
+Obviously you should call your project something more descriptive (and make sure it's a directory-friendly name - no spaces, all lowercase).
+
+\section{Running Laravel}
+
+There are various ways to get Laravel up and running. If you're on a Mac you can use \href{https://laravel.com/docs/master/valet}{Laravel Valet}. But we'll be using \textbf{Homestead}, Laravel's pre-configured Vagrant box.
+\\
+
+There are two ways to setup Homestead: globally and locally. The global way is more efficient in terms of hard drive usage, but it's also a bit of a pain to get setup properly. For this reason I recommend going with the local setup.
+\\
+
+First, we need to add the Homestead files to our project. \textit{In the newly created project directory} run:
+
+\begin{minted}{bash}
+    composer require laravel/homestead
+\end{minted}
+
+This should add a couple of new Composer packages. If it looks like it's installed lots of packages then make sure you're definitely in the project directory.
+\\
+
+Composer only adds files to the \texttt{vendor} directory, which Vagrant doesn't know anything about. So next, we need to copy the relevant Homestead files into the project directory:
+
+\begin{minted}{bash}
+    vendor/bin/homestead make
+\end{minted}
+
+This should have added a \texttt{Homestead.yaml} and \texttt{Vagrantfile} to your project.
+\\
+
+\begin{infobox}{\texttt{Homestead.yaml}}
+    The \texttt{Homestead.yaml} file that is generate is specific to the directory that you run it in. If you move the project to a different directory you'll want to run the \texttt{homestead make} command again or update the folders mapping in the \texttt{Homestead.yaml} file.
+\end{infobox}
+
+By default Homestead is setup to use 2GB of RAM. For our purposes this is overkill (and will make computer with less than 8GB of RAM feel really sluggish). So, change the second line of \texttt{Homestead.yaml} so it just uses 512MB:
+
+\begin{minted}{yaml}
+    memory: 512
+\end{minted}
+
+Now you can get Vagrant up and running:
+
+\begin{minted}{bash}
+    vagrant up
+\end{minted}
+
+This can take a while the first time as it will need to download the appropriate Homestead box\footnote{This can be \textit{really} slow. Unfortunately the Homestead box is hosted on a really under-powered server. If you get a download time of several hours it can sometimes be worth cancelling and retrying a few minutes later.}, then get the VM up and running, and then \textbf{provision} (in this case, run the Laravel setup scripts) the VM.
+
+
+\pagebreak
+
+
+\section{Getting Started}
+
+Once Vagrant has finished loading:
+
+\begin{itemize}
+    \item On Mac: \href{http://homestead.test}{http://homestead.test}
+    \item On Windows: \href{http://localhost:8000}{http://localhost:8000}
+\end{itemize}
+
+\img{12cm}{02/img/laravel.png}{0em}{Laravel up and running}
+
+\pagebreak
+
+\begin{infobox}{Server Errors on First Run}
+    Occasionally provisioning doesn't quite work as planned. This often happens if you moved the project directory and forgot to update \texttt{Homestead.yaml}. You can re-run the provisioning scripts with \texttt{vagrant provision}. However, when you run them the second time it can skip a few stages. So, if you get a 500 error on first run, run the following in the project directory:
+
+    \begin{minted}{bash}
+        vagrant reload --provision # re-run provisioning scripts
+    \end{minted}
+
+    Then run the following on the VM:
+
+    \begin{minted}[frame=topline]{bash}
+        artisan key:generate # generate a new app key
+    \end{minted}
+\end{infobox}
+
+
+\section{Additional Resources}
+
+\begin{itemize}[leftmargin=*]
+    \item \href{https://laravel.com/docs/master/installation#installation}{Laravel Installation}
+    \item \href{http://laravel.com/docs/master/homestead#per-project-installation}{Per-project Homestead Setup}
+    \item \href{https://stitcher.io/blog/php-in-2019}{PHP in 2019}
+\end{itemize}

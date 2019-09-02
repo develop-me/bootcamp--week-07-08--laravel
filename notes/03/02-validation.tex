@@ -1,0 +1,42 @@
+You should always validate any data that gets submitted to your site on the server-side. For a good user-experience you should probably also have validation on the client-side using JavaScript, but it's perfectly possible that a user might have JavaScript disabled or that a malicious party might be making a direct request.
+\\
+
+The idea of validation is to turn a certain class of \texttt{500} errors into \texttt{4xx} errors. Remember, client-side code can't do anything useful with \texttt{500} errors, but \texttt{4xx} errors have specific meanings.
+\\
+
+To avoid any MySQL errors we need to at minimum validate the following:
+
+\begin{itemize}
+    \item \texttt{required}: any database fields that cannot be \texttt{null} should have the \texttt{required} validation
+    \item \texttt{max:255}: if you're storing data in a \texttt{VARCHAR} then make sure you have max length validation that matches the \texttt{VARCHAR} length
+    \item \texttt{date}/\texttt{integer}/\texttt{string}: check formats before inserting into MySQL. These are not the database migration types, but validation specific rules - so \texttt{VARCHAR} and \texttt{TEXT} both count as \texttt{string} for validation. You will also need the \texttt{nullable} validation if the field is not required.
+\end{itemize}
+
+As well as the cases above there are plenty of \href{http://laravel.com/docs/master/validation#available-validation-rules}{other bits of validation} that you can do easily with Laravel.
+\\
+
+As with everything in Laravel, we'll need to create a new type of class. In this case it's a \texttt{FormRequest} class. The \texttt{FormRequest} class actually inherits everything from the \texttt{Request} class that we're already using in our controller when we want to work with the request the user made.
+\\
+
+Use \texttt{artisan} to create a \texttt{FormRequest} class:
+
+\begin{minted}{bash}
+    artisan make:request ArticleRequest
+\end{minted}
+
+This will create a file in \texttt{app/Http/Requests}. The \texttt{ArticleRequest} class has two methods. We first need to return \texttt{true} from the \texttt{authorize} method: this method can be very useful when you support user logins in your API, but for now we'll just assume everyone can make requests. The \texttt{rules} method needs to return an associative array, where the property name is the JSON property that needs validating and its value is an array of validation rules:
+
+\phpinputminted{03/figures/02/01-validation}
+
+
+Finally we need to  update the \texttt{Articles} controller to use our validated request instead of the standard \texttt{Request} object. First let it know where the \texttt{ArticleRequest} class lives:
+
+\begin{minted}{php}
+    use App\Http\Requests\ArticleRequest;
+\end{minted}
+
+And then update the type-hinting on the \texttt{store} and \texttt{update} methods to use the \texttt{ArticleRequest} class instead of \texttt{Request}:
+
+\phpinputminted{03/figures/02/02-type-hint}
+
+This works because \texttt{ArticleRequest} is a descendant of \texttt{Request}, so it has all of the same methods and properties.

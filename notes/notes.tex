@@ -1,0 +1,75 @@
+% setup the document
+\documentclass[b5paper,openany]{book}
+
+% setup variables ------------------------------
+
+% your name
+\newcommand\instructor{Mark Wales \& Oli Ward}
+
+% the week number
+\newcommand\weekno{7}
+
+% week main title
+\newcommand\maintitle{Server-Side Programming}
+
+% week subtitle
+\newcommand\subtitle{with Laravel}
+
+% link to notes - relative to github.com/develop-me/
+\newcommand\github{week-07--laravel-blade/blob/master/notes/}
+
+% setup functions, styling, etc.
+\input{../../templates/template.tex}
+
+% the structure of the document
+\begin{document}
+
+% render the title page (uses variables above)
+\tp
+
+\quotepage{There is no such thing as perfect security, only varying levels of insecurity.}{Salman Rushdie}
+
+\tableofcontents
+
+\input{../../templates/preface.tex}
+
+
+\chapter{Server-Side Programming}
+
+\chapter{Vagrant}
+
+\chapter{MySQL}
+
+\chapter{MySQL with PHP}
+
+\chapter{Laravel: An Introduction}
+\input{02/01-setup.tex}
+
+\chapter{Eloquent ORM}
+\input{02/02-eloquent.tex}
+
+\chapter{Routes \& Controllers}
+\input{02/03-controllers.tex}
+
+\chapter{Blade Templates}
+
+\chapter{Forms}
+\input{03/01-forms.tex}
+
+\chapter{Validation}
+\input{03/02-validation.tex}
+
+\chapter{Relational Data}
+\input{03/03-one-to-many.tex}
+
+\chapter{Login Form}
+
+
+
+\nchapter{Glossary}
+\input{glossary.tex}
+
+
+\input{../../templates/colophon.tex}
+
+\end{document}

@@ -1,0 +1,221 @@
+It's very common that we'll need to store relationships between different types of things. For example an article can have comments and tags. And while comments belong to a specific article, tags can belong to multiple articles. We need some way to store these relationships in our database and to deal with them in Laravel.
+\\
+
+A naive approach\footnote{This was what I did my first time building a database. I then learnt the proper way to do it and spent the following two months rewriting the whole thing in secret and updating the site without telling the client.} to storing comments for an article might be to add a \texttt{comments} column and then store an array of comments. But there isn't an \texttt{ARRAY} type in SQL, so you'd have to \textbf{serialize}\footnote{Turning a data structure into data that can be stored/transferred. This is actually what WordPress does for quite a lot of its data.} it somehow. This is possible, but it will lead to a world of trouble later on.
+\\
+
+Another wrong-footed approach\footnote{Which I've seen in production software} would be to create a bunch of columns called \texttt{comment\_1}, \texttt{comment\_2}, \&c. This is arguably worse than the serialisation approach as it means the database structure limits the number of comments that can be stored - and we'd have to change the database structure if we wanted to store more comments\footnote{As I said, I've seen this in production software. And they charged the client for such database changes too!}. If we wanted to store more than just the comment text we'd also need \textit{multiple} columns for each comment: \texttt{comment\_text\_1}, \texttt{comment\_email\_1}, \&c.
+
+\section{Relational Databases}
+
+SQL is designed to be used with \textbf{Relational Database Management Systems} (RDBMS). The key word being \textit{relational}. Although each table in the database should represent one type of thing, the database allows us to map relationships between rows in one table to rows in another table. This is based on some \href{https://en.wikipedia.org/wiki/Relational\_algebra}{pretty rigorous mathematical logic}, so it's got well known performance characteristics.
+
+\begin{infobox}{Why Not NoSQL?}
+    \quoteinline{It’s a curious thing about our industry: not only do we not learn from our mistakes, we also don’t learn from our successes}{Keith Braithwaite}
+
+    It's become very trendy to use NoSQL databases to make API driven apps\footnotemark. The most popular being MongoDB.
+    \\
+
+    MongoDB is a ``document'' database: it's designed for storing arbitrary data, as opposed to specific data types. If that's all you use it for then it's really efficient - although such features are now common in SQL databases like PostgreSQL. But people got carried away and tried to use it to store \textit{relational} data and ended up getting themselves into lots of issues - do a search for ``MongoDB to PostgreSQL'' for many an article on the subject.
+    \\
+
+    It turns out that \textit{most} data you'll ever want to store and work with is relational, so you should probably stick to a relational database most the time.
+    \\
+
+    That's not to say that NoSQL has no place in the world: it's really good for specific uses cases and more often than not should be used \textit{alongside} SQL databases.
+    \\
+
+    For example it's very common to pair up ElasticSearch with an SQL database: searching an SQL database for key terms is either very inefficient or involves a lot of extra tables and code. ElasticSearch does it all for us with very little effort. However, you'd still want to store your main data in an SQL database.
+    \\
+
+    Another case is using a graph database (such as Neo4j) alongside SQL. Although SQL is good at storing specific relationships, it's very bad at exploring those relationships: for example, Facebook finding all of your friends' friends. In fact the relationships don't need to get very complicated before it would take SQL millennia to find every possible relationship. Graph databases are designed specifically to find relationships and can do this very quickly. Again, you'd probably want to store your main data in an SQL database
+\end{infobox}
+
+\footnotetext{You might be noticing a pattern here.}
+
+
+\pagebreak
+
+
+There are various types of relationship that we can store in SQL, but the two most common are:
+
+\begin{itemize}
+    \item \textbf{One-to-Many}: when some\footnote{Zero or more} of one type of thing belong to another type of thing, for example articles have lots of comments, but comments belong to a specific article.
+    \item \textbf{Many-to-Many}: when some of one type of thing related to some of another type of thing, for example articles can have lots of tags, and tags belong to lots of articles.
+\end{itemize}
+
+\begin{infobox}{Other Types of Relationships}
+    We won't be looking at the following types of relationship in any detail, but they're worth knowing about:
+
+    \begin{itemize}[leftmargin=*]
+        \item \textbf{One-to-One}: when two types of thing are linked directly. For example a \texttt{people} table might have a one-to-one link to an \texttt{addresses} table. However, in many cases these are actually one-to-\textit{many} relationships: e.g. two different people might share the same address.
+        \item \textbf{Has-Many-Through}: when some of one thing relate to another type of thing \textit{via} a third type of thing. For example if our blog had users we could find all the comments on articles that the user wrote: the comments belong to the article and the article belongs to a user. This isn't technically a new type of relationship: it's just two relationships strung together.
+        \item \textbf{Polymorphic Relationships}: sometimes it's useful to represent a hierarchy. Say that we had various type of blog post (e.g. \texttt{articles}, \texttt{links}, \texttt{videos}) and we stored each type in its own table as they require different values to be stored. We could have a parent \texttt{posts} table which stores the common information and allows us to get all of them out with one query. Relational algebra doesn't express this sort of relationship well, so it is not usually part of the RDBMS. This means it isn't brilliant from a performance perspective and the way it's stored in the database is dependent on the DB library that you're using.
+    \end{itemize}
+\end{infobox}
+
+
+\pagebreak
+
+
+\section{One-to-Many Relationships: Comments}
+
+Each article can have \textbf{many} comments, but each comment can only belong to \textbf{one} article. So this is a one-to-many relationship. One-to-many relationships are asymmetrical, in that one sort of thing effectively belongs to another sort of thing.
+\\
+
+We can store this relationship by creating an \texttt{article\_id} column on the \texttt{comments} table that references the ID of the article each comment belongs to. Under the hood, MySQL can really efficiently use this structure to join together related data.
+
+\img{12cm}{03/img/one-to-many.eps}{1em}{One-to-many relationships}
+
+
+\subsection{Database Migration}
+
+First, we'll need to create a new database migration. We should create a \texttt{Comment} model at the same time as we'll need to work with comments in the Laravel code. Run the following \texttt{artisan} command:
+
+\begin{minted}{bash}
+    artisan make:model Comment -m
+\end{minted}
+
+A comment belongs to an article and has an email address and the comment text. As well as adding the columns, we should also tell MySQL that the \texttt{article\_id} column points to the \texttt{id} column of the \texttt{articles} table. We do this by setting up a \textbf{foreign key} constraint.
+
+\begin{infobox}{Foreign Keys}
+    Setting up a foreign key constraint tells MySQL that a column on one table points to a column on another table (or even the same table).
+    \\
+
+    You \textit{could} create the \texttt{article\_id} column without creating a foreign key and everything would still work. However, by adding the foreign key we get certain data integrity guarantees:
+
+    \begin{itemize}
+        \item It's not possible to set an \texttt{article\_id} that doesn't exist
+        \item If an article is removed from the database, MySQL can remove all related comments automatically (this is known as \textbf{cascading} the delete operation)
+        \item We can also cascade update operations, which can be useful if you aren't using \texttt{AUTO\_INCREMENT} for IDs
+    \end{itemize}
+
+    Data integrity is really important, so it's always worthwhile spending the extra bit of effort to create a foreign key.
+\end{infobox}
+
+Update the \texttt{up} method of the newly created database migration:
+
+\phpinputminted{03/figures/03/01-migration}
+
+Don't forget to run \texttt{artisan migrate} once you've saved the migration file.
+
+
+\subsection{Eloquent Models}
+
+Now we've updated the database structure we need to tell our Eloquent models about the relationship between articles and comments. Then Eloquent can do its ORM magic and join up the different models.
+\\
+
+Let's update our Article model to let it know that it can have comments:
+
+\phpinputminted{03/figures/03/02-Article}
+
+Now we can easily access a collection of \texttt{Comment} objects for an article object instance using its new \texttt{comments} property.\footnote{Even though we created a method - Eloquent creates the property for us}
+\\
+
+We need to setup the other side of the relationship in the \texttt{Comment} model (which we created earlier):
+
+\phpinputminted{03/figures/03/03-Comment}
+
+Now all of our \texttt{Comment} object instances will have an \texttt{article} property that gives back the related \texttt{Article} object.
+\\
+
+We can use \texttt{artisan tinker} to get a bit of a better idea of how the ORM relationships work:
+
+\phpinputminted{03/figures/03/04-tinker}
+
+
+\subsection{Routing \& Controller Logic}
+
+Now that we've got the \texttt{Comment} model setup we can add the necessary controller logic to the API. We're going to want two new routes: one to add a comment to an article and one for showing all the comments that belong to a specific article. Both of these routes work with a specific article, so we'll need to get the ID as a URL parameter.
+\\
+
+We'll setup the following routes:
+
+\begin{itemize}
+    \item \texttt{POST /articles/<article\_id>/comments}: create a comment for the given article ID
+    \item \texttt{GET /articles/<article\_id>/comments}: get all comments for the given article ID
+\end{itemize}
+
+We could add two methods to the \texttt{Articles} controller to handle these, but to keep things tidy let's create a new \texttt{Comments} controller:
+
+\begin{minted}{shell}
+    artisan make:controller Comments --api
+\end{minted}
+
+Now we can add the routes:
+
+\phpinputminted{03/figures/03/05-routes}
+
+\pagebreak
+
+Now we'll need to update the \texttt{Comments} controller. First, let the controller know about the \texttt{Comment} \textit{and} \texttt{Article} models:
+
+\begin{minted}{php}
+    use App\Article;
+    use App\Comment;
+\end{minted}
+
+We'll do the \texttt{GET} request first as it's very simple. We'll use route model binding to get the correct article object passed in for us (or a 404 if it's not found). And then we just use the \texttt{comments} property to get the collection of all that article's comments:
+
+\phpinputminted{03/figures/03/06-index}
+
+Next, let's handle the \texttt{POST} request. This one is a little more involved, as we'll need to deal with the request JSON. Again, we'll use route model binding to get the article from the URL. Then we need to get the request data and create a new comment using it. However, we can't use the \texttt{Comment::create()} method, as we need to make sure it has a valid \texttt{article\_id} property, otherwise MySQL won't let us store it. Instead we'll pass the data in as the first argument when we create a new \texttt{Comment} object: this assigns the properties, as with \texttt{create()}, but doesn't save it to the database. We'll store it in the database using the article model:
+
+\phpinputminted{03/figures/03/07-store}
+
+Passing the data in when we create the comment counts as mass assignment, so we need to make sure we update the \texttt{Comment} model's \texttt{fillable} property so we don't get a mass assignment vulnerability error:
+
+\phpinputminted{03/figures/03/08-fillable}
+
+
+\subsection{Validation}
+
+We \textit{always} need to add validation to any data sent to the server. First, use \texttt{artisan} to create a \texttt{CommentRequest}:
+
+\begin{minted}{bash}
+    artisan make:request CommentRequest
+\end{minted}
+
+Then update the \texttt{authorize()} and \texttt{rules()} methods:
+
+\phpinputminted{03/figures/03/09-CommentRequest}
+
+You'll also need to update the \texttt{Comments} controller to use the validated request. First let the controller know where to find the \texttt{CommentRequest} class:
+
+\begin{minted}{php}
+    use App\Http\Requests\CommentRequest;
+\end{minted}
+
+Then update the type-hinting to use \texttt{CommentRequest} instead of \texttt{Request}:
+
+\phpinputminted{03/figures/03/10-request-type-hint}
+
+
+
+
+\subsection{Resource}
+
+Finally, we'll need to update how our comments get formatted in JSON. Again, we don't need to sent the timestamps columns and we also don't need the \texttt{article\_id} column: if you've made an API request to get the comment then you must already know the article ID.
+\\
+
+Use \texttt{artisan} to create a resource for comments:
+
+\begin{minted}{bash}
+    artisan make:resource CommentResource
+\end{minted}
+
+\pagebreak
+
+Then update the \texttt{toArray()} method to return only the columns we want:
+
+\phpinputminted{03/figures/03/11-resource}
+
+Now to use it in the controller. Tell the \texttt{Comments} controller where to find the resource class:
+
+\begin{minted}{php}
+    use App\Http\Resources\CommentResource;
+\end{minted}
+
+Then update the \texttt{index} and \texttt{store} methods:
+
+\phpinputminted{03/figures/03/12-controller-resource}
