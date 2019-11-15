@@ -1,4 +1,4 @@
-If we're going to create a database driven API, we'll need to interact with a database. There are two key parts to this:
+If we're going to create a database driven site, we'll need to interact with a database. There are two key parts to this:
 
 \begin{itemize}
     \item Setting up and updating the structure of the database
@@ -30,10 +30,10 @@ Laravel makes it very easy to do both of these using the \texttt{artisan} comman
 
 \section{Database Migrations}
 
-The Homestead box creates a database called \texttt{homestead} which Laravel has been setup to use by the provisioning script.\footnote{Take a look in the \texttt{.env} file if you want to see.} The \texttt{homestead} database is empty by default, so we'll need to add the structure that we need for our API.
+The Homestead box creates a database called \texttt{homestead} which Laravel has been setup to use by the provisioning script.\footnote{Take a look in the \texttt{.env} file if you want to see.} The \texttt{homestead} database is empty by default, so we'll need to add the structure that we need for our site.
 \\
 
-Realistically, you're never going to know the complete structure of your database when you start building an API. Specifications will change over time and features will be added and removed. The structure you end up with at the end might be very different from what you started with.
+Realistically, you're never going to know the complete structure of your database when you start building a site. Specifications will change over time and features will be added and removed. The structure you end up with at the end might be very different from what you started with.
 \\
 
 For this reason, we need a way to keep the structure of the database up-to-date with the rest of the app: it's no good writing code that tries to access a non-existent table or column.
@@ -42,7 +42,7 @@ For this reason, we need a way to keep the structure of the database up-to-date 
 Keeping the database structure up-to-date becomes particularly tricky if there are multiple developers working on the same codebase. In the bad ole days developers would share a ``dump'' of the database: i.e. a complete copy of all of the tables, columns, and data. But this is bad for a couple of reasons:
 
 \begin{itemize}
-    \item Say you have two developers working on the API. One of them, Asha, is working on stuff to do with money and the various related tables. The other developer, Jiro, is working on stuff to do with users and the tables related to that. If Asha does a dump of her database and passes it over to Jiro, then it's not going to have all the user tables that Jiro has created, so he'd need to recreate them manually.
+    \item Say you have two developers working on the site. One of them, Asha, is working on stuff to do with money and the various related tables. The other developer, Jiro, is working on stuff to do with users and the tables related to that. If Asha does a dump of her database and passes it over to Jiro, then it's not going to have all the user tables that Jiro has created, so he'd need to recreate them manually.
 
     \item Sharing the structure of the database is desirable, but we probably don't want to share the test data that other developers have been putting in. The things that people type in as test data are probably best kept to themselves. Anyone looking at a database I've populated manually would think I was obsessed with wombats, fish, and spoons.\footnote{And I really don't care for fish.}
 \end{itemize}
@@ -52,7 +52,7 @@ This is where \textbf{database migrations} come in. A database migration is a fi
 
 \subsection{Creating a Migration}
 
-We're going to build a simple blog API which will allow us to create articles which have a title and an article body. So we want to create a table called \texttt{articles} with \texttt{id}, \texttt{title}, and \texttt{article} columns.
+We're going to build a simple blog which will allow us to create articles which have a title and an article body. So we want to create a table called \texttt{articles} with \texttt{id}, \texttt{title}, and \texttt{article} columns.
 \\
 
 Make sure you're inside the Vagrant box and in the \texttt{code} directory and then run:

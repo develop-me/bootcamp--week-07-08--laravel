@@ -1,0 +1,41 @@
+PDO (``PHP Data Objects'') provides an interface for working with MySQL from PHP.
+\\
+
+PDO is an ``abstraction layer'', which means we can actually also use PDO to connect to other types of database such as SQLite and PostgreSQL, without needing to change much of our code.
+
+
+\begin{infobox}{The history of MySQL with PHP}
+    Originally we used the \texttt{mysql} functions to work with MySQL in PHP. However, these functions lead to quite messy code and lack many security features. They are no longer usable in PHP.
+    \\
+
+    \texttt{mysqli} was designed to replace \texttt{mysql} - it literally stands for ``MySQL Improved''. It adds useful security features and also an optional object-oriented API.
+    \\
+
+    More recently it's become common to use other SQL databases such as PostgreSQL and SQLite. It's desirable to be able to use any of these from PHP. So \texttt{PDO} was introduced as a way to support other databases in an object-oriented style.
+\end{infobox}
+
+\section{Connecting}
+
+We need to first create an object representing a connection to the database:
+
+\begin{minted}{php}
+    $pdo = new PDO('mysql:host=localhost;dbname=database', 'username', 'password');
+\end{minted}
+
+Once we've created it we can use the \texttt{\$pdo} object to do things with our database.
+
+
+\section{Running a Query}
+
+Running a query consists of two parts. First we generate the query, then we run it. Until we run it, nothing actually happens
+
+
+\section{MySQL Injection}
+
+
+
+\section{Additional Resources}
+
+\begin{itemize}[leftmargin=*]
+    \item \href{http://php.net/manual/en/mysqlinfo.api.choosing.php}{Choosing a PHP API}: The differences between \texttt{mysql}, \texttt{mysqli}, and \texttt{PDO}.
+\end{itemize}

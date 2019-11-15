@@ -9,7 +9,7 @@ Laravel was created by a chap called Taylor Otwell, who was previously a .NET de
 One of the core ideas behind Laravel is that it should be built on pre-existing libraries. Rather than having to write \textit{all} of the code from scratch, Laravel just joins together the best libraries and provides a wrapper for them so that everything is consistent. That means the more complicated bits of code (like file systems management or routing) are written by specialists in those areas.
 \\
 
-The other key idea behind Laravel is that it should make building websites and APIs as frictionless as possible. If there's a common thing that lots of sites need to do, then Laravel will have a quick and easy way to do it. This means that, once you get used to it, you can get an API up and running in a few minutes.
+The other key idea behind Laravel is that it should make building websites and APIs as frictionless as possible. If there's a common thing that lots of sites need to do, then Laravel will have a quick and easy way to do it. This means that, once you get used to it, you can get a site up and running in a few minutes.
 \\
 
 Here are some of the key features of Laravel:
@@ -26,13 +26,13 @@ Here are some of the key features of Laravel:
 
 
 \begin{infobox}{Why Not Node?}
-    It's become very trendy to use Node to make APIs.
+    It's become very trendy to use Node for server-side code.
     \\
 
-    However, there is no established framework (or combination of libraries) in the Node ecosystem that provide anything close to what Laravel offers. This means that two seemingly similar Node APIs might be written completely differently. There are also certain essential bits of tooling, like database migrations, that are not well supported. In fact, Node is in a very similar sort of position to where PHP was pre-Laravel: lots of options, but none of them quite offering everything that you need. Give it a few more years and this will almost certainly change.
+    However, there is no established framework (or combination of libraries) in the Node ecosystem that provide anything close to what Laravel offers. This means that two seemingly similar Node back-ends might be written completely differently. There are also certain essential bits of tooling, like database migrations, that are not well supported. In fact, Node is in a very similar sort of position to where PHP was pre-Laravel: lots of options, but none of them quite offering everything that you need. Give it a few more years and this will almost certainly change.
     \\
 
-    So why is Node so popular for building APIs? Companies think ``We've got front-end developers who can already write JavaScript, let's use them to write the back-end too!''. This is wrong-headed for two reasons: firstly, back-end code has very little in common with front-end code. Secondly, if you really have to do this, you'd be much better getting developers to learn a new programming language, like PHP, Ruby, or C\#, and using frameworks like Laravel, Ruby on Rails, or .NET. It turns out most the energy comes with learning the framework rather than the programming language, so you'd be better using a framework that does most the work for you.
+    So why is Node so popular for building back-ends? Companies think ``We've got front-end developers who can already write JavaScript, let's use them to write the back-end too!''. This is wrong-headed for two reasons: firstly, back-end code has very little in common with front-end code. Secondly, if you really have to do this, you'd be much better getting developers to learn a new programming language, like PHP, Ruby, or C\#, and using frameworks like Laravel, Ruby on Rails, or .NET. It turns out most the energy comes with learning the framework rather than the programming language, so you'd be better using a framework that does most the work for you.
     \\
 
     That's not to say Node doesn't have its uses. It's great for doing stuff with web-sockets and streaming data (trying to use PHP for those is horrible). And if you enjoy functional programming then Node lets you write largely functional code (again not something PHP is good for). Personally, if I'm going to be writing object-oriented code anyway, I'd always go for Laravel.
@@ -96,6 +96,14 @@ By default Homestead is setup to use 2GB of RAM. For our purposes this is overki
     memory: 512
 \end{minted}
 
+You'll also need to edit the \texttt{.env} file to use the default Homestead database setup:
+
+\begin{minted}{ini}
+    DB_DATABASE=homestead
+    DB_USERNAME=root
+    DB_PASSWORD=secret
+\end{minted}
+
 Now you can get Vagrant up and running:
 
 \begin{minted}{bash}
@@ -106,6 +114,19 @@ This can take a while the first time as it will need to download the appropriate
 
 
 \pagebreak
+
+\begin{infobox}{The \texttt{.env} File}
+    There are certain configuration options that rather than being application specific are ``environment'' (i.e. the machine that the app is running on) specific.
+    \\
+
+    For example, when you're developing your application you can probably get away with using \texttt{root} as the root MySQL password, as it's only on your Vagrant box. You might also want to show full error messages when something goes wrong.
+    \\
+
+    However, on a production box you might need to use a better MySQL password and maybe a different database name. You probably \textit{don't'} want to output full errors, as this can be a big security risk: giving away how your application is built exposes it to known vulnerabilities.
+    \\
+
+    These sort of configuration options go in the \texttt{.env} file. This file is specific to each computer that it runs on, so should not be copied or added to version control. Instead, when running on a new machine, you should copy the \texttt{.env.example} file and edit that. This will make sure that you don't accidentally copy across settings that are specific to another machine.
+\end{infobox}
 
 
 \section{Getting Started}
@@ -141,5 +162,7 @@ Once Vagrant has finished loading:
 \begin{itemize}[leftmargin=*]
     \item \href{https://laravel.com/docs/master/installation#installation}{Laravel Installation}
     \item \href{http://laravel.com/docs/master/homestead#per-project-installation}{Per-project Homestead Setup}
+    \item \href{https://github.com/vlucas/phpdotenv#why-env}{Why .env?}
+    \item \href{https://en.wikipedia.org/wiki/Environment\_variable}{Environmental Variables}
     \item \href{https://stitcher.io/blog/php-in-2019}{PHP in 2019}
 \end{itemize}

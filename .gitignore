@@ -9,6 +9,7 @@ _minted-*/
 examples/
 vendor/
 cache/
+test/
 
 .brokdb
 .cmt.bkp
