@@ -6,7 +6,7 @@
 
 You'll need the password `wsYZzT8_m_pwBNDjSk77` to setup an account.
 
-Read the [restful.training](https://github.com/smallhadroncollider/restful-blog#restfultraining) docs and see if you can:
+Read the [restful.training](https://github.com/develop-me/restful.training#restfultraining) docs and see if you can:
 
 - Setup an account
 - Create three articles

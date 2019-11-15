@@ -374,7 +374,7 @@ Then configure MySQL and setup a password:
     sudo mysql_secure_installation
 \end{minted}
 
-Press enter when asked about the current password. Type \texttt{Y} to set a new password and enter and re-enter to confirm, then answer \texttt{Y} to all further questions.
+Press enter when asked about the current password. Type \texttt{Y} to set a new password and enter and re-enter to confirm, then answer \texttt{Y} to all further questions. You'll need the password later when setting up Laravel, so make a note of it somewhere.
 
 \pagebreak
 
@@ -405,10 +405,18 @@ Update your \texttt{.env} file with the details of your database (the name of th
     sudo nano .env
 \end{minted}
 
+Populate the database details:
+
 \begin{minted}{ini}
     DB_DATABASE=laravel
     DB_USERNAME=root
-    DB_PASSWORD=root
+    DB_PASSWORD={PASSWORD FROM MYSQL SETUP EARLIER}
+\end{minted}
+
+Setup the app key (populated in \texttt{.env}):
+
+\begin{minted}{bash}
+    php artisan key:generate
 \end{minted}
 
 Now, use \texttt{artisan} to setup the correct structure for the database:
@@ -461,3 +469,79 @@ Success, everything is setup! You should now be able to make calls to your API.
         php artisan migrate
     \end{minted}
 \end{infobox}
+
+
+\section{HTTPS \& SSL Certificates}
+
+HTTPS = HTTP \textbf{Secure} encrypts all information sent between the client and the server and should always be used if the API requires any sort of authentication. Nowadays it is considered good practice to use HTTPS on \textit{all} websites, as it can prevent a number of security issues.
+\\
+
+First step, we'll need to set up a real domain to point to our server. If you don't have one to use ask Oli to set you up a \texttt{something.developme.space} one.
+\\
+
+We install \texttt{certbot-auto} on our AWS EC2 instance, which we can use to have SSL certificates issued for us, with:
+
+\begin{minted}{bash}
+    wget https://dl.eff.org/certbot-auto
+    chmod a+x certbot-auto
+\end{minted}
+
+Then we issue a certificate (replace \texttt{YOUR.DOMAIN} with actual domain without \texttt{http://} or \texttt{https://} or any trailing slashes):
+
+\begin{minted}{bash}
+    sudo ./certbot-auto --debug -v --server https://acme-v01.api.letsencrypt.org/directory certonly -d YOUR.DOMAIN
+\end{minted}
+
+Choose option 3 for how to verify and enter path \texttt{/var/www/html/public} as your web root.
+\\
+
+Next we create a new Apache configuration file so we can configure requests to \texttt{https://YOUR.DOMAIN} to use this certificate.
+\\
+
+First:
+
+\begin{minted}{bash}
+    sudo nano /etc/httpd/conf.d/vhost.conf
+\end{minted}
+
+Then enter contents below, replacing the \textit{four} instances of \texttt{YOUR.DOMAIN} below with your actual domain without \texttt{http://} or \texttt{https://} or any trailing slashes:
+
+\begin{minted}{apache}
+    <VirtualHost *:80>
+        ServerName YOUR.DOMAIN
+
+        # redirect all traffic to the HTTPS version (port 443)
+        RewriteEngine on
+        RewriteRule ^ https://%{SERVER_NAME}%{REQUEST_URI} [END,NE,R=permanent]
+    </VirtualHost>
+
+    <IfModule mod_ssl.c>
+        <VirtualHost *:443>
+            ServerName YOUR.DOMAIN
+
+            DocumentRoot /var/www/html/public
+
+            <IfModule mod_dir.c>
+                DirectoryIndex index.php index.pl index.cgi index.html index.xhtml index.htm
+            </IfModule>
+
+            Include /etc/letsencrypt/options-ssl-apache.conf
+            SSLCertificateFile /etc/letsencrypt/live/YOUR.DOMAIN/fullchain.pem
+            SSLCertificateKeyFile /etc/letsencrypt/live/YOUR.DOMAIN/privkey.pem
+        </VirtualHost>
+    </IfModule>
+\end{minted}
+
+Enable TLS support by installing the Apache module mod\_ssl:
+
+\begin{minted}{bash}
+    sudo yum install -y mod24_ssl
+\end{minted}
+
+Finally restart Apache to use new configuration with:
+
+\begin{minted}{bash}
+    sudo service httpd restart
+\end{minted}
+
+For reference, here is AWS's guide on \href{https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/SSL-on-amazon-linux-ami.html}{SSL on AMI instances}.
