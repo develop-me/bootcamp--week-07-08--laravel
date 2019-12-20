@@ -65,7 +65,7 @@ Each article can have \textbf{many} comments, but each comment can only belong t
 
 We can store this relationship by creating an \texttt{article\_id} column on the \texttt{comments} table that references the ID of the article each comment belongs to. Under the hood, MySQL can really efficiently use this structure to join together related data.
 
-\img{12cm}{03/img/one-to-many.eps}{1em}{One-to-many relationships}
+\img{12cm}{10-one-to-many/img/one-to-many.eps}{1em}{One-to-many relationships}
 
 
 \subsection{Database Migration}
@@ -95,7 +95,7 @@ A comment belongs to an article and has an email address and the comment text. A
 
 Update the \texttt{up} method of the newly created database migration:
 
-\phpinputminted{03/figures/03/01-migration}
+\phpinputminted{10-one-to-many/figures/01-migration}
 
 Don't forget to run \texttt{artisan migrate} once you've saved the migration file.
 
@@ -107,21 +107,21 @@ Now we've updated the database structure we need to tell our Eloquent models abo
 
 Let's update our Article model to let it know that it can have comments:
 
-\phpinputminted{03/figures/03/02-Article}
+\phpinputminted{10-one-to-many/figures/02-Article}
 
 Now we can easily access a collection of \texttt{Comment} objects for an article object instance using its new \texttt{comments} property.\footnote{Even though we created a method - Eloquent creates the property for us}
 \\
 
 We need to setup the other side of the relationship in the \texttt{Comment} model (which we created earlier):
 
-\phpinputminted{03/figures/03/03-Comment}
+\phpinputminted{10-one-to-many/figures/03-Comment}
 
 Now all of our \texttt{Comment} object instances will have an \texttt{article} property that gives back the related \texttt{Article} object.
 \\
 
 We can use \texttt{artisan tinker} to get a bit of a better idea of how the ORM relationships work:
 
-\phpinputminted{03/figures/03/04-tinker}
+\phpinputminted{10-one-to-many/figures/04-tinker}
 
 
 \subsection{Routing \& Controller Logic}
@@ -144,7 +144,7 @@ We could add two methods to the \texttt{Articles} controller to handle these, bu
 
 Now we can add the routes:
 
-\phpinputminted{03/figures/03/05-routes}
+\phpinputminted{10-one-to-many/figures/05-routes}
 
 \pagebreak
 
@@ -157,15 +157,15 @@ Now we'll need to update the \texttt{Comments} controller. First, let the contro
 
 We'll do the \texttt{GET} request first as it's very simple. We'll use route model binding to get the correct article object passed in for us (or a 404 if it's not found). And then we just use the \texttt{comments} property to get the collection of all that article's comments:
 
-\phpinputminted{03/figures/03/06-index}
+\phpinputminted{10-one-to-many/figures/06-index}
 
 Next, let's handle the \texttt{POST} request. This one is a little more involved, as we'll need to deal with the request JSON. Again, we'll use route model binding to get the article from the URL. Then we need to get the request data and create a new comment using it. However, we can't use the \texttt{Comment::create()} method, as we need to make sure it has a valid \texttt{article\_id} property, otherwise MySQL won't let us store it. Instead we'll pass the data in as the first argument when we create a new \texttt{Comment} object: this assigns the properties, as with \texttt{create()}, but doesn't save it to the database. We'll store it in the database using the article model:
 
-\phpinputminted{03/figures/03/07-store}
+\phpinputminted{10-one-to-many/figures/07-store}
 
 Passing the data in when we create the comment counts as mass assignment, so we need to make sure we update the \texttt{Comment} model's \texttt{fillable} property so we don't get a mass assignment vulnerability error:
 
-\phpinputminted{03/figures/03/08-fillable}
+\phpinputminted{10-one-to-many/figures/08-fillable}
 
 
 \subsection{Validation}
@@ -178,7 +178,7 @@ We \textit{always} need to add validation to any data sent to the server. First,
 
 Then update the \texttt{authorize()} and \texttt{rules()} methods:
 
-\phpinputminted{03/figures/03/09-CommentRequest}
+\phpinputminted{10-one-to-many/figures/09-CommentRequest}
 
 You'll also need to update the \texttt{Comments} controller to use the validated request. First let the controller know where to find the \texttt{CommentRequest} class:
 
@@ -188,7 +188,7 @@ You'll also need to update the \texttt{Comments} controller to use the validated
 
 Then update the type-hinting to use \texttt{CommentRequest} instead of \texttt{Request}:
 
-\phpinputminted{03/figures/03/10-request-type-hint}
+\phpinputminted{10-one-to-many/figures/10-request-type-hint}
 
 
 
@@ -208,7 +208,7 @@ Use \texttt{artisan} to create a resource for comments:
 
 Then update the \texttt{toArray()} method to return only the columns we want:
 
-\phpinputminted{03/figures/03/11-resource}
+\phpinputminted{10-one-to-many/figures/11-resource}
 
 Now to use it in the controller. Tell the \texttt{Comments} controller where to find the resource class:
 
@@ -218,4 +218,4 @@ Now to use it in the controller. Tell the \texttt{Comments} controller where to 
 
 Then update the \texttt{index} and \texttt{store} methods:
 
-\phpinputminted{03/figures/03/12-controller-resource}
+\phpinputminted{10-one-to-many/figures/12-controller-resource}

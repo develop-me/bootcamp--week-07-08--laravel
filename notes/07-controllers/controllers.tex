@@ -1,0 +1,23 @@
+\section{Controllers}
+
+\textbf{Controller} is another term that comes up a lot in software development. A controller's job is to bring together all the other bits of code that make up an app: to \textit{control} what happens. In Laravel, controllers are called by the router: they take the request, do whatever it is that needs doing, and then return a response.
+\\
+
+Run the following inside your Vagrant box to create an Articles controller:
+
+\begin{minted}{bash}
+    artisan make:controller Articles
+\end{minted}
+
+This will create a file (\texttt{app/Http/Controllers/Articles.php}), which contains the boilerplate for a controller.
+
+% output the list of articles with a var_dump to keep Blade separate?
+
+
+\section{Additional Resources}
+
+\begin{itemize}[leftmargin=*]
+    \item \href{https://laravel.com/docs/master/routing}{Routing}
+    \item \href{http://laravel.com/docs/master/controllers}{Controllers}
+    \item \href{https://laraveldaily.com/how-to-structure-routes-in-large-laravel-projects/}{How to Structure Routes in Large Laravel Apps}
+\end{itemize}

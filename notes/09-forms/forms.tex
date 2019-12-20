@@ -1,3 +1,25 @@
+If we want to submit data to the site we'll need a form.
+
+\section{The \texttt{method} Attribute}
+
+\section{\texttt{GET} Requests}
+
+Useful for search. Never use for submitting things like passwords.
+
+\section{\texttt{POST} Requests}
+
+\texttt{POST} routes should \textbf{always} return a call to \texttt{redirect()}. This avoids resubmitting the form if the page is refreshed.
+
+
+
+\section{Sanitising Data}
+
+We need to be careful with the data that the user submits.
+
+\subsection{MySQL Injection}
+
+
+\section{Validation}
 You should always validate any data that gets submitted to your site on the server-side. For a good user-experience you should probably also have validation on the client-side using JavaScript, but it's perfectly possible that a user might have JavaScript disabled or that a malicious party might be making a direct request.
 \\
 
@@ -26,7 +48,7 @@ Use \texttt{artisan} to create a \texttt{FormRequest} class:
 
 This will create a file in \texttt{app/Http/Requests}. The \texttt{ArticleRequest} class has two methods. We first need to return \texttt{true} from the \texttt{authorize} method: this method can be very useful when you support user logins in your API, but for now we'll just assume everyone can make requests. The \texttt{rules} method needs to return an associative array, where the property name is the JSON property that needs validating and its value is an array of validation rules:
 
-\phpinputminted{03/figures/02/01-validation}
+\phpinputminted{09-forms/figures/01-validation}
 
 
 Finally we need to  update the \texttt{Articles} controller to use our validated request instead of the standard \texttt{Request} object. First let it know where the \texttt{ArticleRequest} class lives:
@@ -37,7 +59,7 @@ Finally we need to  update the \texttt{Articles} controller to use our validated
 
 And then update the type-hinting on the \texttt{store} and \texttt{update} methods to use the \texttt{ArticleRequest} class instead of \texttt{Request}:
 
-\phpinputminted{03/figures/02/02-type-hint}
+\phpinputminted{09-forms/figures/02-type-hint}
 
 This works because \texttt{ArticleRequest} is a descendant of \texttt{Request}, so it has all of the same methods and properties.
 
