@@ -86,6 +86,7 @@ To launch your server just follow these simple and easy to remember steps:
     \item Go to ``Configure Security Group''
         \begin{itemize}
             \item Add rule and select HTTP. This enables the sending and receiving of data via HTTP.
+            \item Add rule and select HTTPS. This enables the sending and receiving of data via HTTPS.
         \end{itemize}
     \item Click ``Launch''
     \item Select your existing key-pair
@@ -111,6 +112,15 @@ For an Amazon Linux instance the username is \texttt{ec2-user} and the domain ca
 
     \begin{minted}{bash}
         ssh -i ~/.ssh/aws-key-pair.pem ec2-user@ec2-3-8-125-57.eu-west-2.compute.amazonaws.com
+    \end{minted}
+
+    This example assumes your key is called \texttt{aws-key-pair.pem} and exists in the \texttt{.ssh} folder of your user.
+    \\
+
+    If you get an error about permissions then you need to run:
+
+    \begin{minted}{bash}
+        chmod 400 ~/.ssh/aws-key-pair.pem
     \end{minted}
 \end{infobox}
 
@@ -343,7 +353,13 @@ Once again check the page in your browser. The Apache test message should have d
 You're getting an error because you are missing the \texttt{.env} file that contains your Laravel configuration. Create a new \texttt{.env} file and paste the contents of your existing \texttt{.env} into it:
 
 \begin{minted}{bash}
-    sudo nano /var/www/html/.env
+    nano /var/www/html/.env
+\end{minted}
+
+Set the owner of \texttt{.env} to \texttt{ec2-user}:
+
+\begin{minted}{bash}
+    sudo chown ec2-user:ec2-user .env
 \end{minted}
 
 
@@ -402,7 +418,7 @@ And create a new database:
 Update your \texttt{.env} file with the details of your database (the name of the database and password you created as well as changing user to root):
 
 \begin{minted}{bash}
-    sudo nano .env
+    nano .env
 \end{minted}
 
 Populate the database details:
@@ -433,7 +449,7 @@ Success, everything is setup! You should now be able to make calls to your API.
     If you get a \texttt{Maximum key length exceeded} error you can override this in\\ \texttt{app/Provider/AppServiceProvider.js}:
 
     \begin{minted}{bash}
-        sudo nano /var/www/html/app/Providers/AppServiceProvider.php
+        nano /var/www/html/app/Providers/AppServiceProvider.php
     \end{minted}
 
     Add the following code to the top of the file:
@@ -458,8 +474,8 @@ Success, everything is setup! You should now be able to make calls to your API.
     \end{minted}
 
     \begin{minted}{mysql}
-        CREATE DATABASE laravel;
         DROP DATABASE laravel;
+        CREATE DATABASE laravel;
         exit;
     \end{minted}
 
@@ -489,7 +505,7 @@ We install \texttt{certbot-auto} on our AWS EC2 instance, which we can use to ha
 Then we issue a certificate (replace \texttt{YOUR.DOMAIN} with actual domain without \texttt{http://} or \texttt{https://} or any trailing slashes):
 
 \begin{minted}{bash}
-    sudo ./certbot-auto --debug -v --server https://acme-v01.api.letsencrypt.org/directory certonly -d YOUR.DOMAIN
+    sudo ./certbot-auto --debug certonly -d YOUR.DOMAIN
 \end{minted}
 
 Choose option 3 for how to verify and enter path \texttt{/var/www/html/public} as your web root.
