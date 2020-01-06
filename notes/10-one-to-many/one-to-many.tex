@@ -10,29 +10,6 @@ Another wrong-footed approach\footnote{Which I've seen in production software} w
 
 SQL is designed to be used with \textbf{Relational Database Management Systems} (RDBMS). The key word being \textit{relational}. Although each table in the database should represent one type of thing, the database allows us to map relationships between rows in one table to rows in another table. This is based on some \href{https://en.wikipedia.org/wiki/Relational\_algebra}{pretty rigorous mathematical logic}, so it's got well known performance characteristics.
 
-\begin{infobox}{Why Not NoSQL?}
-    \quoteinline{It’s a curious thing about our industry: not only do we not learn from our mistakes, we also don’t learn from our successes}{Keith Braithwaite}
-
-    It's become very trendy to use NoSQL databases to make API driven apps\footnotemark. The most popular being MongoDB.
-    \\
-
-    MongoDB is a ``document'' database: it's designed for storing arbitrary data, as opposed to specific data types. If that's all you use it for then it's really efficient - although such features are now common in SQL databases like PostgreSQL. But people got carried away and tried to use it to store \textit{relational} data and ended up getting themselves into lots of issues - do a search for ``MongoDB to PostgreSQL'' for many an article on the subject.
-    \\
-
-    It turns out that \textit{most} data you'll ever want to store and work with is relational, so you should probably stick to a relational database most the time.
-    \\
-
-    That's not to say that NoSQL has no place in the world: it's really good for specific uses cases and more often than not should be used \textit{alongside} SQL databases.
-    \\
-
-    For example it's very common to pair up ElasticSearch with an SQL database: searching an SQL database for key terms is either very inefficient or involves a lot of extra tables and code. ElasticSearch does it all for us with very little effort. However, you'd still want to store your main data in an SQL database.
-    \\
-
-    Another case is using a graph database (such as Neo4j) alongside SQL. Although SQL is good at storing specific relationships, it's very bad at exploring those relationships: for example, Facebook finding all of your friends' friends. In fact the relationships don't need to get very complicated before it would take SQL millennia to find every possible relationship. Graph databases are designed specifically to find relationships and can do this very quickly. Again, you'd probably want to store your main data in an SQL database
-\end{infobox}
-
-\footnotetext{You might be noticing a pattern here.}
-
 
 \pagebreak
 

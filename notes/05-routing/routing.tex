@@ -5,11 +5,19 @@ When a user loads a page in a Laravel app, after setting everything up, Laravel 
 \\
 
 First, let's add a route to handle \texttt{GET} requests sent to \texttt{/articles}. This will point to code that handles show a list of articles.
-
-\pagebreak
+\\
 
 Add a \texttt{POST} route for \texttt{/articles} to \texttt{routes/web.php}:
 
 \phpinputminted{05-routing/figures/01-route-post}
 
-We use the \texttt{\$router} object, which is provided to use by Laravel. It has methods for each of the HTTP methods (e.g. \texttt{\$router->get()}, \texttt{\$router->post()}, etc.). These methods take a URL fragment as the first argument and a controller  method as a second argument (we'll get to these in a second). So the code above says ``If the user makes a \texttt{GET} request to \texttt{/articles}, run the \texttt{index()} method of the \texttt{Articles} controller.
+We use the \texttt{\$router} object, which is provided to use by Laravel. It has methods for each of the HTTP methods (e.g. \texttt{\$router->get()}, \texttt{\$router->post()}, etc.). These methods take a URL fragment as the first argument and a controller  method as a second argument (we'll get to these in a second). So the code above says If the user makes a \texttt{GET} request to \texttt{/articles}, run the \texttt{index()} method of the \texttt{Articles} controller.
+
+\begin{infobox}{View all routes}
+    A useful command to see all routes setup, the HTTP methods for them, which controllers and which methods will be run:
+
+    \begin{minted}{bash}
+        artisan route:list
+    \end{minted}
+
+\end{infobox}
