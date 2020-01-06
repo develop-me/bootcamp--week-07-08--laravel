@@ -502,7 +502,7 @@ We install \texttt{certbot-auto} on our AWS EC2 instance, which we can use to ha
     chmod a+x certbot-auto
 \end{minted}
 
-Then we issue a certificate (replace \texttt{YOUR.DOMAIN} with actual domain without \texttt{http://} or \texttt{https://} or any trailing slashes):
+Then we issue a certificate (replace \texttt{YOUR.DOMAIN} with actual domain without \texttt{http(s)://} or any trailing slashes):
 
 \begin{minted}{bash}
     sudo ./certbot-auto --debug certonly -d YOUR.DOMAIN
@@ -520,7 +520,7 @@ First:
     sudo nano /etc/httpd/conf.d/vhost.conf
 \end{minted}
 
-Then enter contents below, replacing the \textit{four} instances of \texttt{YOUR.DOMAIN} below with your actual domain without \texttt{http://} or \texttt{https://} or any trailing slashes:
+Then enter contents below, replacing the \textit{four} instances of \texttt{YOUR.DOMAIN} below with your actual domain without \texttt{http(s)://} or any trailing slashes:
 
 \begin{minted}{apache}
     <VirtualHost *:80>
