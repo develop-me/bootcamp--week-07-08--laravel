@@ -2,5 +2,5 @@
 
 protected $middleware = [
   // ...other middleware...
-  \Barryvdh\Cors\HandleCors::class,
+  \Fruitcake\Cors\HandleCors::class,
 ];

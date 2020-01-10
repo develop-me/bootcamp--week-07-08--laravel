@@ -69,34 +69,36 @@ Although we can make requests to our API using Postman and the like, we won't be
 Modern browsers use something called \textbf{Cross-Origin Resource Sharing} to handle this. They expect certain HTTP headers to be set on API responses to say who can and can't use the API.
 \\
 
-We don't want to write the code for this ourselves as it's fairly complicated. Luckily, \href{https://github.com/barryvdh/laravel-cors}{someone else has done it for us}.
+We don't want to write the code for this ourselves as it's fairly complicated. Luckily, \href{https://github.com/fruitcake/laravel-cors}{someone else has done it for us}.
 \\
 
 Install the CORS library with \texttt{composer}:
 
 \begin{minted}{bash}
-    composer require barryvdh/laravel-cors
+    composer require fruitcake/laravel-cors
 \end{minted}
 
 Then run the following command:
 
 \begin{minted}{bash}
-    php artisan vendor:publish --provider="Barryvdh\Cors\ServiceProvider"
+    php artisan vendor:publish --tag="cors"
 \end{minted}
 
 This copies the necessary config files out of the \texttt{vendor} directory.
 \\
 
-We need to tell Laravel to load the CORS library, so add the following line to the \texttt{providers} property in \texttt{config/app.php}:
-
-\phpinputminted{01/figures/04/08-provider}
-
-We also need to tell Laravel that it should use the CORS library as \textbf{middleware} for every HTTP request that gets made. Middleware is code that runs before/after the controller code to modify the request/response in some way.
+We need to tell Laravel that it should use the CORS library as \textbf{middleware} for every HTTP request that gets made. Middleware is code that runs before/after the controller code to modify the request/response in some way.
 \\
 
 To add the CORS middleware, in \texttt{app/Http/Kernel.php}:
 
 \phpinputminted{01/figures/04/09-middleware}
+
+We'll also need to update the CORS config file to tell it to only work on the \texttt{/api} end-point. In \texttt{config/cors.php}:
+
+\begin{minted}{php}
+    'paths' => ['api/*'],
+\end{minted}
 
 CORS only kicks in if you have an \texttt{Origin} header, which Postman doesn't send by default. But, if you want to check it's working, you can add one:
 
