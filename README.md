@@ -1,32 +1,63 @@
 # Week 7: Server-Side Programming with Laravel
 
-- Day 1: MySQL
-    - Server-side Programming
-    - Vagrant
-    - MySQL CLI
-    - MySQL PDO
+## Day 1: MySQL
 
-- Day 2: Basic Laravel
-    - Homestead & Laravel Setup
-    - Eloquent
-    - Database Migrations
-    - Routing
-    - Controllers
-    - Blade
-    - Route Model Binding
+### Server-Side Programming
+* What is a server?
+* Vagrant
 
-- Day 3: Forms & Relational Data
-    - `GET` & `POST`
-    - Forms
-    - Validation
-    - One-to-Many Relationships
+### MySQL
+* Why?
+* Relational Data/Structure
+* Data Types
+* CLI
 
-- Day 4: Security
-    - Sessions & Cookies
-    - Storing Passwords
-        - Hashing
-        - Collisions
-        - Rainbow tables
-        - Salts
-    - Mail
-    - Unit testing
+## Day 2: Basic Laravel
+
+### Basic Laravel
+* Homestead
+* Routing
+
+### Blade
+* `@extends`
+* `@section`
+* Partials/`@include`
+* Passing in/around data
+* [Laravel Mix](https://laravel-mix.com)?
+
+## Controllers
+
+
+## Models
+* Eloquent
+* Database Migrations & Rollbacks
+* Seeding
+* Route Model Binding
+
+## Day 3: Forms & Relational Data
+
+### HTTP methods & Forms
+
+* `GET` & `POST`
+* Forms
+* Validation
+* SQL Injection/Mass Assignment
+* File uploads (Tricksy?)
+
+### Relational Data
+* One-to-Many Relationships
+
+## Day 4: Security
+* Sessions & Cookies
+* Storing Passwords
+    * Hashing
+    * Collisions
+    * Rainbow tables
+    * Salts
+* Mail
+* Unit testing
+
+### Auth Package
+* Config
+* Password Hashing/Security
+* Sessions/Cookies
