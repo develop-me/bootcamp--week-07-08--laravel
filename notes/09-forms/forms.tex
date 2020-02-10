@@ -10,7 +10,13 @@ Useful for search. Never use for submitting things like passwords.
 
 \texttt{POST} routes should \textbf{always} return a call to \texttt{redirect()}. This avoids resubmitting the form if the page is refreshed.
 
+\section{Cross-Site Request Forgery}
 
+Make sure you include a CSRF token on any forms:
+
+\begin{minted}{php}
+    @csrf
+\end{minted}
 
 \section{Sanitising Data}
 

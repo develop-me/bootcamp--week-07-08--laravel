@@ -11,3 +11,26 @@ We can use a ``cookie'' to store a simple bit of text on the user's computer. Th
 \subsection{Rainbow Tables}
 
 \subsection{Salting}
+
+\section{The Auth Package}
+
+First add the UI package to generate the forms for us:
+
+\begin{minted}{php}
+    composer require laravel/ui --dev
+\end{minted}
+
+Then add the bootstrap Auth UI:
+
+\begin{minted}{php}
+    artisan ui bootstrap --auth
+\end{minted}
+
+You'll need to update all the views in \texttt{resources/views/auth} to use \texttt{@extends('app')} (instead of \texttt{layouts.app}). You can then remove the \texttt{resources/views/layouts} directory.
+\\
+
+We don't want to allow user registration, so we'll turn this off in \texttt{routes/web.php}:
+
+\begin{minted}{php}
+    Auth::routes(['register' => false]);
+\end{minted}
