@@ -1,6 +1,9 @@
 # Week 7: Server-Side Programming with Laravel
 
-## Day 1: MySQL
+- [Presentation](https://docs.google.com/presentation/d/1skAHzDLyDYkMJeRLq4Ha-DcgLnE4Yr8qpD5DLgIynIk)
+- [Challenges](https://github.com/develop-me/bootcamp--week-07--laravel/tree/master/challenges)
+
+## Day 1: Servers & MySQL
 
 ### Server-Side Programming
 * What is a server?
