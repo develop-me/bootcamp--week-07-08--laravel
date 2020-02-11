@@ -83,14 +83,15 @@ Each column stores a specific type of data. Here are a few of the most common ty
 A row in an SQL database always has to have one ``unique'' way of identifying it - otherwise there's no way to select/update a single row. For our purposes we'll just use a numeric ID. MySQL can automatically generate these for us.
 \\
 
+These unique IDs are called the \texttt{PRIMARY KEY} and are often set to \texttt{AUTO\_INCREMENT}, so the first record has ID \texttt{1}, the next is assigned \texttt{2} and so on.
+\\
+
 \begin{infobox}{Beyond IDs}
     More complex systems (particularly ones spread across multiple servers) might need to use a more complex system such as ``UUID''s (\href{https://en.wikipedia.org/wiki/Universally\_unique\_identifier}{Universally Unique Identifiers}).
     \\
 
     The unique aspect can also be a combination of multiple columns. This can be very useful with complex relationships.
 \end{infobox}
-
-
 
 \section{SQL}
 
@@ -102,6 +103,15 @@ We can use \texttt{CREATE DATABASE} to add a new database.
     CREATE DATABASE database_name;
 \end{minted}
 
+\subsection{\texttt{SHOW}}
+
+We can use \texttt{SHOW} to see what databases and tables we have.
+
+\begin{minted}{mysql}
+    SHOW DATABASES;
+
+    SHOW TABLES (IN database_name);
+\end{minted}
 
 \subsection{\texttt{USE}}
 
@@ -111,7 +121,31 @@ Once we've created a database we need to tell MySQL that we want to work with th
     USE database_name;
 \end{minted}
 
-\textbf{You won't be able to run any of the other commands unless you have told MySQL which database you need to use.}
+\begin{infobox}{To \texttt{USE} or not to \texttt{USE}}
+    If you don't run \texttt{USE} then you'll need to include the database name in all the SQL queries you run. As we often only work within one database at a time this adds typing.
+
+    \textbf{Without \texttt{USE}}
+    \begin{minted}{mysql}
+        SELECT * FROM database_name.articles;
+
+        SELECT * FROM database_name.comments;
+
+        SELECT * FROM database_name.tags;
+
+    \end{minted}
+
+    \textbf{Without \texttt{USE}}
+
+    \begin{minted}{mysql}
+        USE database_name;
+
+        SELECT * FROM articles;
+
+        SELECT * FROM comments;
+
+        SELECT * FROM tags;
+    \end{minted}
+\end{infobox}
 
 \subsection{\texttt{CREATE TABLE}}
 
