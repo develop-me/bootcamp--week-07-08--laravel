@@ -1,10 +1,5 @@
 # Challenges
 
-[01-scotchbox.md](01-scotchbox.md)
-[02-mysql.md](02-mysql.md)
-[03-practice-table.md](03-practice-table.md)
-[04-create.md](04-create.md)
-
 1. [First Vagrant Machine](01-scotchbox.md)
 1. [Accessing MySQL Prompt](02-mysql.md)
 1. [First Database Tables](03-practice-table.md)
