@@ -1,2 +1,0 @@
-# Planning and creating tables
-
