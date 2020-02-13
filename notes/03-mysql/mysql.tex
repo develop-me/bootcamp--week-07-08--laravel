@@ -180,13 +180,55 @@ If we're only interested in some of the columns we can specify this:
     SELECT id, title, body FROM articles;
 \end{minted}
 
+\subsection{\texttt{SELECT ... WHERE ...}}
 
+If we're only interested in some of the records we can filter using \texttt{WHERE}.
+\\
+
+To get the first 5 articles from the table:
+
+\begin{minted}{mysql}
+    SELECT * FROM articles WHERE id <= 5;
+\end{minted}
+
+\subsection{\texttt{SELECT ... WHERE ... LIKE ...}}
+
+To search the database for parts of a field we use \texttt{LIKE}.
+\\
+
+\begin{minted}{mysql}
+    SELECT * FROM articles WHERE title LIKE '%wombats%';
+\end{minted}
+
+\textbf{Note:} the \texttt{%} is a wildcard and allows us to look for articles that have ``wombat'' in the title at the start, end or middle.
+
+\subsection{\texttt{INSERT}}
+
+To insert a new row of data (record) into your table:
+
+\begin{minted}{mysql}
+    INSERT INTO `articles` (`title`, `body`) VALUES ('Welocme to my blog!', 'In this essay I will...');
+\end{minted}
+
+\textbf{Note:} use of different quote types \texttt{`} and \texttt{'}
 
 \subsection{\texttt{UPDATE}}
 
+To update fields in a record:
+
+\begin{minted}{mysql}
+    UPDATE `articles` SET `title` = 'Welcome to my blog!' WHERE id = 1;
+\end{minted}
+
+\textbf{Note:} the \texttt{WHERE} is very important, else all records in the table will have their title updated to the same thing!
 
 \subsection{\texttt{ALTER}}
 
+To change a table after its been created:
+
+\begin{minted}{mysql}
+    ALTER TABLE articles ADD COLUMN featured TINYINT(1) DEFAULT 0;
+\end{minted}
 
 \subsection{\texttt{DELETE}}
 
@@ -213,6 +255,26 @@ We can also use \texttt{DROP} to remove an entire database:\footnote{Use with \t
     We'll be covering the \textit{structure} of these relationships later in the course, but we won't actually be using MySQL queries.
 \end{infobox}
 
+\section{Accessing MySQL Prompt on Vagrant Box}
+
+As the database is ``inside'' the box we need we first need to SSH in:
+
+\begin{minted}{bash}
+    cd folder-of-vagrant-project/
+
+    vagrant up # if not already running
+
+    vagrant SSH
+
+    mysql -u username -p # For Scotch Box username and password are "root"
+
+    # when finished
+
+    exit # go from MySQL prompt back to command line inside the box
+
+    exit # exit SSH back to your host machine
+
+\end{minted}
 
 \section{Additional Resources}
 

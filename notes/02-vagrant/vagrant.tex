@@ -14,12 +14,12 @@ Ideally we'd like a LAMP virtual machine to test our code on.
 When working with Vagrant boxes we start off with a file called \texttt{Vagrantfile} that has the configuration details of the virtual computer we're creating.
 \\
 
-\textbf{config.vm.box}
+\textbf{\texttt{config.vm.box}}
 
 The box temple to build the Vagrant box from - see \href{vagrantbox.es}{https://www.vagrantbox.es/} for other boxes
 \\
 
-\textbf{config.vm.network}
+\textbf{\texttt{config.vm.network}}
 
 The IP address of the Vagrant box. Useful for communicating with the Vagrant box.
 \\
@@ -27,12 +27,12 @@ The IP address of the Vagrant box. Useful for communicating with the Vagrant box
 If running lots of boxes at ones, then they should have different IP addresses.
 \\
 
-\textbf{config.vm.hostname}
+\textbf{\texttt{config.vm.hostname}}
 
 The local domain name to use for the box (resolves to the IP address above) if the \href{vagrant-hostsupdater}{https://github.com/cogitatio/vagrant-hostsupdater} plugin is installed.
 \\
 
-\textbf{config.vm.synced\_folder}
+\textbf{\texttt{config.vm.synced\_folder}}
 
 Which folder on the host to sync into the guest virtual machine. This is how you get your files ``into'' the Vagrant box or web server.
 
