@@ -232,6 +232,13 @@ To change a table after its been created:
 
 \subsection{\texttt{DELETE}}
 
+To delete a row (record) from a table:
+
+\begin{minted}{mysql}
+    DELETE FROM TABLE articles WHERE id = 1;
+\end{minted}
+
+\textbf{Note:} the \texttt{WHERE} is very important, else all records in the table will be deleted!
 
 \subsection{\texttt{DROP}}
 
@@ -246,7 +253,6 @@ We can also use \texttt{DROP} to remove an entire database:\footnote{Use with \t
 \begin{minted}{mysql}
     DROP DATABASE database_name;
 \end{minted}
-
 
 \begin{infobox}{Joins}
     We've not actually covered the ``relational'' part of relational databases. We can use the \texttt{JOIN} command to get related data from multiple tables in a very efficient manner.
