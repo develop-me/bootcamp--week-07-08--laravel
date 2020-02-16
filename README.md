@@ -6,61 +6,56 @@
 ## Day 1: Servers & MySQL
 
 ### Server-Side Programming
-* What is a server?
-* Vagrant
+- What is a server?
+- LAMP
+- Vagrant & Scotch Box
 
 ### MySQL
-* Why?
-* Relational Data/Structure
-* Data Types
-* CLI
+- Why?
+- Relational Data/Structure
+- Data Types
+- CLI
+- SQL
 
 ## Day 2: Basic Laravel
 
 ### Basic Laravel
-* Homestead
-* Routing
+- Homestead
+- Blade templating
+- Routing
 
-### Blade
-* `@extends`
-* `@section`
-* Partials/`@include`
-* Passing in/around data
-* [Laravel Mix](https://laravel-mix.com)?
+### Controllers
 
-## Controllers
-
-
-## Models
-* Eloquent
-* Database Migrations & Rollbacks
-* Seeding
-* Route Model Binding
+### Models
+- Eloquent
+- Database Migrations & Rollbacks
+- Seeding
+- Route Model Binding
 
 ## Day 3: Forms & Relational Data
 
 ### HTTP methods & Forms
 
-* `GET` & `POST`
-* Forms
-* Validation
-* SQL Injection/Mass Assignment
-* File uploads (Tricksy?)
+- `GET` & `POST`
+- Forms
+- Validation
+- SQL Injection/Mass Assignment
+- File uploads (Tricksy?)
 
 ### Relational Data
-* One-to-Many Relationships
+- One-to-Many Relationships
 
 ## Day 4: Security
-* Sessions & Cookies
-* Storing Passwords
-    * Hashing
-    * Collisions
-    * Rainbow tables
-    * Salts
-* Mail
-* Unit testing
+- Sessions & Cookies
+- Storing Passwords
+    - Hashing
+    - Collisions
+    - Rainbow tables
+    - Salts
+- Mail
+- Unit testing
 
 ### Auth Package
-* Config
-* Password Hashing/Security
-* Sessions/Cookies
+- Config
+- Password Hashing/Security
+- Sessions/Cookies
