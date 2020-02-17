@@ -18,4 +18,6 @@
 
 ## Advanced
 
-Set your `last updated` field to automatically update when any field of the record is changed.
+1. Set your `last updated` field to automatically update when any field of the record is changed.
+
+1. Test it works with an `UPDATE` then `SELECT`
