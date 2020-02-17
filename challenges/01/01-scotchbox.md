@@ -1,9 +1,11 @@
 # Creating a Scotch Box
 
+1. `cd` to a suitable place, e.g. `cd develop-me/week07/`
+
 1. Get setup with a Vagrant box built from the Scotch Box template
 
     ```bash
-    git clone git@github.com:develop-me/scotch-box.git
+    git clone https://github.com/develop-me/scotch-box.git
 
     cd scotch-box
 
