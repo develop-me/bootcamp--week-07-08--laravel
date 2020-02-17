@@ -8,6 +8,6 @@
 
 1. Find a way of returning just the rows that have `full name` starting with 'Simon'.
 
-## Advanced
+## Advanced
 
 1. Find the average age of people in the table.
