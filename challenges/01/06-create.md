@@ -12,4 +12,6 @@
 
 ## Advanced
 
-1. setup a PHP script to access the data. Useful sample code [is here](php-and-databases.php).
+1. add another table into your vets database system, it could be for *procedures* (name, date, cost, pet id) or  *invoices* (owner id, total, invoice date, payment date)
+
+1. set up a PHP script to access the data. Useful sample code [is here](php-and-databases.php).
