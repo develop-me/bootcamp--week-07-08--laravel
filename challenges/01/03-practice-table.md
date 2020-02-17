@@ -18,7 +18,8 @@
     INSERT INTO `graduates` (`id`, `full name`, `location`, `age`) VALUES
     (1, 'Oli Ward', 'Bedminster', 36),
     (2, 'Simon Capet', 'College Green', 49),
-    (3, 'Simon New', 'Montpelier', 38),
+    (3, 'Simon New', 'Montpelier', 33),
     (4, 'Kasia Pranke', 'Bedminster', 34),
-    (5, 'Josh Simons', 'Redland', 32);
+    (5, 'Josh Simons', 'Redland', 32),
+    (6, 'Zoot Fandango', 'Mars', 212);
     ```
