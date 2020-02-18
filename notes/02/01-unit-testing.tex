@@ -226,32 +226,10 @@ You'll notice that we use the same \texttt{Article} object in both tests, we cou
 Sometimes we need to test things that involve the database. However, we don't want to pollute our normal database with test data. If we run the same test hundreds of times, we don't want to end up with the same test article hundreds of times. It's also harder to write tests if we don't know the state of the database before we start.
 \\
 
-For this reason we usually use a \textit{separate} database for testing. We're going to use an \textbf{in-memory SQLite} database. You don't really need to worry about what that means as Laravel does all the work for us, but basically it's temporary and stored in memory (as opposed to on the hard-drive), so it's really fast.
+For this reason we usually use a \textit{separate} database for testing. By default Laravel uses an \textbf{in-memory SQLite} database. You don't really need to worry about what that means as Laravel does all the work for us, but basically it's temporary and stored in memory (as opposed to on the hard-drive), so it's really fast.
+\\
 
-
-\pagebreak
-
-
-\subsection{Setting Up a Test Database}
-
-First, we'll need to add the following to the \texttt{connections} section of \\ \texttt{config/database.php}:
-
-\begin{minted}{php}
-    'testing' => [
-        'driver'   => 'sqlite',
-        'database' => ':memory:',
-        'prefix'   => '',
-    ],
-\end{minted}
-
-Then we need to tell PHPUnit to use that database instead of the normal one. We do this by adding a line to the \texttt{<php>} section of the \texttt{phpunit.xml} file:
-
-\begin{minted}{xml}
-    <php>
-        // ... other <server /> tags
-        <server name="DB_CONNECTION" value="testing"/>
-    </php>
-\end{minted}
+Laravel automatically sets this up for us in the \texttt{phpunit.xml} file.
 
 
 \subsection{Using the Test Database in Tests}
@@ -317,8 +295,10 @@ Because the database is wiped before each test, we can be sure that the first ar
 
 The test above isn't particularly useful, but when it comes to testing our controllers it can be.
 
+\begin{infobox}{\texttt{Cannot add a NOT NULL column with default value NULL}}
+    SQLite doesn't allow you to add new columns to an existing database table without making them \texttt{nullable} or giving them a \texttt{default} value. If you get the error above when you run your tests, you'll need to update your migrations to either set a default (\texttt{->default(\$value)}) value or make the column nullable \\ (\texttt{->nullable()}).
+\end{infobox}
 
-\pagebreak
 
 
 \section{Testing Controllers}
