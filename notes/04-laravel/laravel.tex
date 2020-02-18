@@ -71,6 +71,7 @@ There are two ways to setup Homestead: globally and locally. The global way is m
 First, we need to add the Homestead files to our project. \textit{In the newly created project directory} run:
 
 \begin{minted}{bash}
+    # inside your project folder (cd project-name first!) run
     composer require laravel/homestead
 \end{minted}
 
@@ -111,9 +112,6 @@ Now you can get Vagrant up and running:
 \end{minted}
 
 This can take a while the first time as it will need to download the appropriate Homestead box\footnote{This can be \textit{really} slow. Unfortunately the Homestead box is hosted on a really under-powered server. If you get a download time of several hours it can sometimes be worth cancelling and retrying a few minutes later.}, then get the VM up and running, and then \textbf{provision} (in this case, run the Laravel setup scripts) the VM.
-
-
-\pagebreak
 
 \begin{infobox}{The \texttt{.env} File}
     There are certain configuration options that rather than being application specific are ``environment'' (i.e. the machine that the app is running on) specific.

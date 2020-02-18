@@ -1,4 +1,71 @@
 Laravel has its own templating language called ``Blade'', which allows us to easily render HTML.
+\\
+
+
+
+
+
+\section{Layouts}
+
+The front-end views you see in your Laravel site are produced from Blade template files.
+\\
+
+The files have \texttt{.blade.php} file extension and are stored in the \texttt{resources/views} folder.
+\\
+
+\section{Extending a Layout}
+
+Templating is often done by setting up a master layout and then extending, or overriding parts of that template to create child templates.
+\\
+
+This is done by using \texttt{@extends} within the child layout file.
+\\
+
+For example \texttt{@extends('layouts.app')} is used to extend a layout called \texttt{layouts.app.blade.php}.
+
+
+\section{Section and Yield Directives}
+
+Sections of layout can be defined in a master template and overridden in a child template.
+\\
+
+A \texttt{@section} that ends with \texttt{@endsection} directive will only define a section.
+\\
+
+A \texttt{@section} that ends with \texttt{@show} directive will define and immediately yield (show) the section.
+\\
+
+In this way we can have default content in the master, and override it in the child template as below:
+\\
+
+\textbf{Master layout \texttt{master.blade.php}}
+
+\begin{minted}{php}
+    @section('content')
+        <h1>My Default Content<h1>
+    @show
+\end{minted}
+
+\textbf{Child layout \texttt{child.blade.php}}
+\begin{minted}{php}
+    @extends('master')
+    @section('content')
+        <h1>This will override the default. Ha!<h1>
+    @endsection
+\end{minted}
+
+\section{Partials}
+
+Template parts can be made more modular, for reuse or to keep things neater, using partial template files.
+\\
+
+The partials can then be included back into a layout or multiple layouts with \texttt{@include}.
+
+_parts/navbar.blade.php
+
+@include("_parts/navbar")
+
+
 
 \section{Additional Resources}
 

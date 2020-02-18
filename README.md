@@ -24,6 +24,11 @@
 - Blade templating
 - Routing
 
+### Blade
+- `@extends`
+- `@section`
+- Partials/`@include`
+
 ### Controllers
 
 ### Models
