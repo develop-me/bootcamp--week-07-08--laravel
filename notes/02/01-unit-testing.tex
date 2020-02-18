@@ -303,6 +303,9 @@ The test above isn't particularly useful, but when it comes to testing our contr
 
 \section{Testing Controllers}
 
+Technically, this is blurring the lines between Unit tests and Feature tests, but it's very useful to be able to check that our controllers are doing what we expect.
+\\
+
 First, let's create a new test, putting it in an appropriate namespace:
 
 \begin{minted}{bash}
@@ -359,6 +362,16 @@ As always, don't forget to run your tests:
 
 If all tests pass we can be sure that the \texttt{store} method is doing what we expect: taking the data from the request, storing it in the database, and returning it.
 
+\subsection{When Controller Test Go Wrong}
+
+Controller tests might not always work and it can be hard to work out why.
+\\
+
+If you're fake request doesn't work for some reason (e.g. validation fails), then the \texttt{getOriginalContent()} method will return \texttt{null} (as there is no original content to return). Then any assertions on this will fail.
+\\
+
+The easiest way to work out what's going on is to make a \textit{real} request to your controller with the same data and see what happens. You should get an error which you can then work with.
+
 
 
 \section{Additional Resources}
@@ -366,4 +379,5 @@ If all tests pass we can be sure that the \texttt{store} method is doing what we
 \begin{itemize}[leftmargin=*]
     \item \href{https://github.com/sebastianbergmann/phpunit}{PHPUnit}
     \item \href{http://laravel.com/docs/6.x/testing}{Laravel: Testing - Getting Started}
+    \item \href{https://github.com/JeroenDeDauw/nyancat-phpunit-resultprinter}{Nyan Cat PHPUnit Result Printer}
 \end{itemize}
