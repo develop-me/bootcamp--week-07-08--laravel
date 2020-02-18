@@ -8,7 +8,7 @@
 - Write migration
     - add two tables
     - remove timestamps from `tags`
-    - pivot table second
+    - pivot table second: `article_tag`
     - remove both in `down` but backwards
 - Add `public $timestamps = false;` to `Tag`
 - Add relationships: `belongsToMany()`
