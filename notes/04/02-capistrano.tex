@@ -1,0 +1,176 @@
+It would be a faff if, every time we wanted to update the website, we had to login to the server, pull down the latest Git repo, run composer install, run database migrations, and do everything else that needs doing each time the codebase changes.
+\\
+
+\textbf{Capistrano} is a command-line tool that helps us automate this process. There's quite a bit of setup involved, but once it's done we can deploy a new version of our website by simply running \texttt{cap production deploy} on our own machine.
+\\
+
+We'll be using Capistrano to deploy a Laravel website, but it can be used for deploying \textit{any} type of codebase (e.g. a React app, a static website, a Ruby on Rails site). Once you've got it setup, it's easier and more reliable than FTP!
+
+
+\begin{infobox}{Ruby Ruby Ruby Ruby Aahaayeeaahohehh}
+    Capistrano is built using \textbf{Ruby}, which is an object-oriented programming language often used as a server-side language (most commonly with the ``Ruby on Rails'' framework).
+    \\
+
+    Unlike PHP, with its chequered history, Ruby was designed \textit{from scratch} as an OOP language, meaning it's got a much nicer way of working with numbers/strings/arrays than PHP does. It's also not a C-based language, so it doesn't have semi-colons and brackets all over the shop.
+    \\
+
+    Most of the Capistrano configuration we'll be writing is in Ruby. But, don't worry, you don't need to understand Ruby to use Capistrano. Although feel free to consider it the beginnings of a third programming language under your belt!
+\end{infobox}
+
+
+\section{Installing \texttt{bundle}}
+
+We need to use Ruby's package manager, \texttt{gem}, to install the \texttt{bundle} command:\footnote{Rather confusingly we install \texttt{bundle\textbf{r}} to do this}
+
+\begin{minted}{bash}
+    gem install bundler
+\end{minted}
+
+Bundle is used a lot in the world of Ruby to avoid package versioning conflicts. Unlike the rest of the commands, you only need to run this the first time you use Capistrano on a machine.
+
+
+\section{Adding Capistrano to a Project}
+
+In your project directory, create a file called \texttt{Gemfile}\footnote{No file extension} containing the following:
+
+\inputminted{ruby}{04/resources/02/01-Gemfile}
+
+Now run \texttt{bundle} to install Capistrano:
+
+\begin{minted}{bash}
+    bundle install
+\end{minted}
+
+
+\section{Setting Up Capistrano}
+
+Capistrano needs a few different configuration files. The first is the \texttt{Capfile}, this tells Capistrano where the rest of the configuration files live and tells it which Capistrano modules to use.
+\\
+
+Create a file named \texttt{Capfile} in your project directory containing the following:
+
+\inputminted{ruby}{04/resources/02/02-Capfile}
+
+Next, we need to tell Capistrano what to do when it runs a deployment. We do this by creating a file \texttt{deployment/deploy.rb} (referenced on the first line of the \texttt{Capfile}) and adding some instructions to it. There's quite a lot in this one, so read the comments for each section to get a sense of what it does:
+
+\inputminted{ruby}{04/resources/02/03-deploy.rb}
+
+
+Finally, we need a file for each type of deployment. Normally we might have one for ``staging'' (the work-in-progress/test server) and one for ``production'' (the finished site). We'll just have a production one for now.
+\\
+
+Create a file \texttt{deployment/deploy/production.rb} and put the following in it:
+
+\inputminted{ruby}{04/resources/02/04-production.rb}
+
+
+\section{Sever Setup}
+
+Capistrano creates its own directory structure on the server:
+
+\begin{itemize}
+    \item \texttt{repo}: the Git repo itself
+    \item \texttt{releases}: all previous versions of the site, including the current one
+    \item \texttt{shared}: where linked files live
+    \item \texttt{current}: an alias to the latest release
+\end{itemize}
+
+We'll need to make some changes on the server to handle this.
+\\
+
+First, make sure you \texttt{ssh} in:
+
+\begin{minted}{bash}
+    ssh aws
+\end{minted}
+
+Then we should make a backup of our manually deployed site:
+
+\begin{minted}{bash}
+    cd /var/www
+    mv <repo-name> <repo-name>-bkp
+\end{minted}
+
+Now, we need to copy across the existing \texttt{.env} file. This is a linked file, so it belongs in \texttt{shared}:
+
+\begin{minted}{bash}
+    # create the shared directory
+    mkdir -p <repo-name>/shared
+
+    # copy the .env file into it
+    cp <rep-name>-bkp/.env <repo-name>/shared/
+\end{minted}
+
+Finally, we need to update Nginx to point to the \texttt{current} directory:
+
+\begin{minted}{bash}
+    sudo nano /etc/nginx/sites-available/default
+\end{minted}
+
+\begin{minted}{nginx}
+    root /var/www/<repo-name>/current/public;
+\end{minted}
+
+And then restart Nginx:
+
+\begin{minted}{bash}
+    sudo nginx -s reload
+\end{minted}
+
+
+
+\section{Deploying}
+
+We're now ready to deploy! The remaining commands should all be run on your own computer.
+\\
+
+First, make sure you've pushed the latest version of your site up to GitHub, otherwise Capistrano will be pulling down an old version;
+
+\begin{minted}{bash}
+    git push
+\end{minted}
+
+Now we tell Capistrano to use the \texttt{production} deployment that we setup earlier. We do this via \texttt{bundle} to avoid package versioning conflict issues:
+
+\begin{minted}{bash}
+    bundle exec cap production deploy
+\end{minted}
+
+The \texttt{bundle exec} bit is just running the following bit with \texttt{bundle}. Then we say \texttt{cap}, short for ``Capistrano'', then the deployment setup we want to use (\texttt{production} in this case), and then the \texttt{deploy} command.
+\\
+
+Now comes the pay off. Capistrano is going to:
+
+\begin{enumerate}
+    \item Pull down the latest version of the repo to the server
+    \item Copy the files into a new timestamped \texttt{releases} directory
+    \item Link any shared files (\texttt{.env}, the \texttt{storage} directory)
+    \item Run \texttt{composer install}
+    \item Link the \texttt{current} directory to the latest release
+    \item Run the \texttt{after :published} tasks
+\end{enumerate}
+
+This might seem a bit complicated, but it's done this way for a few reasons.
+\\
+
+Firstly, it ensures that the site goes down for the shortest amount of time possible. Pulling down the repo and running \texttt{composer} are time consuming tasks, so it does these in a separate directory so that the old version of the site stays up until this is complete. Only once it's \textit{successfully} made the changes does it link the \texttt{current} directory to the new release. This also means if something goes wrong during deployment the old version stays up.
+\\
+
+Secondly, it allows us to keep track of the previous build of the site, which means if deployment is successful but then you notice something's not quite right (e.g. a bug on the site), you can ``rollback'' the deployment, just like with a database migration.
+
+
+\section{Rolling Back}
+
+If you deploy a site and then realise the code wasn't quite ready, you can go back to the previous version by running:
+
+\begin{minted}{bash}
+    bundle exec cap production deploy:rollback
+\end{minted}
+
+
+\section{Additional Resources}
+
+\begin{itemize}[leftmargin=*]
+    \item \href{https://capistranorb.com}{Capistrano}
+    \item \href{https://github.com/capistrano/composer}{Capistrano Composer Module}
+\end{itemize}

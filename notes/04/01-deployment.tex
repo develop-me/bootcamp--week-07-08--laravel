@@ -115,13 +115,42 @@ For an Ubuntu instance the username is \texttt{ubuntu} and the domain can be fou
     ec2-3-8-39-24.eu-west-2.compute.amazonaws.com
 \end{minted}
 
-To login to your server run:
+Next, we need to tell SSH to use the key we just created whenever it tries to connect to that server. In \texttt{~/.ssh/config}:
 
-\begin{minted}{bash}
-    ssh -o IdentitiesOnly=yes -i ~/.ssh/my-server-key.pem ubuntu@ec2-3-8-125-57.eu-west-2.compute.amazonaws.com
+\begin{minted}{text}
+    Host ec2-3-8-199-58.eu-west-2.compute.amazonaws.com
+      User ubuntu
+      IdentityFile ~/.ssh/my-server-key.pem
+      IdentitiesOnly yes
 \end{minted}
 
 Make sure you point to \textit{your} \texttt{pem} file and the correct IPv4 address.
+\\
+
+Now, to login to your server run:
+
+\begin{minted}{bash}
+    ssh ubuntu@ec2-3-8-199-58.eu-west-2.compute.amazonaws.com
+\end{minted}
+
+That's quite a lot to remember, to let's update our \texttt{~/.ssh/config} with an alias:
+
+\begin{minted}{text}
+    Host aws ec2-3-8-199-58.eu-west-2.compute.amazonaws.com
+      HostName ec2-3-8-199-58.eu-west-2.compute.amazonaws.com
+      User ubuntu
+      IdentityFile ~/.ssh/my-server-key.pem
+      IdentitiesOnly yes
+\end{minted}
+
+The \texttt{aws} bit after \texttt{Host} adds an alias for us so that we don't need to type out the full username and address. Now we can just do:
+
+\begin{minted}{bash}
+    ssh aws
+\end{minted}
+
+Much easier to remember!
+
 
 
 \subsection{Setting Up the Server}
@@ -347,8 +376,19 @@ Now reboot Nginx:
 Finally, give Nginx permission to use the directory:
 
 \begin{minted}{bash}
-    setfacl -R -m u:www-data:rwX /var/www/
+    # give permission to nginx for all future files
+    sudo setfacl -Rdm u:www-data:rwX /var/www/
+
+    # give permission to nginx for all current files
+    sudo setfacl -Rm u:www-data:rwX /var/www/
 \end{minted}
+
+\begin{infobox}{File Access Control Lists}
+    The permissions system of Unix (and thus Linux) was based on the idea that a single user ``owned'' directories and files on a computer. This was a significant security upgrade in the 70s, but for more modern uses it's a bit lacking.
+    \\
+
+    \textbf{File Access Control Lists} let us set permissions on a file/directory for as many users as we like. This is very useful, but as always, with great power comes great responsibility.
+\end{infobox}
 
 Once again check the page in your browser. The Nginx test message should have disappeared and everything should be broken. Congratulations, you have made progress!
 \\
@@ -478,3 +518,10 @@ Finally restart Nginx to use new configuration with:
 \end{minted}
 
 For reference, here is AWS's guide on \href{https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/SSL-on-amazon-linux-ami.html}{SSL on AMI instances}.
+
+\section{Additional Resources}
+
+\begin{itemize}[leftmargin=*]
+    \item \href{https://www.digitalocean.com/community/tutorials/how-to-install-linux-nginx-mysql-php-lemp-stack-ubuntu-18-04}{Digital Ocean: How To Install Linux, Nginx, MySQL, PHP (LEMP stack) on Ubuntu 18.04}
+    \item \href{https://www.digitalocean.com/community/tutorials/how-to-install-and-configure-laravel-with-lemp-on-ubuntu-18-04}{How to Install and Configure Laravel with LEMP on Ubuntu 18.04}
+\end{itemize}
