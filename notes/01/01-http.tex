@@ -29,10 +29,7 @@ You should get back a valid HTTP response.
 You just connected to a server at CERN, had a chat with it, and asked it to give you back a webpage. Because you said the right thing, it obliged and gave you a response.
 
 \begin{infobox}{The Internet vs. The Web}
-    The ``internet'' and the ``world wide web'' are, historically, not the same thing.
-    \\
-
-    The internet started off as ARPANet in the late 60s. It was a way of connecting together government computers and universities in a way where it wasn't necessary that every ``node'' in the network needed to be connected directly.
+    The ``internet'' and the ``world wide web'' are, historically, not the same thing. The internet started off as ARPANet in the late 60s. It was a way of connecting together government computers and universities in a way where it wasn't necessary that every ``node'' in the network needed to be connected directly.
     \\
 
     \img{12cm}{01/img/arpa-net}{1em}{The internet was so small in 1977 that you could map every computer connected to it on a piece of A4 (\href{http://som.csudh.edu/fac/lpress/history/arpamaps/}{source})}
@@ -40,7 +37,7 @@ You just connected to a server at CERN, had a chat with it, and asked it to give
     Things like e-mail, IRC, newsgroups, and bulletin boards all existed before the web.
     \\
 
-    The ``World Wide Web'' was invented in 1989 by Sir Tim Berners Lee, who was working at CERN at the time. He wanted to create a way so that you could click on a reference in a research paper and be taken directly to the referenced paper - what we'd now call a link. He didn't expect this to have much use outside of academia.
+    The ``World Wide Web'' was invented in 1989 by Sir Tim Berners Lee, who was working at CERN at the time. He wanted to create a way to click on a reference in a research paper and be taken directly to the referenced paper - what we'd now call a link. He didn't expect this to have much use outside of academia.
 \end{infobox}
 
 
@@ -157,15 +154,19 @@ The HTTP spec also defines a number of ``status codes'' which have specific mean
     \item \texttt{5xx}: Server Error
 \end{itemize}
 
+Client errors are when the user did something wrong (e.g., requested a page that doesn't exist, submitted the wrong information). Server errors are when your server code has done something wrong. Validation, which you looked at earlier, is the process of turning 500 errors (we did something wrong) into 400 errors (\textit{you} did something wrong).
+
 
 \section{Additional Resources}
 
 \begin{itemize}[leftmargin=*]
+    \item \href{https://httpstatuses.com}[HTTP Status Codes]
     \item \href{https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods}{MDN: HTTP Methods}
     \item \href{https://www.restapitutorial.com/httpstatuscodes.html}{HTTP Status Codes}
     \item \href{https://twobithistory.org/2018/06/10/birth-of-the-web.html}{The World Wide Web and Its Inventor}
     \item \href{https://www.charlesproxy.com}{Charles Proxy}: view all the HTTP requests on your computer
-    \item \href{https://www.youtube.com/watch?v=6iYfvshY4e0}{What is Internet Anyway? An Internaut's Guide}
     \item \href{https://evertpot.com/http/451-unavailable-for-legal-reasons}{451: Unavailable for Legal Reasons}
     \item \href{https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/418}{418: I'm a Teapot}
+    \item \href{https://www.youtube.com/watch?v=6iYfvshY4e0}{What is Internet Anyway? An Internaut's Guide}
+    \item Try running \texttt{curl https://wttr.in}
 \end{itemize}
