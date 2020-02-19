@@ -6,6 +6,9 @@
 - Add login form material
 - Update routes to use array instead of "@" for controller/method
 - MySQL examples more generic (with placeholders `table name`, `field name`, TYPE)
+- add `use App\Article;` to controller notes
+- more templates and routes before controller so process is more practiced
+- spoofing objects so can foreach without switching from arrays to objects
 
 ## Doing
 

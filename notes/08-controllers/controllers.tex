@@ -43,7 +43,7 @@ Invoking this controller to handle a request would be done on the route, as such
     Route::get('articles/{id}', "Articles@show");
 \end{minted}
 
-\subsection{Type Hinting}
+\subsection{Route Model Binding}
 
 Laravel is able to resolve Eloquent models defined in routes or controller actions where the type-hinted variable name (\texttt{\$article} below) matches the route segment name (\texttt{\{article\}} below). For example:
 
@@ -62,7 +62,7 @@ This can simplify the above \texttt{show()} method to:
     class Articles extends Controller
     {
         // shows single article
-        public function show(Article $article$)
+        public function show(Article $article)
         {
             return view("articles/show", [
                 "article" => $article
