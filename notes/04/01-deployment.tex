@@ -519,9 +519,30 @@ Finally restart Nginx to use new configuration with:
 
 For reference, here is AWS's guide on \href{https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/SSL-on-amazon-linux-ami.html}{SSL on AMI instances}.
 
+
+\section{Terminating an Instance}
+
+AWS doesn't give you free hosting forever, so at some point you may want to terminate your instance, otherwise it will start charging you.
+\\
+
+To terminate an instance:
+
+\begin{itemize}
+    \item Go to "EC2" in the AWS Console
+    \item Click on "Instances" in the left-hand menu
+    \item Select the EC2 Instance you want to terminate
+    \item Click on the "Actions" button (above the instances list)
+    \item Select "Instance State" then "Terminate"
+    \item Agree to terminate the instance
+\end{itemize}
+
+Terminating an instance will delete the server including any files and setup on it. Make sure you definitely want to do this!
+
+
 \section{Additional Resources}
 
 \begin{itemize}[leftmargin=*]
     \item \href{https://www.digitalocean.com/community/tutorials/how-to-install-linux-nginx-mysql-php-lemp-stack-ubuntu-18-04}{Digital Ocean: How To Install Linux, Nginx, MySQL, PHP (LEMP stack) on Ubuntu 18.04}
     \item \href{https://www.digitalocean.com/community/tutorials/how-to-install-and-configure-laravel-with-lemp-on-ubuntu-18-04}{How to Install and Configure Laravel with LEMP on Ubuntu 18.04}
+    \item \href{https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/terminating-instances.html}{Terminating an EC2 Instance}
 \end{itemize}
