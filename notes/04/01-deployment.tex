@@ -470,7 +470,10 @@ Success, everything is setup! You should now be able to make calls to your API.
 
 \section{HTTPS \& SSL Certificates}
 
-HTTPS = HTTP \textbf{Secure} encrypts all information sent between the client and the server and should always be used if the API requires any sort of authentication. Nowadays it is considered good practice to use HTTPS on \textit{all} websites, as it can prevent a number of security issues.
+\textbf{HTTP Secure} (HTTPS) encrypts all information sent between the client and the server and should \textit{always} be used if the site receives any personal data or uses any sort of authentication.
+\\
+
+Nowadays it is considered good practice to use HTTPS on \textit{all} websites, as it can prevent a number of security issues.
 \\
 
 First step, we'll need to set up a real domain to point to our server. If you don't have one to use ask the instructor to set you up a \texttt{something.developme.space} one.
@@ -517,7 +520,7 @@ Finally restart Nginx to use new configuration with:
     sudo nginx -s reload
 \end{minted}
 
-For reference, here is AWS's guide on \href{https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/SSL-on-amazon-linux-ami.html}{SSL on AMI instances}.
+Now if you go to your website again it should automatically send you to an HTTPS version.
 
 
 \section{Terminating an Instance}
