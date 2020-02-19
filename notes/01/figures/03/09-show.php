@@ -1,7 +1,9 @@
 <?php
 
-// the id gets passed in for us
-public function show($id)
+// the article gets passed in for us
+// using Route Model Binding
+public function show(Article $article)
 {
-  return Article::find($id);
+  // just return the article
+  return $article;
 }
