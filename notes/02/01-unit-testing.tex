@@ -1,0 +1,178 @@
+\textbf{Unit Testing} is when we test small parts of our code to check that it works as we expect. This can save us having to dump bits of code to see what's going on.
+\\
+
+Laravel makes it very easy to unit test code. All our unit tests live in the \texttt{tests/Unit} directory. You can see an example test called \texttt{ExampleTest.php} already in there.
+
+\section{Running Tests}
+
+To run all of your unit tests run the following:
+
+\begin{minted}{bash}
+    vendor/bin/phpunit --filter Unit
+\end{minted}
+
+You should get a message saying:
+
+\begin{minted}{text}
+    OK (1 test, 1 assertion)
+\end{minted}
+
+If you don't include the \texttt{--filter Unit} bit, it will also run \textbf{Feature Tests}, which let you test broader functionality, but we're not interested in this at the moment.
+
+\section{Generating Tests}
+
+Laravel can automatically generate unit tests for us:
+
+\begin{minted}{bash}
+    artisan make:test ArticleTest --unit
+\end{minted}
+
+There should now be a file called \texttt{ArticleTest} in the unit tests directory.
+
+
+\section{Writing Tests}
+
+Let's have a look at the test class:
+
+\begin{minted}{php}
+    namespace Tests\Unit;
+
+    use Illuminate\Foundation\Testing\RefreshDatabase;
+    use Tests\TestCase;
+
+    class ArticleTest extends TestCase
+    {
+        public function testExample()
+        {
+            $this->assertTrue(true);
+        }
+    }
+\end{minted}
+
+Test class names need to \textit{end} with \texttt{Test} and to \texttt{extend} \texttt{TestCase} - this is a class provided by Laravel that does most of the heavy-lifting for us. Under-the-hood, that class is itself extending a class provided by PHPUnit, the de facto PHP testing library.
+\\
+
+Test methods need to \textit{start} with \texttt{test}. You can do whatever you need to inside a test method, but importantly you should always \textbf{assert} something.
+
+\subsection{Asserting}
+
+``Asserting'' something just means saying ``This should be the case''. So if we assert that something is true, we're saying ``This value should be true''. An assertion can be correct, in which case the test passes, or incorrect, in which case the test fails.
+\\
+
+There's a \href{https://phpunit.readthedocs.io/en/9.0/assertions.html}{huge number of possible assertions}, but for now we'll stick to some basics:
+
+\begin{itemize}
+    \item \texttt{assertTrue}: assert that something is \texttt{true}
+    \item \texttt{assertSame}: assert that two things are the same type and value
+\end{itemize}
+
+Technically speaking you only really need \texttt{assertTrue}, but the other methods provide useful shorthands.
+\\
+
+Let's write some assertions about an \texttt{Article}:
+
+\begin{minted}{php}
+    public function testTitle()
+    {
+        $article = new Article([
+            "title" => "Hello",
+            "content" => "Blah blah blah",
+        ]);
+
+        $this->assertTrue($article->title === "Hello");
+    }
+\end{minted}
+
+We create a new \texttt{Article} and then assert it's true that it's \texttt{title} property is equal to \texttt{"Hello"}.
+\\
+
+We could of course write this using \texttt{assertSame}:
+
+\begin{minted}{php}
+    $this->assertSame("Hello", $article->title);
+\end{minted}
+
+Using \texttt{assertSame} is better, as if the test fails PHPUnit will tell you what it was expecting to happen. Notice that we put the \textbf{expected} value first and the \texttt{actual} value second, if it's the other way round the PHPUnit output will be backwards.
+\\
+
+Let's add a \texttt{truncate} method to our \texttt{Article} model:
+
+\begin{minted}{php}
+    use Illuminate\Support\Str;
+\end{minted}
+
+\begin{minted}{php}
+    public function truncate()
+    {
+        // use the Laravel Str::limit method
+        return Str::limit($this->content, 20);
+    }
+\end{minted}
+
+We use Laravel's \texttt{Str::limit} helper method to take the article content and limit it to 20 characters. We can now test this by adding the following to \texttt{ArticleTest}:
+
+\begin{minted}{php}
+    public function testTruncate()
+    {
+        $article = new Article([
+            "title" => "Hello",
+            "content" => "Blah blah blah",
+        ]);
+
+        // doesn't need truncating
+        $this->assertSame("Blah blah blah", $article->truncate());
+
+        $article = new Article([
+            "title" => "Hello",
+            "content" => "Blah blah blah blah blah blah blah",
+        ]);
+
+        // should be truncated
+        $this->assertSame("Blah blah blah blah...", $article->truncate());
+    }
+\end{minted}
+
+
+\subsection{Using the Constructor}
+
+You'll notice that we use the same \texttt{Article} object in both methods, we could set this up in the \texttt{\_\_constructor} method to save creating it twice:
+
+\begin{minted}{php}
+    private $article;
+
+    public function __construct()
+    {
+        // make sure we call the parent's constructor
+        parent::__construct();
+
+        // setup the article
+        $this->article = new Article([
+            "title" => "Hello",
+            "content" => "Blah blah blah",
+        ]);
+
+    }
+
+    public function testTitle()
+    {
+        // use the article *property*
+        $this->assertSame("Hello", $this->article->title);
+    }
+
+    public function testTruncate()
+    {
+        // use the article *property*
+        $this->assertSame("Blah blah blah", $this->article->truncate());
+
+        // ...rest of test
+    }
+\end{minted}
+
+
+
+\section{Additional Resources}
+
+\begin{itemize}[leftmargin=*]
+    \item \href{https://github.com/sebastianbergmann/phpunit}{PHPUnit}
+    \item \href{http://laravel.com/docs/6.x/testing}{Laravel: Testing - Getting Started}
+\end{itemize}
