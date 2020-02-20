@@ -18,6 +18,10 @@ You should get a message saying:
 \end{minted}
 
 If you don't include the \texttt{--filter Unit} bit, it will also run \textbf{Feature Tests}, which let you test broader functionality, but we're not interested in this at the moment.
+\\
+
+You can now delete the \texttt{tests/Unit/ExampleTest.php} file, as we'll create our own tests next.
+
 
 \section{Generating Tests}
 
@@ -95,6 +99,12 @@ We could of course write this using \texttt{assertSame}:
 Using \texttt{assertSame} is better, as if the test fails PHPUnit will tell you what it was expecting to happen. Notice that we put the \textbf{expected} value first and the \texttt{actual} value second, if it's the other way round the PHPUnit output will be backwards.
 \\
 
+Make sure to re-run your tests every time you make any changes:
+
+\begin{minted}{bash}
+    vendor/bin/phpunit --filter Unit
+\end{minted}
+
 Let's add a \texttt{truncate} method to our \texttt{Article} model:
 
 \begin{minted}{php}
@@ -109,7 +119,10 @@ Let's add a \texttt{truncate} method to our \texttt{Article} model:
     }
 \end{minted}
 
-We use Laravel's \texttt{Str::limit} helper method to take the article content and limit it to 20 characters. We can now test this by adding the following to \texttt{ArticleTest}:
+We use Laravel's \href{http://laravel.com/docs/6.x/helpers#method-str-limit}{\texttt{Str::limit} helper method} to take the article content and limit it to 20 characters.
+\\
+
+We can now test this by adding the following to \texttt{ArticleTest}:
 
 \begin{minted}{php}
     public function testTruncate()
@@ -167,6 +180,173 @@ You'll notice that we use the same \texttt{Article} object in both methods, we c
         // ...rest of test
     }
 \end{minted}
+
+
+\section{Testing with a Database}
+
+Sometimes we need to test things that involve the database. However, we don't want to pollute our normal database with test data. If we run the same test hundreds of times, we don't want to end up with the same test article hundreds of times. It's also harder to write tests if we don't know the state of the database before we start.
+\\
+
+For this reason we usually use a \textit{separate} database for testing. We're going to use an \textbf{in-memory SQLite} database. You don't really need to worry about what that means as Laravel does all the work for us, but basically it's temporary and stored in memory (as opposed to on the hard-drive), so it's really fast.
+
+
+\pagebreak
+
+
+\subsection{Setting Up a Test Database}
+
+First, we'll need to add the following to the \texttt{connections} section of \\ \texttt{config/database.php}:
+
+\begin{minted}{php}
+    'testing' => [
+        'driver'   => 'sqlite',
+        'database' => ':memory:',
+        'prefix'   => '',
+    ],
+\end{minted}
+
+Then we need to tell PHPUnit to use that database instead of the normal one. We do this by adding a line to the \texttt{<php>} section of the \texttt{phpunit.xml} file:
+
+\begin{minted}{xml}
+    <php>
+        // ... other <server /> tags
+        <server name="DB_CONNECTION" value="testing"/>
+    </php>
+\end{minted}
+
+
+\subsection{Using the Test Database in Tests}
+
+We need to make a few changes to our test before we can work with the database.
+\\
+
+First, we need to extend the \textit{Laravel} \texttt{TestCase} class. Replace the \\ \texttt{use PHPUnit\textbackslash{}Framework\textbackslash{}TestCase} line with:
+
+\begin{minted}{php}
+    use Tests\TestCase;
+\end{minted}
+
+We can also tell Laravel to automatically refresh (clear and then migrate) the database for us each time we run the tests. This makes the database state more predictable.
+\\
+
+Add the following \texttt{use} statement:
+
+\begin{minted}{php}
+    use Illuminate\Foundation\Testing\DatabaseMigrations;
+\end{minted}
+
+Then, as the very first line in your class add the following:
+
+\begin{minted}{php}
+    class ArticleTest extends TestCase
+    {
+        use DatabaseMigrations;
+
+        // ...rest of class code
+    }
+\end{minted}
+
+This is called a \texttt{trait}: it effectively adds a method to your class.
+\\
+
+Now we can write tests involving the database.
+
+
+\subsection{Writing Database Tests}
+
+Now we can now write code that uses the database just as we normally would:
+
+\begin{minted}{php}
+    public function testDatabase()
+    {
+        // add an article to the database
+        Article::create([
+            "title" => "Hello",
+            "content" => "Blah blah blah",
+        ]);
+
+        // get the first article back from the database
+        $articleFromDB = Article::all()->first();
+
+        // check the titles match
+        $this->assertSame("Hello", $articleFromDB->title);
+    }
+\end{minted}
+
+Because the database is wiped before each run, we can be sure that the first article in the database is the one we just added.
+\\
+
+The test above isn't particularly useful, but when it comes to testing our controllers it can be.
+
+
+\pagebreak
+
+
+\section{Testing Controllers}
+
+First, let's create a new test, putting it in an appropriate namespace:
+
+\begin{minted}{bash}
+    artisan make:test Http\\Controllers\\API\\ArticlesTest --unit
+\end{minted}
+
+Then we'll edit the test file:
+
+\begin{minted}{php}
+    namespace Tests\Unit\Http\Controllers\API;
+
+    // setup to use database
+    use Illuminate\Foundation\Testing\DatabaseMigrations;
+    use Tests\TestCase;
+
+    // use classes we'll need
+    use App\Http\Requests\API\ArticleRequest;
+    use App\Http\Controllers\API\Articles;
+    use App\Article;
+
+    class ArticlesTest extends TestCase
+    {
+        // the database migrations trait
+        // ensures the database is cleared between tests
+        use DatabaseMigrations;
+
+        // a test for the controller's store() method
+        public function testStore()
+        {
+            // create an ArticleRequest
+            // URL as first argument
+            // Method as second argument
+            // Array of data as third argument
+            $request = ArticleRequest::create('/api/articles', 'POST', [
+                'title' => 'foo',
+                'content' => 'bar',
+            ]);
+
+            // create a new Articles controller
+            $controller = new Articles();
+
+            // call the store method, passing it the request
+            // check we get an article back
+            $result = $controller->store($request);
+            $this->assertSame("bar", $result->content);
+
+            // test to see if it's been added to the database
+            $article = Article::all()->first();
+            $this->assertSame("bar", $article->content);
+        }
+    }
+\end{minted}
+
+First, we do the usual database test setup bits and pieces. Then in our test we create a fake \texttt{ArticleRequest}, as that's what our controller is expecting to be given. Then we create our own instance of the controller and call the \texttt{store} method, passing it the request. Then we test first to see if we got an article with the right \texttt{content} back and secondly to see if it was added to the database.
+\\
+
+As always, don't forget to run your tests:
+
+\begin{minted}{bash}
+    vendor/bin/phpunit --filter Unit
+\end{minted}
+
+If all tests pass we can be sure that the \texttt{store} method is doing what we expect: taking the data from the request, storing it in the database, and returning it.
 
 
 
