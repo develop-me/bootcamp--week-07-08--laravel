@@ -50,7 +50,7 @@ To launch your server just follow these simple and easy to remember steps:
         \end{itemize}
          This enables the sending and receiving of data via HTTPS/HTTP.
     \item Click ``Launch''
-    \item On the final screen generate a new SSH key pair and download the \texttt{pem} file
+    \item On the final screen ``Create a new key pair'' and download the \texttt{pem} file
     \item Go back to the EC2 dashboard and you should see this server loading up
 \end{itemize}
 
@@ -153,7 +153,7 @@ Much easier to remember!
 
 
 
-\subsection{Setting Up the Server}
+\section{Setting Up the Server}
 
 You will need to install the following software packages on the server:
 
@@ -408,7 +408,7 @@ You're getting an error because you are missing the \texttt{.env} file that cont
 Check the page in your browser. The page should now display a \textit{Laravel} error message saying that we've not setup a MySQL database yet.
 
 
-\section{Setting Up the Database}
+\subsection{Setting Up the Database}
 
 First, configure MySQL and setup a password:
 
@@ -479,14 +479,22 @@ Nowadays it is considered good practice to use HTTPS on \textit{all} websites, a
 First step, we'll need to set up a real domain to point to our server. If you don't have one to use ask the instructor to set you up a \texttt{something.developme.space} one.
 \\
 
-Now update the Nginx config to use this domain, set the server name:
+Now update the Nginx config to use this domain, edit the config file:
 
 \begin{minted}{bash}
     sudo nano /etc/nginx/sites-available/default
 \end{minted}
 
+Change the \texttt{server\_name}:
+
 \begin{minted}{nginx}
     server_name <YOUR.DOMAIN>;
+\end{minted}
+
+Then restart Nginx:
+
+\begin{minted}{bash}
+    sudo nginx -s reload
 \end{minted}
 
 Next, we install \texttt{certbot} on our AWS EC2 instance, which we can use to have SSL certificates issued for us, with:
@@ -501,26 +509,19 @@ Then we issue a certificate:
     sudo certbot --nginx
 \end{minted}
 
-Next we create a new Nginx configuration file so we can configure requests to \texttt{https://YOUR.DOMAIN} to use this certificate.
+Read the instructions carefully as you go along.
 \\
 
-First:
+You'll need to provide \texttt{certbot} with an email address so that it can warn you if a certificate is due to expire. It's up to you whether to sign-up for their email newsletter or not.
+\\
 
-\begin{minted}{bash}
-    sudo nano /etc/nginx/sites-available/default
-\end{minted}
-
-Then enter contents below, replacing \texttt{<repo-name>} with the correct directory and the \textit{five} instances of \texttt{<YOUR.DOMAIN>} with your actual domain (without \texttt{http(s)://}) or any trailing slashes:
-
-\inputminted{nginx}{04/resources/01/01-nginx-https.conf}
-
-Finally restart Nginx to use new configuration with:
-
-\begin{minted}{bash}
-    sudo nginx -s reload
-\end{minted}
+When offered the choice, select the relevant domain name from the list (there will probably only be one option). When offered whether to redirect traffic pick \texttt{2: Redirect}, this will ensure that all traffic goes via HTTPS.
+\\
 
 Now if you go to your website again it should automatically send you to an HTTPS version.
+\\
+
+Certbot will even automatically generate new certificates for you every 90 days - assuming you keep your instance running that long.
 
 
 \section{Terminating an Instance}
