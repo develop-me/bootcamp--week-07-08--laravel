@@ -1,10 +1,281 @@
 We've already seen that it can be useful to write tests for our code.
 \\
 
-But what if we wrote the tests \textit{first}? This is the idea behind \textbf{Test Driven Development}.
+But what if we wrote the tests \textit{first}? This is the key idea behind \textbf{Test Driven Development}.
+\\
 
+Rather than writing a piece of functionality and then testing it when we think it works, TDD says we should first write a test that fails and then write the code that will make the test work. If you're doing TDD properly you should never write a piece of code without having written a test for it first.
 
 \section{Red, Green, Refactor}
+
+When writing test-driven code you enter the ``Red, Green, Refactor'' loop.
+
+\begin{itemize}
+    \item \textbf{Red}: write a \textit{failing} test - and check that it fails
+    \item \textbf{Green}: write the \textit{smallest amount of code} that you can to pass the test
+    \item \textbf{Refactor}: can you improve the code without breaking any of the tests
+\end{itemize}
+
+
+\section{Why?}
+
+This might seem like a crazy way to write code, but it forces you to think about what you're actually doing. The \textbf{red} stage make you think ``What does this code \textit{actually} need to do?''. The \textbf{green} phase lets you think about how to get it working in the simplest possible way. The \textbf{refactor} phase lets you improve your code without worrying about breaking anything.
+\\
+
+If you use TDD for \textit{every line of code in your application}, then you have the freedom to change whatever you like with the guarantee that \textit{if all the tests still pass, it definitely still does what it did before}. This can be incredibly liberating!
+\\
+
+Initially, you probably think that writing code this way will be much slower. And to start with it will be. But if you can get into the right mindset, you may find that it allows you to reason about you code in a much more straightforward manner. And when it comes to making changes later – which is what you'll spend most of your time doing – you'll find you save a huge amount of time and mental effort.
+
+\section{FizzBuzz}
+
+Let's write FizzBuzz using TDD. We'll use TDD for more practical purposes later.
+\\
+
+We'll need two classes, \texttt{FizzBuzz} and \texttt{FizzBuzzTest}.
+\\
+
+Put the following in \texttt{app/FizzBuzz.php}:
+
+\begin{minted}{php}
+    namespace App;
+
+    class FizzBuzz
+    {
+        public function forNumber()
+        {
+
+        }
+    }
+\end{minted}
+
+Now, create a test:
+
+\begin{minted}{bash}
+    aritsan make:test FizzBuzzTest --unit
+\end{minted}
+
+And update that file to look like this:
+
+\begin{minted}{php}
+    namespace Tests\Unit;
+
+    use PHPUnit\Framework\TestCase;
+
+    class FizzBuzzTest extends TestCase
+    {
+        public function testForNumber()
+        {
+
+        }
+    }
+\end{minted}
+
+Now run your tests. Seriously:
+
+\begin{minted}{bash}
+    vendor/bin/phpunit --filter FizzBuzz
+\end{minted}
+
+We've limited testing just to \texttt{FizzBuzz} so we don't get any noise. You should see that the tests pass (because there aren't any), but we get a message telling us we didn't perform any assertions.
+\\
+
+It's important to run your tests even when you know they'll fail, because sometimes they \textit{won't}, which might mean you've set your tests up wrong!
+\\
+
+Right, let's get our first fail. In \texttt{FizzBuzzTest}:
+
+\begin{minted}{php}
+    public function testForNumber()
+    {
+        $fizzbuzz = new FizzBuzz();
+        $this->assertSame("1", $fizzbuzz->forNumber(1));
+    }
+\end{minted}
+
+Now, \textbf{run your tests}. You should see that you get a failure saying \texttt{Failed asserting that null is identical to \textquotesingle{}1\textquotesingle{}}. This is \textit{good}, according to TDD we can't start writing in FizzBuzz \textit{until} we have a failing test. Start with \textbf{red}.
+\\
+
+Let's get our test passing. In \texttt{FizzBuzz}:
+
+\begin{minted}{php}
+    public function forNumber(int $number) : string
+    {
+        return "1";
+    }
+\end{minted}
+
+\textbf{Run your tests}. Our first \textbf{green}!
+\\
+
+Now, you're thinking is probably a mixture of confusion and expletives. Of course they passed! But the method \textit{always} returns \texttt{"1"}.
+\\
+
+But, remember the rules of TDD: write the \textit{smallest amount of code} that you can to pass the test. And that's just what we did. Just remember, \textit{we're not finished yet}.
+\\
+
+We can't really refactor our code at the moment, it's about as simple as it can be. So let's get back to \textbf{red}. Add a new test:
+
+\begin{minted}{php}
+    $this->assertSame("2", $fizzbuzz->forNumber(2));
+\end{minted}
+
+\textbf{Run your tests}. Totes \textbf{red}.
+\\
+
+Let's fix that:
+
+\begin{minted}{php}
+    public function forNumber(int $number) : string
+    {
+        // wrap what's passed in a s a string
+        return "{$number}";
+    }
+\end{minted}
+
+\textbf{Run your tests}. \textbf{Green}! Good work.
+\\
+
+Again, no refactoring necessary. So let's get back to \textbf{red}:
+
+\begin{minted}{php}
+    $this->assertSame("Fizz", $fizzbuzz->forNumber(3));
+\end{minted}
+
+\textbf{Run your tests}. \textbf{Red}. And let's get it working:
+
+\begin{minted}{php}
+    public function forNumber(int $number) : string
+    {
+        if ($number === 3) {
+            return "Fizz";
+        }
+
+        return "{$number}";
+    }
+\end{minted}
+
+\textbf{Run your tests}. \textbf{Green.} You'll notice it's slowly starting to resemble the answer to FizzBuzz that you're familiar with, but TDD is forcing us to do it bit by bit.
+\\
+
+We could maybe refactor at this point (maybe use a ternary?), but it's best not to refactor \textit{too} soon, so let's leave it as is for now.
+\\
+
+Next test:
+
+\begin{minted}{php}
+    $this->assertSame("4", $fizzbuzz->forNumber(4));
+\end{minted}
+
+\textbf{Run your tests}. \textbf{Green!} Didn't even have to do anything that time.
+\\
+
+Next test:
+
+\begin{minted}{php}
+    $this->assertSame("Buzz", $fizzbuzz->forNumber(5));
+\end{minted}
+
+\textbf{Run your tests}. \textbf{Red} again. Let's fix it:
+
+\begin{minted}{php}
+    public function forNumber(int $number) : string
+    {
+        if ($number === 3) {
+            return "Fizz";
+        }
+
+        if ($number === 5) {
+            return "Buzz";
+        }
+
+        return "{$number}";
+    }
+\end{minted}
+
+\textbf{Run your tests}. Back to \textbf{green}.
+\\
+
+Next test:
+
+\begin{minted}{php}
+    $this->assertSame("Fizz", $fizzbuzz->forNumber(6));
+\end{minted}
+
+\textbf{Run your tests}. \textbf{Red}.
+\\
+
+Again, notice how TDD is forcing us to think about what we want to happen at every stage.
+\\
+
+Let's get it working. Update the first \texttt{if} statement to use \texttt{\%}:
+
+\begin{minted}{php}
+    if ($number % 3 === 0) {
+        return "Fizz";
+    }
+\end{minted}
+
+\textbf{Run your tests}. \textbf{Green}. Don't be tempted to do the same for \texttt{5} just yet: you've not written a test for it.
+\\
+
+We don't need to test every single possible value, just the ones we're interested in. So let's skip to \texttt{10}.
+
+\begin{minted}{php}
+    $this->assertSame("Buzz", $fizzbuzz->forNumber(10));
+\end{minted}
+
+\textbf{Run your tests}. Here's the \textbf{red} you were looking for. Now we can fix it:
+
+\begin{minted}{php}
+    if ($number % 5 === 0) {
+        return "Buzz";
+    }
+\end{minted}
+
+\textbf{Run your tests}. \textbf{Green} again. Now let's add our final test case:
+
+\begin{minted}{php}
+    $this->assertSame("FizzBuzz", $fizzbuzz->forNumber(15));
+\end{minted}
+
+\textbf{Run your tests}. \textbf{Red} again.
+\\
+
+Let's go for the simplest solution to start with:
+
+\begin{minted}{php}
+    public function forNumber(int $number) : string
+    {
+        if ($number % 3 === 0 && $number % 5 === 0) {
+            return "FizzBuzz";
+        }
+
+        // ...etc.
+    }
+\end{minted}
+
+\textbf{Run your tests}. Back to \textbf{Green}.
+\\
+
+We've written all the tests, now we can \textbf{refactor}. But we can refactor \textit{without worrying about breaking things}: if the tests pass then it still does everything we want it to do.
+\\
+
+\hr
+
+Some refactorings later:
+
+\begin{minted}{php}
+    public function forNumber(int $number) : string
+    {
+        $result = $number % 3 ? "" : "Fizz";
+        $result .= $number % 5 ? "" : "Buzz";
+        return $result ? $result : "{$number}";
+    }
+\end{minted}
+
+The above is the result of many many refactorings. Some of them didn't work. But because I ran the tests \textit{every} time, I knew I'd made a mistake. I was free to try things and came up with a solution I genuinely wasn't expecting.
+
 
 \section{Git Hooks}
 
@@ -45,6 +316,7 @@ Now, whenever you try to commit and code to Git the tests will run and if any of
 
 \begin{itemize}[leftmargin=*]
     \item \href{https://www.freecodecamp.org/news/test-driven-development-what-it-is-and-what-it-is-not-41fa6bca02a2/}{What is Test Driven Development?}
+    \item \href{https://www.codecademy.com/articles/tdd-red-green-refactor}{Red, Green, Refactor}
     \item \href{https://www.sandimetz.com/99bottles}{99 Bottles of OOP}
     \item \href{https://git-scm.com/book/en/v2/Customizing-Git-Git-Hooks}{Git Hooks}
 \end{itemize}
