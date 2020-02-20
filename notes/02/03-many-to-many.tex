@@ -7,6 +7,8 @@ We can't reference the article or tag ID from the other table in this case, as t
 
 It is possible to store additional information about the relationship on a pivot table, which Eloquent makes available on the model's \texttt{pivot} property, but in our case this won't be necessary.
 
+\pagebreak
+
 
 \begin{infobox}{Termlists}
     It's quite common with databases to have tables which effectively just store a list of strings with an associated ID: e.g. countries, cities, genders, etc. These are sometimes referred to as \textbf{termlists} (because it's a list of terms):
@@ -105,7 +107,97 @@ We'll also need to tell the \texttt{Article} model about tags. Again we'll use a
 
 \phpinputminted{02/figures/02/05-article-relationship}
 
-The API we're creating takes an array of tag strings (e.g. \texttt{["Wombats", "Fish", "Spoons"]}) as part of the \texttt{POST}/\texttt{PUT} request when creating/updating an article. We'll need to make sure that we don't create the same tag more than once. Let's add a \texttt{static} method to the \texttt{Tag} class so that we can pass it an array of strings and it will return a collection of \texttt{Tag} objects: if the tag already exists it will find it in the database and if the tag doesn't exist it will create it for us. We'll call the method \texttt{fromStrings}:
+\section{TDD}
+
+The API we're creating takes an array of tag strings (e.g. \texttt{["Wombats", "Fish", "Spoons"]}) as part of the \texttt{POST}/\texttt{PUT} request when creating/updating an article. We'll need to make sure that we don't create the same tag more than once.
+\\
+
+This is going to involve some custom code, so let's use TDD!
+\\
+
+We want to create a method that takes an array of strings and gives us back an array of \texttt{Tag} models. This should be a \texttt{static} method on the \texttt{Tag} class.
+\\
+
+First, create a new test:
+
+\begin{minted}{bash}
+    artisan make:test TagTest --unit
+\end{minted}
+
+We're storing tags in the database, so we'll need to setup our test to use our test database:
+
+\begin{minted}{php}
+    namespace Tests\Unit;
+
+    use Tests\TestCase;
+    use Illuminate\Foundation\Testing\DatabaseMigrations;
+
+    class TagTest extends TestCase
+    {
+        use DatabaseMigrations;
+
+        // ...etc.
+    }
+\end{minted}
+
+To keep stuff really simple, let's first write a method that takes a \textit{single} string and give us back a \texttt{Tag}. Let's write our first test:
+
+\begin{minted}{php}
+    public function testFromString()
+    {
+        $result = Tag::fromString("Test");
+        $this->assertSame("Test", $result->name);
+    }
+\end{minted}
+
+And get it \textbf{red}:
+
+\begin{minted}{php}
+    // create the method
+    static public function fromString($string)
+    {
+    }
+\end{minted}
+
+\textbf{Run your tests}. \textbf{Red}. Let's get it \textbf{green}:
+
+\begin{minted}{php}
+    protected $fillable = ["name"];
+
+    static public function fromString($string)
+    {
+        return new Tag(["name" => $string]);
+    }
+\end{minted}
+
+\textbf{Run your tests}. \textbf{Green}. But our method isn't done. It should store the tag in the database. Let's add another assertion:
+
+\begin{minted}{php}
+    $tagFromDB = Tag::all()->first();
+    $this->assertSame("Test", $tagFromDB->name);
+\end{minted}
+
+\textbf{Run your tests}. \textbf{Red}. Let's update the method to store the tag in the database:
+
+\begin{minted}{php}
+    static public function fromString($string)
+    {
+        return Tag::create(["name" => $string]);
+    }
+\end{minted}
+
+\textbf{Run your tests}. \textbf{Green} again. But, we're still not done. We need to only add a tag to the database if it \textit{doesn't} already exist. Let's add a test for this:
+
+\begin{minted}{php}
+    // test no duplicates
+    $result = Tag::fromString("Test");
+    $allTags = Tag::where("name", "Test");
+    $this->assertSame(1, $allTags->count());
+\end{minted}
+
+
+
+Let's add a \texttt{static} method to the \texttt{Tag} class so that we can pass it an array of strings and it will return a collection of \texttt{Tag} objects: if the tag already exists it will find it in the database and if the tag doesn't exist it will create it for us. We'll call the method \texttt{fromStrings}:
 
 \phpinputminted{02/figures/02/06-Tag-fromStrings}
 
