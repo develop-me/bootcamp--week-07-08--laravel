@@ -7,7 +7,7 @@ APIs typically use \textbf{tokens} to authenticate users. A token is just a rand
     MTQ0NjJkZmQ5OTM2NDE1ZTZjNGZmZjI3
 \end{minted}
 
-The process of using a token is as follows:
+The most common protocol for using tokens is OAuth2 and looks like this:
 
 \begin{enumerate}
     \item The user makes a request to a dedicated authentication endpoint, providing credentials such as username and password
@@ -17,6 +17,8 @@ The process of using a token is as follows:
     \item The API checks the validity of the token
     \item The API grants or denies requests based on whether the user is valid and who the user is
 \end{enumerate}
+
+By using tokens the user doesn't have to send their password with every single request, which tends to make things more secure.
 
 \pagebreak
 
@@ -85,11 +87,12 @@ And set the driver of the \texttt{api} authentication guard to \texttt{passport}
     ],
 \end{minted}
 
-\pagebreak
-
 \subsection{Creating a User}
 
-To use authentication we'll need to create a user. Run \texttt{tinker} (in \texttt{vagrant ssh} mode):
+If you don't already have one you'll need to create a user.
+\\
+
+Run \texttt{tinker} (in \texttt{vagrant ssh} mode):
 
 \begin{minted}{bash}
     artisan tinker
@@ -187,7 +190,8 @@ Now let's update our existing user to have the role of \texttt{"author"} and gen
 \end{minted}
 
 \begin{minted}{php}
-    App\User::where('id', 1)->update(['role' => 'author']);
+    App\User::where('email', 'an.author@gmail.com')
+            ->update(['role' => 'author']);
 
     App\User::create([
         'name' => 'A Subscriber',
