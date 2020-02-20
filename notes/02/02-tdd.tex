@@ -1,7 +1,50 @@
-We saw last week that it can be useful to write tests for our code.
+We've already seen that it can be useful to write tests for our code.
 \\
 
 But what if we wrote the tests \textit{first}? This is the idea behind \textbf{Test Driven Development}.
 
 
 \section{Red, Green, Refactor}
+
+\section{Git Hooks}
+
+Now that we're test-driven, we should be careful to never commit any code to Git \textit{if} any of our tests are failing.
+\\
+
+We can use \textbf{Git Hooks} to guarantee that we can't commit failing code. Hooks are custom bits of code that run at specific points in the Git life-cycle.
+\\
+
+We're interested in the \texttt{pre-commit} hook. If this bit of code returns an \textbf{error code} (any number except \texttt{0}) then Git won't allow the commit to run.
+\\
+
+When all of your PHPUnit tests succeed you get back a \texttt{0} exit code, but if any fail you'll get back a non-zero exit code. That means all we need to put in our hook is code that runs PHPUnit.
+\\
+
+Hooks live in the \texttt{.git/hooks} directory inside your project. So we need to create a file called \texttt{.git/hooks/pre-commit} and then put the following inside:
+
+\begin{minted}{bash}
+    #!/bin/bash
+
+    vendor/bin/phpunit --filter Unit
+\end{minted}
+
+This is just the command that we've been running manually.
+\\
+
+We also need to give this file execution permissions, otherwise it can't be run:
+
+\begin{minted}{bash}
+    chmod +x .git/hooks/pre-commit
+\end{minted}
+
+Now, whenever you try to commit and code to Git the tests will run and if any of them fail the commit will fail.
+
+
+
+\section{Additional Resources}
+
+\begin{itemize}[leftmargin=*]
+    \item \href{https://www.freecodecamp.org/news/test-driven-development-what-it-is-and-what-it-is-not-41fa6bca02a2/}{What is Test Driven Development?}
+    \item \href{https://www.sandimetz.com/99bottles}{99 Bottles of OOP}
+    \item \href{https://git-scm.com/book/en/v2/Customizing-Git-Git-Hooks}{Git Hooks}
+\end{itemize}
