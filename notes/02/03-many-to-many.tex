@@ -107,6 +107,7 @@ We'll also need to tell the \texttt{Article} model about tags. Again we'll use a
 
 \phpinputminted{02/figures/02/05-article-relationship}
 
+
 \section{TDD}
 
 The API we're creating takes an array of tag strings (e.g. \texttt{["Wombats", "Fish", "Spoons"]}) as part of the \texttt{POST}/\texttt{PUT} request when creating/updating an article. We'll need to make sure that we don't create the same tag more than once.
@@ -115,7 +116,7 @@ The API we're creating takes an array of tag strings (e.g. \texttt{["Wombats", "
 This is going to involve some custom code, so let's use TDD!
 \\
 
-We want to create a method that takes an array of strings and gives us back an array of \texttt{Tag} models. This should be a \texttt{static} method on the \texttt{Tag} class.
+We want to create a method that takes an array of strings and gives us back a \textit{collection} of \texttt{Tag} models. This should be a \texttt{static} method on the \texttt{Tag} class.
 \\
 
 First, create a new test:
@@ -145,7 +146,14 @@ To keep stuff really simple, let's first write a method that takes a \textit{sin
 \begin{minted}{php}
     public function testFromString()
     {
+        // call the Tag::fromString static method
         $result = Tag::fromString("Test");
+
+        // check we get back a Tag
+        // using assertInstanceOf to check the class
+        $this->assertInstanceOf(Tag::class, $result);
+
+        // check the tag has the right name
         $this->assertSame("Test", $result->name);
     }
 \end{minted}
@@ -154,33 +162,57 @@ And get it \textbf{red}:
 
 \begin{minted}{php}
     // create the method
-    static public function fromString($string)
+    static public function fromString()
     {
     }
 \end{minted}
 
-\textbf{Run your tests}. \textbf{Red}. Let's get it \textbf{green}:
+\textbf{Run your tests}. \textbf{Red}. Let's get it \textbf{green}, but in the most minimal way possible:
 
 \begin{minted}{php}
     protected $fillable = ["name"];
 
-    static public function fromString($string)
+    static public function fromString() : Tag
+    {
+        return new Tag(["name" => "Test"]);
+    }
+\end{minted}
+
+\textbf{Run your tests}. \textbf{Green}. Obviously it needs to work for \textit{any} string, so let's add another test:
+
+\begin{minted}{php}
+    // test a different tag
+    $result = Tag::fromString("Hammock");
+    $this->assertInstanceOf(Tag::class, $result);
+    $this->assertSame("Hammock", $result->name);
+\end{minted}
+
+\textbf{Run your tests}. Unsurprisingly it's \textbf{red}. Let's get it \textbf{green} again:
+
+\begin{minted}{php}
+    static public function fromString(string $string) : Tag
     {
         return new Tag(["name" => $string]);
     }
 \end{minted}
 
-\textbf{Run your tests}. \textbf{Green}. But our method isn't done. It should store the tag in the database. Let's add another assertion:
+\textbf{Run your tests}. Back to \textbf{green}. But our method isn't done. It should store the tag \textit{in the database}. Let's add another assertion:
 
 \begin{minted}{php}
+    // get the first tag from the database
     $tagFromDB = Tag::all()->first();
+
+    // check we get a tag
+    $this->assertInstanceOf(Tag::class, $tagFromDB);
+
+    // check it's got the right name
     $this->assertSame("Test", $tagFromDB->name);
 \end{minted}
 
 \textbf{Run your tests}. \textbf{Red}. Let's update the method to store the tag in the database:
 
 \begin{minted}{php}
-    static public function fromString($string)
+    static public function fromString(string $string) : Tag
     {
         return Tag::create(["name" => $string]);
     }
@@ -195,23 +227,68 @@ And get it \textbf{red}:
     $this->assertSame(1, $allTags->count());
 \end{minted}
 
+\textbf{Run your tests}. Back to \textbf{red}. We're running the \texttt{fromString()} method again, which \textit{should} give us back the same tag as before and not add an additional one to the database. So if we get all the tags back we should only get one. Currently this is going to fail, because we \textit{always} create a new tag.
+\\
 
+Let's update our \texttt{fromString()} method to get this green again:
 
-Let's add a \texttt{static} method to the \texttt{Tag} class so that we can pass it an array of strings and it will return a collection of \texttt{Tag} objects: if the tag already exists it will find it in the database and if the tag doesn't exist it will create it for us. We'll call the method \texttt{fromStrings}:
+\begin{minted}{php}
+    static public function fromString(string $string) : Tag
+    {
+        $tag = Tag::where("name", $string)->first();
+        return $tag ? $tag : Tag::create(["name" => $string]);
+    }
+\end{minted}
 
-\phpinputminted{02/figures/02/06-Tag-fromStrings}
+\textbf{Run your tests}. \textbf{Green} again. We're now checking if the tag already exists in the database. If it does then we return the version from the database, otherwise we create a new tag.
+\\
 
-Because we're using \texttt{create()}, which uses mass assignment, we'll also need to add a \texttt{\$fillable} property to the \texttt{Tag} model:
+That's our \texttt{fromString()} method finished. Let's get \texttt{fromStrings()} working next. Again, let's write a failing test to start with:
 
-\phpinputminted{02/figures/02/07-Tag-fillable}
+\begin{minted}{php}
+    public function testFromStrings()
+    {
+        // call the fromStrings method
+        $result = Tag::fromStrings(["Test", "Hammock"]);
 
-Now, let's use \texttt{artisan tinker} to see if this works:
+        // check it's a Collection
+        $this->assertInstanceOf(Collection::class, $result);
 
-\phpinputminted{02/figures/02/08-tinker}
+        // check the first item is "Test"
+        $this->assertSame("Test", $result[0]->name);
 
+        // check the second item is "Hammock"
+        $this->assertSame("Hammock", $result[1]->name);
+    }
+\end{minted}
+
+\textbf{Run your tests}. Should be \textbf{red}. Let's fix that:
+
+\begin{minted}{php}
+    static public function fromStrings(array $strings) : Collection
+    {
+        return collect($strings)->map([Tag::class, "fromString"]);
+    }
+\end{minted}
+
+\textbf{Run your tests}. Hurrah \textbf{green}! Looks like everything is working.
+\\
+
+We might later discover that sometimes tags have whitespace around them, so we could add some tests for that. Or a user might provide the same tag twice by accident, so we could add some tests for that. The more tests we add the more confident we can be about our code.
+\\
+
+Finished versions of both classes are on GitHub:
+
+\begin{itemize}
+    \item \href{https://github.com/develop-me/bootcamp--laravel-project/blob/develop/app/Tag.php}{\texttt{Tag} class}
+    \item \href{https://github.com/develop-me/bootcamp--laravel-project/blob/develop/tests/Unit/TagTest.php}{\texttt{TagTest} class}
+\end{itemize}
 
 
 \section{Controller Logic}
+
+\textbf{The following steps should really be performed with TDD.} See the \href{https://github.com/develop-me/bootcamp--laravel-project/tree/develop/tests/Unit}{project on GitHub for a full set of tests}.
+\\
 
 We won't need to add any new routes for tags because they get added as part of the article \texttt{POST}/\texttt{PUT} request. But we will need to update the \texttt{store} and \texttt{update} methods in the \texttt{Articles} controller.
 \\

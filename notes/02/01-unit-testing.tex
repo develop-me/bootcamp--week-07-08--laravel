@@ -313,22 +313,16 @@ Then we'll edit the test file:
         // a test for the controller's store() method
         public function testStore()
         {
-            // create an ArticleRequest
-            // URL as first argument
-            // Method as second argument
-            // Array of data as third argument
-            $request = ArticleRequest::create('/api/articles', 'POST', [
-                'title' => 'foo',
-                'content' => 'bar',
-            ]);
+            // use the "call" method to fake a
+            // POST request to /api/articles
+            // then get the original content (otherwise we'll get JSON)
+            $response = $this->call('POST', '/api/articles', [
+                "title" => "foo",
+                "content" => "bar",
+            ])->getOriginalContent();
 
-            // create a new Articles controller
-            $controller = new Articles();
-
-            // call the store method, passing it the request
-            // check we get an article back
-            $result = $controller->store($request);
-            $this->assertSame("bar", $result->content);
+            // check we get the article back
+            $this->assertSame("bar", $response->content);
 
             // test to see if it's been added to the database
             $article = Article::all()->first();
@@ -337,7 +331,7 @@ Then we'll edit the test file:
     }
 \end{minted}
 
-First, we do the usual database test setup bits and pieces. Then in our test we create a fake \texttt{ArticleRequest}, as that's what our controller is expecting to be given. Then we create our own instance of the controller and call the \texttt{store} method, passing it the request. Then we test first to see if we got an article with the right \texttt{content} back and secondly to see if it was added to the database.
+First, we do the usual database test setup bits and pieces. Then in our test we make a fake \texttt{POST} call to \texttt{api/articles} and get the ``original content'' (this gives us back what was actually returned, rather than the JSON version). Then we test first to see if we got an article with the right \texttt{content} back and secondly to see if it was added to the database.
 \\
 
 As always, don't forget to run your tests:
