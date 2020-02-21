@@ -8,6 +8,7 @@
 - API design needn't reflect database structure
 - Add TDD to tags Controller logic
 - `git bisect` in TDD chapter?
+- Difference between authentication and authorisation
 
 ## Doing
 
