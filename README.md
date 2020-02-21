@@ -45,7 +45,6 @@
 - Forms
 - Validation
 - SQL Injection/Mass Assignment
-- File uploads (Tricksy?)
 
 ### Relational Data
 - One-to-Many Relationships
