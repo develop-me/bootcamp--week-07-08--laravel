@@ -53,7 +53,7 @@ Let's have a look at the test class:
     }
 \end{minted}
 
-Test class names need to \textit{end} with \texttt{Test} and to \texttt{extend} \texttt{TestCase} - this is a class provided by Laravel that does most of the heavy-lifting for us. Under-the-hood, that class is itself extending a class provided by PHPUnit, the de facto PHP testing library.
+Test class names need to \textit{end} with \texttt{Test} and to extend \texttt{TestCase} – this is a class provided by Laravel that does most of the heavy-lifting for us. Under-the-hood, that class is itself extending a class provided by PHPUnit, the de facto PHP testing library.
 \\
 
 Test methods need to \textit{start} with \texttt{test}. You can do whatever you need to inside a test method, but importantly you should always \textbf{assert} something.
@@ -96,7 +96,7 @@ We could of course write this using \texttt{assertSame}:
     $this->assertSame("Hello", $article->title);
 \end{minted}
 
-Using \texttt{assertSame} is better, as if the test fails PHPUnit will tell you what it was expecting to happen. Notice that we put the \textbf{expected} value first and the \texttt{actual} value second, if it's the other way round the PHPUnit output will be backwards.
+Using \texttt{assertSame} is better, as if the test fails PHPUnit will tell you what it was expecting to happen. Notice that we put the \textbf{expected} value first and the \textbf{actual} value second, if it's the other way round the PHPUnit output will be backwards.
 \\
 
 Make sure to re-run your tests every time you make any changes:
@@ -148,7 +148,7 @@ We can now test this by adding the following to \texttt{ArticleTest}:
 
 \subsection{Using the Constructor}
 
-You'll notice that we use the same \texttt{Article} object in both methods, we could set this up in the \texttt{\_\_constructor} method to save creating it twice:
+You'll notice that we use the same \texttt{Article} object in both methods, we could set this up in the \texttt{\_\_construct} method to save creating it twice:
 
 \begin{minted}{php}
     private $article;
@@ -226,7 +226,7 @@ First, we need to extend the \textit{Laravel} \texttt{TestCase} class. Replace t
     use Tests\TestCase;
 \end{minted}
 
-We can also tell Laravel to automatically refresh (clear and then migrate) the database for us each time we run the tests. This makes the database state more predictable.
+We can also tell Laravel to automatically refresh (clear and then migrate) the database for each test we run. This makes the database state more predictable.
 \\
 
 Add the following \texttt{use} statement:
@@ -273,7 +273,7 @@ Now we can now write code that uses the database just as we normally would:
     }
 \end{minted}
 
-Because the database is wiped before each run, we can be sure that the first article in the database is the one we just added.
+Because the database is wiped before each test, we can be sure that the first article in the database is the one we just added.
 \\
 
 The test above isn't particularly useful, but when it comes to testing our controllers it can be.

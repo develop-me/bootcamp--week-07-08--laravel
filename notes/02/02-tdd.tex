@@ -16,6 +16,8 @@ When writing test-driven code you enter the ``Red, Green, Refactor'' loop.
     \item \textbf{Refactor}: can you improve the code without breaking any of the tests
 \end{itemize}
 
+Remember, ``refactoring'' means: rewriting a piece of code without changing what it does.
+
 
 \section{Why?}
 
@@ -128,12 +130,15 @@ Let's fix that:
 \begin{minted}{php}
     public function forNumber(int $number) : string
     {
-        // wrap what's passed in a s a string
+        // wrap what's passed in as a string
         return "{$number}";
     }
 \end{minted}
 
-\textbf{Run your tests}. \textbf{Green}! Good work.
+\textbf{Run your tests}. \textbf{Green}!
+\\
+
+It's important that we didn't write it like this initially. We should only write things that make a test pass and we didn't need to write it this way until we added the second test. If you skip stages you're also \textit{skipping tests} which means your code might not be as tested as you think.
 \\
 
 Again, no refactoring necessary. So let's get back to \textbf{red}:
@@ -308,9 +313,9 @@ We also need to give this file execution permissions, otherwise it can't be run:
     chmod +x .git/hooks/pre-commit
 \end{minted}
 
-Now, whenever you try to commit and code to Git the tests will run and if any of them fail the commit will fail.
+Now, whenever you try to commit anything to Git the tests will run and if any of them fail the commit will fail. As long as you've used TDD, it's now not possible to commit broken code.
 
-
+% git bisect?
 
 \section{Additional Resources}
 

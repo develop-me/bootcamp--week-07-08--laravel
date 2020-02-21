@@ -1,8 +1,8 @@
 <?php
 
-$router->group([
+Route::group([
   "prefix" => "articles",
   "middleware" => ["auth:api"],
-], function ($router) {
+], function () {
   // ...routes
 }
