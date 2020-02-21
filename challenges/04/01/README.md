@@ -2,7 +2,7 @@
 
 ---
 
-## Deployment
+## Deployment (Chapter 9)
 
 The "Section 9.x" bits refer to the relevant section in the notes
 

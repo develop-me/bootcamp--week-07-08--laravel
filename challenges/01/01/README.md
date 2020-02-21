@@ -2,7 +2,7 @@
 
 ## APIs
 
-### Restful.training
+### RESTful.training
 
 You'll need the password `wsYZzT8_m_pwBNDjSk77` to setup an account.
 
@@ -22,5 +22,7 @@ Read the [restful.training](https://github.com/develop-me/restful.training#restf
 ### Optional: Other APIs
 
 - Play around with the [Star Wars API](https://swapi.co/documentation)
+
+- Sign up for a [Twilio trial account](https://www.twilio.com/try-twilio) and have a play around
 
 - See if you can do anything with the [Twitter API](https://dev.twitter.com/rest/public/search). You'll need a Twitter account and an API key (https://dev.twitter.com/oauth/overview/application-owner-access-tokens). This isn't easy!
