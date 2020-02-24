@@ -4,7 +4,19 @@
 
 ## Unit Testing (Chapter 5)
 
-- Create a method on `Animal` called `dangerous`. It should return `false` if the animal's biteyness is `2` or less and `true` otherwise. Add tests for all five possible values.
+1) Make a new `Animal` and check that it's properties are what you expect. (This is testing Laravel rather than code we've written, so would not be a good test in a real app, but it's a good starting point)
+
+1) Create a method on `Animal` called `dangerous`. It should return `false` if the animal's biteyness is `2` or less and `true` otherwise. Add tests for all five possible values of `biteyness`.
+
+
+### Testing With Databases
+
+1) Use `Animal::create()` and test that it gets added to the database (This is testing Laravel rather than code we've written, so would not be a good test in a real app, but it's a good starting point)
+
+1) Create a method on `Owner` called `numberOfAnimals`. It should return the number of animals that an owner owns. Write three tests to check an owner with no pets, and owner with one pet, and an owner with 4 pets.
+
+    **Hint**: You can save many items to a model with [`saveMany`](http://laravel.com/docs/6.x/eloquent-relationships)
+
 
 ### Tricksy
 
