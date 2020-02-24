@@ -1,194 +1,141 @@
-Now we've got somewhere to store our data and a way to easily access it, we can start to build the public facing part of our API.
+We've already got a nice Blog app up and running. Let's give it an API!
 \\
 
 Remember, a typical RESTful API uses URLs to decide what ``resource'' we are working with and the HTTP method to decide what to do with it. So we need a way to say if the user goes to the URL \texttt{/articles} and they do a \texttt{POST} request, we should look at the JSON data they've sent and create a new article in the database.
-
-
-\section{Routing}
-
-Routing is the process of determining what code should be run based on the given URL. This is a concept you'll come across a lot when developing websites. In fact, we'll come across it again next week when we look at React.
 \\
 
-When a user loads a page in a Laravel app, after setting everything up, Laravel has a look to see if the URL matches any of the defined \textbf{routes} (which live in the \texttt{routes} directory). A route represents a specific URL and HTTP method combination. If Laravel finds a match it then runs the code that the route points to.
+We can, of course, use routing and controllers to do just that.
+
+\section{API Controller}
+
+We'll need a different controller to deal with API requests. Standard requests generate HTML, but we want to return JSON so that another computer can easily parse the response.
 \\
 
-First, let's add a route to handle \texttt{POST} events sent to \texttt{/articles}. This will point to code that handles creating a new article.
-
-\pagebreak
-
-Add a \texttt{POST} route for \texttt{/articles} to \texttt{routes/api.php}:
-
-\stdinputminted[firstline=3]{php}{01/figures/03/01-route-post.php}
-
-We use the \texttt{\$router} object, which is provided to use by Laravel. It has methods for each of the HTTP methods (e.g. \texttt{\$router->get()}, \texttt{\$router->post()}, etc.). These methods take a URL fragment as the first argument and a controller  method as a second argument (we'll get to these in a second). So the code above says ``If the user makes a \texttt{POST} request to \texttt{/articles}, run the \texttt{store()} method of the \texttt{Articles} controller.
-
-
-
-\section{Controllers}
-
-\textbf{Controller} is another term that comes up a lot in software development. A controller's job is to bring together all the other bits of code that make up an app: to \textit{control} what happens. In Laravel, controllers are called by the router: they take the request, do whatever it is that needs doing, and then return a response.
-\\
-
-Run the following inside your Vagrant box to create an Articles controller:
+We can use \texttt{artisan} to generate an empty controller with the necessary scaffolding:
 
 \begin{minted}{bash}
-    artisan make:controller Articles --api
+    artisan make:controller API\\Articles --api
 \end{minted}
 
-This will create a file (\texttt{app/Http/Controllers/Articles.php}), which contains the boilerplate for a controller. The \texttt{--api} flag adds all the standard API methods to the controller for us.\footnote{This isn't always necessary if you're only adding a few routes to the controller, but in this case we'll be adding all the standard methods.}
+We've put it in the \texttt{App\textbackslash{}Http\textbackslash{}Controllers\textbackslash{}API} namespace to keep it separate. We also included the \texttt{--api} option, which will generate all of the standard RESTful API methods for us.
+
+
+\section{API Routing}
+
+First, let's add a route to handle \texttt{GET} requests sent to \texttt{/articles}. This will point to code that handles showing our articles.
 \\
 
-Laravel has added a \texttt{store} method to \texttt{Articles} for us:
+Add a \texttt{GET} route for \texttt{/articles} to \texttt{routes/\textbf{api.php}}:
 
-\stdinputminted[firstline=3]{php}{01/figures/03/02-controller-store.php}
+\begin{minted}{php}
+    # use the appropriate controller
+    use App\Http\Controllers\API\Articles;
 
+    # use array syntax to point to controller
+    # tidier and harder to make typos
+    Route::get("/articles", [Articles::class, "index"]);
+\end{minted}
 
-\pagebreak
+Rather than using the \texttt{"Controller@method"} syntax, we've passed an array with the class name first and the method second. This allows us to take advantage of the \texttt{use} keyword, to avoid needing to type the \texttt{API\textbackslash\textbackslash} (we have to escape back-slashes) bit every time.
+\\
 
+Now if you use Postman to make a \texttt{GET} request to \texttt{http://homestead.test/\textbf{api/}articles} you should get back an empty \texttt{200} response (the controller method exists, but it's not doing anything just yet).
+\\
 
-\section{The API}
-
-We now know almost all we need to know to build a fully functioning API. Let's go through each of the routes in turn.
-
-\subsection{Storing}
-
-We need to create new articles, so we'll be using the \texttt{Article} model in our controller. But that lives in the \texttt{App} namespace, so we'll need to tell the \texttt{Articles} controller where to find it:
+We're going to be using \texttt{App\textbackslash{}Article} in our API controller, so let's include a \texttt{use} statement at the top of the file:
 
 \begin{minted}{php}
     use App\Article;
 \end{minted}
 
-Then we need to update our \texttt{store} function to create an article using the data from the request:
+Now, update \texttt{index} method:
+
+\begin{minted}{php}
+    public function index()
+    {
+      // get all the articles
+      return Article::all();
+    }
+\end{minted}
+
+Make the same request as before with Postman and you should get back a list of all your articles. Laravel is smart enough to output it in the format the user asks for. So, as long as an \texttt{Accept: application/json} header has been set, the user will get back the article list in JSON format.
+
+
+\section{The API}
+
+We can quickly get the other parts of the API working now.
+
+\subsection{The Routes}
+
+Here are the routes we'll need using the standard RESTful end-points and methods:
+
+\begin{minted}{php}
+    // use the API controller
+    use App\Http\Controllers\API\Articles;
+
+    // all of the routes are in the /articles end-point
+    Route::group(["prefix" => "articles"], function () {
+        // GET /articles: show all articles
+        Route::get("", [Articles::class, "index"]);
+
+        // POST /articles: create a new article
+        Route::post("", [Articles::class, "store"]);
+
+        // all these routes also have an article ID in the
+        // end-point, e.g. /articles/8
+        Route::group(["prefix" => "{article}"], function () {
+            // GET /articles/8: show the article
+            Route::get("", [Articles::class, "show"]);
+
+            // PUT /articles/8: update the article
+            Route::put("", [Articles::class, "update"]);
+
+            // DELETE /articles/8: delete the article
+            Route::delete("", [Articles::class, "destroy"]);
+        });
+    });
+\end{minted}
+
+\subsection{The Controller}
+
+We've already got the \texttt{index} method working, let's get the rest working now.
+\\
+
+Let's do the \texttt{show} method first:
+
+\phpinputminted{01/figures/03/09-show}
+
+We accept the article using Route Model Binding and just return it. Laravel deals with converting it into JSON for us.
+\\
+
+Next, let's do \texttt{destroy}:
+
+\phpinputminted{01/figures/03/13-destroy}
+
+Again, we accept the article using Route Model Binding, but this time we call its \texttt{delete} method. We still need to return something though, so we return a \texttt{null} response with a \texttt{204} (``No Content'') status code.
+\\
+
+Now we'll get the \texttt{store} method working:
 
 \phpinputminted{01/figures/03/03-controller-store-code}
-
-The first thing to notice is the \texttt{Request} object getting passed in. This represents the request that the user made. It stores all sorts of useful information, but in this case the only thing we're interested in is the JSON data that the user submitted (the URL and HTTP method have already been dealt with by the router).
-\\
 
 We use the \texttt{\$request->all()} method to get back an associative array of all the data the user submitted. If we were to log this with \texttt{dd(\$request->all())} we'd get something like:
 
 \begin{minted}{php}
     array:2 [
       "title" => "My Thoughts on Wombats"
-      "article" => "Do they use sonar for navigation?"
+      "content" => "Do they use sonar for navigation?"
     ]
 \end{minted}
 
 We then use the \texttt{create} method from the \texttt{Article} class (inherited from Eloquent's \texttt{Model} class). This takes an associative array of values, creates a new instance of the model (in this case an article), sets the properties that were provided, and then stores it in the database. In other words, it does everything we need to do to create a new article! It also returns the newly created article instance, which we immediately \texttt{return}.
 \\
 
-Whatever we \texttt{return} from a controller method gets sent back as a response to the user. Laravel is smart enough to output it in the format the user asks for. So, as long as an \texttt{Accept: application/json} header has been set, the user will get back the newly created article in JSON format.
-\\
-
-Now you can try doing a \texttt{POST} request with Postman\textellipsis{ }but it won't work just yet.
-
-
-\subsubsection{Mass Assignment Vulnerability}
-By default Laravel won't let you do things that might cause security problems. Accepting whatever the user gives you and sending it straight to the database is one of those cases: known as the \textbf{mass assignment vulnerability}.
-\\
-
-Imagine you have a \texttt{users} table that has an \texttt{admin} column for keeping track of whether a user is an admin or not. This is pretty common, so a hacker might try to exploit it. Your user sign-up form probably doesn't have an \texttt{admin} option, but a hacker can easily make a sign-up API request directly (with Postman or \texttt{curl}). They add an \texttt{"admin": true} property to the JSON that they send. Now, if your controller just takes \textit{everything} that they sent and tries to update the database, the hacker has just been given admin rights.
-\\
-
-To stop this from happening, if you pass an Eloquent model and array of properties to update, it will only update the properties that you've listed in the model's \texttt{\$fillable} property. If you've not set this property and try to pass in an array of values you'll get a 500 error.
-
-\pagebreak
-
-We need to update the \texttt{Article} model to tell it which fields to expect:
-
-\phpinputminted{01/figures/03/04-Article-fillable}
-
-Now try making the request in Postman. You should get back a newly created article in JSON format.
-
-
-
-\subsection{Listing}
-
-Next let's setup the \texttt{GET} request for \texttt{/articles}. When this request is made we'll want to give back a JSON array of all the articles that have been added to the database so far.
-\\
-
-First, add the route:
-
-\phpinputminted{01/figures/03/05-get-route}
-
-The \texttt{index} method already exists because we created the model with the \texttt{--api} flag.
-\\
-
-We already know we can get all the articles back from the database with \texttt{Article::all()} and that Laravel will automatically format whatever we return into JSON. We also don't need to get any data from the request, as we're just showing \textit{all} articles. So our \texttt{index} method is simply:
-
-\phpinputminted{01/figures/03/06-index}
-
-That's all there is to it: Laravel does all the hard work for us.
-
-
-\subsection{Reading}
-
-Next we want to add a route for a \texttt{GET} request to something like \texttt{/articles/1}, where the user wants a specific article back.
-\\
-
-As usual, we'll add a route first. This one is going to be a bit different because it needs to allow for \textit{any} valid ID after the \texttt{/articles/} bit of the URL. To do this we use a URL parameter: a placeholder for any text in the URL:
-
-\phpinputminted{01/figures/03/07-get-parameter-route}
-
-You'll also notice that we've now got three routes, all with the same \texttt{articles} prefix in the URL. It can be convenient to group these: not only does it save a bit of typing, the indentation also makes the groupings of related URLS much clearer:
-
-\phpinputminted{01/figures/03/08-group}
-
-We've wrapped our routes with a call to \texttt{\$router->group()}, which we've given a \texttt{prefix} property of \texttt{articles}. All of the routes in this group now have this as the first part of their URL, so we need to remove that prefix from the routes we're putting into the group.
-\\
-
-Now we need to add the code for our controller method. The value of the URL parameter automatically gets passed into the method as the first argument, so we can use that along with \texttt{Article::find()} to get the appropriate article from the database:
-
-\phpinputminted{01/figures/03/09-show}
-
-
-\subsection{Updating}
-
-Next we'll need a \texttt{PUT} route for URLs like \texttt{/articles/1}.
-\\
-
-Again, we'll add the route first:
-
-\phpinputminted{01/figures/03/10-put-route}
-
-Make sure you add this \textit{inside} the prefixed group we created earlier.
-\\
-
-\texttt{PUT} requests are the most complex sort of request we'll be dealing with:
-
-\begin{itemize}
-    \item They need to get the JSON data that the user sent with the request
-    \item They need to get the existing item out of the database, so they need to know the relevant ID
-    \item They need to update the item and then save the changes back to the database
-\end{itemize}
-
-But, of course, Laravel makes it all quite easy:
+Finally, we can get the \texttt{update} method working. This combines aspects of \texttt{show} and \texttt{create}:
 
 \phpinputminted{01/figures/03/11-update}
 
-We use the \texttt{fill()} method that Eloquent models inherit. This lets us pass in an associative array of properties, which then get updated on the model (taking the \texttt{\$fillable} property into account). We need to call \texttt{save()} once we've done updating the model to make sure the changes are persisted in the database.
-\\
-
-Four lines of code to do quite a complex set of computations. A lot I know! Don't worry, we'll get rid of some of them later.
-
-
-\subsection{Deleting}
-
-Finally, let's add a \texttt{DELETE} route.
-\\
-
-We'll need a URL parameter again, as we want to delete specific articles:
-
-\phpinputminted{01/figures/03/12-delete-route}
-
-Again, make sure this goes in the prefixed group we created.
-\\
-
-Now update the \texttt{destroy} method in \texttt{Articles}:
-
-\phpinputminted{01/figures/03/13-destroy}
-
-We use \texttt{find()} to get the article object. We then call the \texttt{delete()} method on the object to remove it from the database. Finally we return a \texttt{response()} with no value and a \texttt{204: No Content} response code, as there's nothing sensible to give back to the user.
+We get the submitted data from the \texttt{\$request} object, then use the \texttt{fill()} method to update the article that we got from Route Model Binding. We then save the model and return it.
 
 \hr
 

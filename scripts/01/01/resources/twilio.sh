@@ -1,0 +1,1 @@
+curl -X POST https://api.twilio.com/2010-04-01/Accounts/<SID>/Messages.json --data-urlencode "From=+12565703524" --data-urlencode "Body=Hello Me\!" --data-urlencode "To=+44<MOBILE-NUMBER>" -u <SID>:<TOKEN>

@@ -1,39 +1,38 @@
 # Challenges
 
-Using your `library` project, build an API with the following spec and test each route with Postman.
-
-Make sure you:
-
-- Use Route Model Binding for 404s in your library API
-- Use a Resource to control the JSON output of your API
-- Validate all requests
-- Add CORS support to your library API
-
-
-### `POST /books`
-
-Creates a new "book" with the following attributes:
-
-- `title`: the book title
-- `pages`: the number of pages
-- `published`: the date the book was published
-- `ISBN`: the book's ISBN
-- `rating`: a number between 1 and 5
-
-Should return the newly added book in JSON format.
-
-### `GET /books`
-
-Returns a list of all the books in JSON format.
-
-### `PUT /books/{book}`
-
-Updates the given book and returns the updated book in JSON format.
-
-### `DELETE /books/{book}`
-
-Removes the given book.
-
 ---
 
-A finished version of the Library API is [available on GitHub](https://github.com/develop-me/library-api)
+## Basic API (Chapters 2 & 3)
+
+**Check your results in Postman as you're going along**
+
+### `/api/animals`
+
+Create a new controller `API\\Animals`. Add RESTful API routes for:
+
+- Listing all your animals
+- Showing a specific animal based on its ID
+- Deleting an animal based on its ID
+- Creating a new animal
+- Updating an existing animal based on its ID
+
+
+### `/api/owners`
+
+Create a new controller `API\\Owners`. Add RESTful API routes for:
+
+- Listing all of your owners
+- Showing a specific owner based on their ID
+- Deleting an owner
+- Creating a new owner
+- Updating an existing owner based on their ID
+
+
+## Tricksy
+
+### `/api/owners/{owner}/animals`
+
+Create a new controller `API\\Owners\\Animals`. Add RESTful API routes for:
+
+- Listing all of the animals that belong to a specific owner
+- Adding an existing animal to an owner

@@ -1,3 +1,3 @@
 <?php
 
-$router->get("", "Articles@index")->middleware('auth:api');
+Route::get("", [Articles, "index"])->middleware('auth:api');

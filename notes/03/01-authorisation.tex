@@ -7,16 +7,18 @@ APIs typically use \textbf{tokens} to authenticate users. A token is just a rand
     MTQ0NjJkZmQ5OTM2NDE1ZTZjNGZmZjI3
 \end{minted}
 
-The process of using a token is as follows:
+The most common protocol for using tokens is OAuth2 and looks like this:
 
 \begin{enumerate}
-    \item The user makes a request to a dedicated authentication endpoint, providing credentials such as username and password
+    \item The user makes a request to a dedicated authorisation endpoint, providing credentials such as username and password
     \item The API checks whether these credentials are valid
     \item If valid, the API returns a token that is unique to the user
     \item The user makes all future requests supplying this token in the header
     \item The API checks the validity of the token
     \item The API grants or denies requests based on whether the user is valid and who the user is
 \end{enumerate}
+
+By using tokens the user doesn't have to send their password with every single request, which tends to make things more secure.
 
 \pagebreak
 
@@ -72,7 +74,7 @@ Finally, in \texttt{config/auth.php} config file, set the default ``guard'' to \
     ],
 \end{minted}
 
-And set the driver of the \texttt{api} authentication guard to \texttt{passport}:
+And set the driver of the \texttt{api} authorisation guard to \texttt{passport}:
 
 \begin{minted}{php}
     'guards' => [
@@ -85,11 +87,12 @@ And set the driver of the \texttt{api} authentication guard to \texttt{passport}
     ],
 \end{minted}
 
-\pagebreak
-
 \subsection{Creating a User}
 
-To use authentication we'll need to create a user. Run \texttt{tinker} (in \texttt{vagrant ssh} mode):
+If you don't already have one you'll need to create a user.
+\\
+
+Run \texttt{tinker} (in \texttt{vagrant ssh} mode):
 
 \begin{minted}{bash}
     artisan tinker
@@ -117,21 +120,21 @@ You should now be able to make a \texttt{POST} request in Postman to \\ \texttt{
     }
 \end{minted}
 
-If everything is setup correctly, you should get back a token which you can use in future requests. As we're currently doing this manually, make sure you write down the token you're given.\footnote{As with most API stuff, authentication with tokens is normally a fully programmatic affair, but it's useful to get a sense of what's going on}
+If everything is setup correctly, you should get back a token which you can use in future requests. As we're currently doing this manually, make sure you write down the token you're given.\footnote{As with most API stuff, authorisation with tokens is normally a fully programmatic affair, but it's useful to get a sense of what's going on}
 
 
 \pagebreak
 
 
-\section{Simple Authentication}
+\section{Simple Authorisation}
 
-For many use cases authentication can be fairly simple: we just need to check if someone is logged in or not.
+For many use cases authorisation can be fairly simple: we just need to check if someone is logged in or not.
 \\
 
-We can use the provided Passport middleware to add authentication to our routes.
+We can use the provided Passport middleware to add authorisation to our routes.
 
 
-\subsection{Adding Authentication to a Single Route}
+\subsection{Adding Authorisation to a Single Route}
 
 Add the \texttt{auth:api} middleware to any routes that require a valid access token:
 
@@ -142,17 +145,17 @@ Try doing a \texttt{GET} request to \texttt{http://homestead.test/api/articles} 
 
 Now choose \texttt{Bearer Token} in the Authorization tab and paste in the access token you got back from the \texttt{oauth/token} endpoint. Your request should now authenticate successfully and return the usual response.
 
-\subsection{Adding Authentication to Multiple Routes}
+\subsection{Adding Authorisation to Multiple Routes}
 
-To add authentication to an entire group:
+To add authorisation to an entire group:
 
 \phpinputminted{03/figures/04-auth-route-group}
 
 
 
-\section{Authentication with Roles}
+\section{Authorisation with Roles}
 
-In reality our blog API probably needs different levels of authentication. Posts should be open to anyone, only the owner of the blog should be able to write and edit blog posts, and only logged in users should be able to comment.
+In reality our blog API probably needs different levels of authorisation. Posts should be open to anyone, only the owner of the blog should be able to write and edit blog posts, and only logged in users should be able to comment.
 \\
 
 This suggests two user roles: \textbf{Author} and \textbf{Subscriber}.
@@ -187,7 +190,8 @@ Now let's update our existing user to have the role of \texttt{"author"} and gen
 \end{minted}
 
 \begin{minted}{php}
-    App\User::where('id', 1)->update(['role' => 'author']);
+    App\User::where('email', 'an.author@gmail.com')
+            ->update(['role' => 'author']);
 
     App\User::create([
         'name' => 'A Subscriber',

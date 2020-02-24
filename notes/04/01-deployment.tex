@@ -4,7 +4,7 @@ There are many ways to deploy your Laravel API; many of them highly automated, e
 We won't be using any of those.
 \\
 
-Even though it's a slighly more involved process, we're going to use an AWS Linux server for the following reasons:
+Even though it's a slightly more involved process, we're going to use an AWS Linux server for the following reasons:
 
 \begin{itemize}
     \item It's free (up to a point)
@@ -17,6 +17,44 @@ AWS (Amazon Web Services) provides a dizzying array of cloud-computing services 
 
 A good proportion of the internet runs on AWS. It powers Netflix, Adobe, Airbnb, IMDb, Slack, and many other major websites.
 
+
+
+\section{Working With EC2}
+
+Elastic Cloud Computing is a service that allows you to spin up virtual computers to deploy your applications, rather than having to invest in hardware. They are ``elastic'' as they can be configured to scale up or down depending on traffic.
+\\
+
+Before you begin you'll need to \href{https://portal.aws.amazon.com/gp/aws/developer/registration}{sign up for an AWS account}.  Once you've got an account click on ``Sign in to the Console''.
+
+
+\subsection{Launching the Server}
+
+To launch your server just follow these simple and easy to remember steps:
+
+\begin{itemize}
+    \item Login to AWS, go to ``EC2'', and make sure you're on the ``EU London'' region (in the top right).
+    \item Launch Instance
+    \item Choose: ``Ubuntu Server 18.04 LTS (HVM), SSD Volume Type''
+    \item Choose: ``T2.micro''
+    \item Go to ``5. Add Tags'' in the tabs and add the tag:
+        \begin{itemize}
+            \item \textbf{Key}: \texttt{Name}
+            \item \textbf{Value}: \texttt{my-server-name}
+        \end{itemize}
+        This is so you can identify it in the dashboard.
+
+    \item Go to the ``6. Configure Security Group'' tab
+        \begin{itemize}
+            \item Add rule and select HTTPS.
+            \item Add rule and select HTTP.
+        \end{itemize}
+         This enables the sending and receiving of data via HTTPS/HTTP.
+    \item Click ``Launch''
+    \item On the final screen ``Create a new key pair'' and download the \texttt{pem} file
+    \item Go back to the EC2 dashboard and you should see this server loading up
+\end{itemize}
+
+
 \section{SSH}
 
 SSH (Secure SHell) enables secure system administration and file transfers over insecure networks. You've already used it in when you added an SSH key to Git.
@@ -27,7 +65,6 @@ SSH takes advantage of public-key cryptography. You create a ``public'' SSH key 
 
 Once a secure connection is created you can use SSH to run commands on a remote machine (usually a server) just as if you are running them on your local machine.
 
-\footnotetext{It was actually invented first by Clifford Cocks in 1973, but he was working for GCHQ at the time, so this wasn't public knowledge until 1997}
 
 \begin{infobox}{Public-Key Cryptography}
     Before the mid-70s the only way to encrypt a message was for both the sender and receiver to agree on an encryption key in advance (\textit{symmetric key cryptography}). This has the obvious issue that at some point the encryption key needs to be shared and if someone intercepts it then the whole system is somewhat pointless.
@@ -54,84 +91,74 @@ Once a secure connection is created you can use SSH to run commands on a remote 
     The actual process involves \textit{much} larger numbers than the ones above (1,024 bit encryption, considered quite weak, involves numbers with 300+ digits). It also involves modulus (\texttt{\%}), because modulus is great.
 \end{infobox}
 
+\footnotetext{It was independently invented by Clifford Cocks in 1973, but he was working for GCHQ at the time, so this wasn't public knowledge until 1997}
 
 
-\section{Working With EC2}
 
-Elastic Cloud Computing is a service that allows you to spin up virtual computers to deploy your applications, rather than having to invest in hardware. They are ``elastic'' as they can be configured to scale up or down depending on traffic.
+\subsection{Accessing the Server}
+
+You should copy the \texttt{pem} file into the \texttt{~/.ssh} directory. Run this inside your \texttt{Downloads} folder:
+
+\begin{minted}{bash}
+    cp my-server-key.pem ~/.ssh
+\end{minted}
+
+Next, we need to make sure no one else on your computer can use the file (remember, anyone with access to this file can access your server):
+
+\begin{minted}{bash}
+    chmod 400 ~/.ssh/my-server-key.pem
+\end{minted}
+
+For an Ubuntu instance the username is \texttt{ubuntu} and the domain can be found by clicking on your instance in the EC2 dashboard and copying the Public DNS (IPv4). It should something look like this:
+
+\begin{minted}{bash}
+    ec2-3-8-39-24.eu-west-2.compute.amazonaws.com
+\end{minted}
+
+Next, we need to tell SSH to use the key we just created whenever it tries to connect to that server. In \texttt{~/.ssh/config}:
+
+\begin{minted}{text}
+    Host ec2-3-8-199-58.eu-west-2.compute.amazonaws.com
+      User ubuntu
+      IdentityFile ~/.ssh/my-server-key.pem
+      IdentitiesOnly yes
+\end{minted}
+
+Make sure you point to \textit{your} \texttt{pem} file and the correct IPv4 address.
 \\
 
-Before we begin we'll need:
-
-\begin{itemize}
-    \item An AWS account
-    \item An EC2 SSH key pair
-\end{itemize}
-
-To create an EC2 SSH key pair follow the instructions in \href{https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-key-pairs.html#having-ec2-create-your-key-pair}{this document}. Make sure you create it in your home region (e.g. \texttt{EU-London}).
-
-\subsection{Launching the Server}
-
-To launch your server just follow these simple and easy to remember steps:
-
-\begin{itemize}
-    \item Login to AWS, go to ``EC2'', and make sure you're on the ``EU London'' region (in the top right).
-    \item Launch Instance
-    \item Choose: ``Amazon Linux AMI 2018.03.0 (HVM), SSD Volume Type - ami-01419b804382064e4''
-    \item Choose: ``T2.micro''
-    \item Go to ``Add Tags''
-        \begin{itemize}
-            \item Add the tag: \texttt{key=Name value=my-server-name}. This is so you can identify it in the dashboard.
-        \end{itemize}
-    \item Go to ``Configure Security Group''
-        \begin{itemize}
-            \item Add rule and select HTTP. This enables the sending and receiving of data via HTTP.
-            \item Add rule and select HTTPS. This enables the sending and receiving of data via HTTPS.
-        \end{itemize}
-    \item Click ``Launch''
-    \item Select your existing key-pair
-    \item Go back to the EC2 dashboard and you should see this server loading up
-\end{itemize}
-
-\subsection{Accessing the server}
-
-You should now be able to SSH into your server from your computer:
+Now, to login to your server run:
 
 \begin{minted}{bash}
-    ssh username@domain.of.your.instance
+    ssh ubuntu@ec2-3-8-199-58.eu-west-2.compute.amazonaws.com
 \end{minted}
 
-For an Amazon Linux instance the username is \texttt{ec2-user} and the domain can be found by clicking on your instance in the EC2 dashboard and copying the Public DNS (IPv4). It should something look like this:
+That's quite a lot to remember, to let's update our \texttt{~/.ssh/config} with an alias:
+
+\begin{minted}{text}
+    Host aws ec2-3-8-199-58.eu-west-2.compute.amazonaws.com
+      HostName ec2-3-8-199-58.eu-west-2.compute.amazonaws.com
+      User ubuntu
+      IdentityFile ~/.ssh/my-server-key.pem
+      IdentitiesOnly yes
+\end{minted}
+
+The \texttt{aws} bit after \texttt{Host} adds an alias for us so that we don't need to type out the full username and address. Now we can just do:
 
 \begin{minted}{bash}
-    ssh ec2-user@ec2-3-8-39-24.eu-west-2.compute.amazonaws.com
+    ssh aws
 \end{minted}
 
-\begin{infobox}{Non-Standard SSH Key}
-    If the SSH key-pair you've used to authenticate with diverges from the usual id\_rsa naming you can specify the exact name of your key pair using the \texttt{-i} flag:
+Much easier to remember!
 
-    \begin{minted}{bash}
-        ssh -i ~/.ssh/aws-key-pair.pem ec2-user@ec2-3-8-125-57.eu-west-2.compute.amazonaws.com
-    \end{minted}
 
-    This example assumes your key is called \texttt{aws-key-pair.pem} and exists in the \texttt{.ssh} folder of your user.
-    \\
 
-    If you get an error about permissions then you need to run:
-
-    \begin{minted}{bash}
-        chmod 400 ~/.ssh/aws-key-pair.pem
-    \end{minted}
-\end{infobox}
-
-\pagebreak
-
-\subsection{Setting Up the Server}
+\section{Setting Up the Server}
 
 You will need to install the following software packages on the server:
 
 \begin{itemize}
-    \item \textbf{Apache}: HTTP server software
+    \item \textbf{Nginx}: HTTP server software
     \item \textbf{MySQL}: database management system
     \item \textbf{PHP}: programming language
     \item \textbf{Git}: file management
@@ -139,28 +166,31 @@ You will need to install the following software packages on the server:
     \item \textbf{SSH Keys}: for authentication
 \end{itemize}
 
-First update \texttt{yum}, used for installing Linux packages, so that it has the most up to date package versions:
+First update \texttt{apt-get}, used for installing Linux packages, so that it has the most up to date package versions:
 
 \begin{minted}{bash}
-    sudo yum update -y
+    sudo apt-get update -y
 \end{minted}
 
-Next, install Apache, PHP and MySQL:
+First, let's install Nginx:
 
 \begin{minted}{bash}
-    sudo yum install -y httpd24 php72 mysql56-server php72-mysqlnd
+    sudo apt-get install -y nginx
 \end{minted}
 
-You'll also need to install a PHP package used by Laravel:
+Once this is installed, visit your IPv4 address in the browser. For example:
 
-\begin{minted}{bash}
-    sudo yum install php72-mbstring
+\begin{minted}{text}
+    http://ec2-3-8-125-57.eu-west-2.compute.amazonaws.com
 \end{minted}
 
-Next, install Git:
+You should see a ``Welcome to nginx!'' message.
+\\
+
+Now, let's install PHP,  MySQL and Git:
 
 \begin{minted}{bash}
-    sudo yum install git
+    sudo apt-get install -y php-fpm mysql-server php-mysql php-mbstring php-dom zip git
 \end{minted}
 
 And finally install Composer:
@@ -174,16 +204,12 @@ And finally install Composer:
     sudo mv composer.phar /usr/local/bin/composer
     # setup a shortcut so that you can use it in any directory
     sudo ln -s /usr/local/bin/composer /usr/bin/composer
+    # own the composer directory
+    sudo chown -R ubuntu ~/.composer
 \end{minted}
 
-Start Apache and configure it so it always starts on boot:
+You can check Composer has installed properly by running \texttt{composer}.
 
-\begin{minted}{bash}
-    sudo service httpd start
-    sudo chkconfig httpd on
-\end{minted}
-
-To make sure everything is working visit your server in the browser (copy the ``Public DNS (IPv4)'' from the EC2 dashboard). You should see an Apache test page.
 
 \subsection{Ownership}
 
@@ -206,7 +232,7 @@ This is because, by default, all files on the server are owned by the \texttt{ro
 Let's take ownership of this directory: so that we can make changes:
 
 \begin{minted}{bash}
-    sudo chown -R ec2-user /var/www/html/
+    sudo chown -R ubuntu /var/www/html/
 \end{minted}
 
 To check it's working, create an index page on your server:
@@ -230,13 +256,13 @@ In Nano add some basic HTML:
 Then press \texttt{Ctrl+o} to save and then \texttt{Ctrl+x} to exit.
 \\
 
-Once again, check your server in the browser. You should now see ``Hello, World!'', as Apache is serving up your \texttt{index.html} file.
+Once again, check your server in the browser. You should now see ``Hello, World!'', as Nginx is serving up your \texttt{index.html} file.
 \\
 
-Finally, remove the \texttt{index.html} file:
+Finally, remove the \texttt{index.html} file and the one Nginx created:
 
 \begin{minted}{bash}
-    rm index.html
+    rm index*.html
 \end{minted}
 
 
@@ -254,8 +280,8 @@ Create a key on the server (hit \texttt{Enter} at all prompts):
 \end{minted}
 
 Substitute the email for the best email to contact you on. This helps your successor when they come to clean up random keys left on the server.
+\\
 
-\pagebreak
 
 You should now be able to see this key-pair in the directory:
 
@@ -295,123 +321,127 @@ You should now be able to connect to Git from the server.
 On your repository, go to clone or download and, as usual, copy the code (ensure it says clone with SSH):
 
 \begin{minted}{bash}
-    cd /var/www/html
-    git init
-    git remote add origin git@github.com:your-name/repo-name.git
-    git fetch
-    git checkout master
-    sudo composer install
+    cd /var/www
+    git clone git@github.com:your-name/repo-name.git
+    cd repo-name
+    composer install
 \end{minted}
 
-
-\begin{infobox}{Memory Issues}
-    If you get an error message to say you've run out of memory, try stopping Apache, run composer again then restart Apache:
-
-    \begin{minted}{bash}
-        sudo service httpd stop
-        sudo composer install
-        sudo service httpd start
-    \end{minted}
-\end{infobox}
 
 
 \subsection{Setting Up Laravel}
 
-Your Laravel project is served out of the \texttt{/var/www/html/public} directory, whereas your server is setup to look for an index page in \texttt{/var/www/html}. So, we need to tell the server where the project root is.
+Your Laravel project is served out of the \texttt{/var/www/<repo-name>/public} directory, whereas your server is setup to look for an index page in \texttt{/var/www/html}. So, we need to tell the server where the project root is.
 \\
 
-Open the Apache config file in a text editor:
+Open the Nginx config file in a text editor:\footnote{It's good practice to use site specific configuration files, but we'll just edit the default one for now}
 
 \begin{minted}{bash}
-    sudo nano /etc/httpd/conf/httpd.conf
+    sudo nano /etc/nginx/sites-available/default
 \end{minted}
 
-Scroll down to \texttt{DocumentRoot} and change it to:
+First, add \texttt{index.php} to the acceptable index files:
 
-\begin{minted}{apache}
-    DocumentRoot "/var/www/html/public"
+\begin{minted}{nginx}
+    index index.php index.html index.htm;
 \end{minted}
 
-We'll also need to update the \texttt{<Directory>} entry:
+Scroll down to \texttt{root} and change it to:
 
-\begin{minted}{apache}
-    # Further relax access to the default document root:
-    <Directory "/var/www/html/public">
-        # …etc.
-        AllowOverride All
+\begin{minted}{nginx}
+    root /var/www/<repo-name>/public
 \end{minted}
 
-Now reboot Apache:
+We'll also need to update the \texttt{location} entries:
+
+\begin{minted}{nginx}
+    # redirect everything to index.php
+    location / {
+        try_files $uri $uri/ /index.php?$query_string;
+    }
+
+    # run php with php-fpm
+    location ~ \.php$ {
+        include snippets/fastcgi-php.conf;
+        fastcgi_pass unix:/var/run/php/php7.2-fpm.sock;
+    }
+\end{minted}
+
+Now reboot Nginx:
 
 \begin{minted}{bash}
-    sudo service httpd restart
+    sudo nginx -s reload
 \end{minted}
 
-Once again check the page in your browser. The Apache test message should have disappeared and everything should be broken. Congratulations, you have made progress!
+Finally, give Nginx permission to use the directory:
+
+\begin{minted}{bash}
+    # give permission to nginx for all future files
+    sudo setfacl -Rdm u:www-data:rwX /var/www/
+
+    # give permission to nginx for all current files
+    sudo setfacl -Rm u:www-data:rwX /var/www/
+\end{minted}
+
+\begin{infobox}{File Access Control Lists}
+    The permissions system of Unix (and thus Linux) was based on the idea that a single user ``owned'' directories and files on a computer. This was a significant security upgrade in the 70s, but for more modern uses it's a bit lacking.
+    \\
+
+    \textbf{File Access Control Lists} let us set permissions on a file/directory for as many users as we like. This is very useful, but as always, with great power comes great responsibility.
+\end{infobox}
+
+Once again check the page in your browser. The Nginx test message should have disappeared and everything should be broken. Congratulations, you have made progress!
 \\
 
-You're getting an error because you are missing the \texttt{.env} file that contains your Laravel configuration. Create a new \texttt{.env} file and paste the contents of your existing \texttt{.env} into it:
+You're getting an error because you are missing the \texttt{.env} file that contains your Laravel configuration. Copy the example file over:
 
 \begin{minted}{bash}
-    nano /var/www/html/.env
+    cd /var/www/<repo-name>
+
+    # copy the example .env file
+    cp .env.example .env
+
+    # generate a key
+    php artisan key:generate
 \end{minted}
 
-Set the owner of \texttt{.env} to \texttt{ec2-user}:
-
-\begin{minted}{bash}
-    sudo chown ec2-user:ec2-user .env
-\end{minted}
+Check the page in your browser. The page should now display a \textit{Laravel} error message saying that we've not setup a MySQL database yet.
 
 
-Check the page in your browser. The page should now display a \textit{Laravel} error message. This is because Laravel writes logs about it's activity. All of the files in \texttt{/var/www/html} belong to you, so Apache is unable to write into the logs.
-\\
+\subsection{Setting Up the Database}
 
-Give Apache permission to write in this directory:
-
-\begin{minted}{bash}
-    setfacl -R -m u:apache:rwX storage/
-    sudo chmod -R 777 storage/*
-\end{minted}
-
-Check the page in your browser again and you should now see the Laravel homepage.
-
-
-\section{Setting Up the Database}
-
-You'll need to start the MySQL client:
-
-\begin{minted}{bash}
-    sudo service mysqld start
-\end{minted}
-
-Then configure MySQL and setup a password:
+First, configure MySQL and setup a password:
 
 \begin{minted}{bash}
     sudo mysql_secure_installation
 \end{minted}
 
-Press enter when asked about the current password. Type \texttt{Y} to set a new password and enter and re-enter to confirm, then answer \texttt{Y} to all further questions. You'll need the password later when setting up Laravel, so make a note of it somewhere.
-
-\pagebreak
-
-We should set MySQL to start at every boot:
-
-\begin{minted}{bash}
-    sudo chkconfig mysqld on
-\end{minted}
+Press enter when asked about the current password. Type \texttt{Y} to set a new password and enter and re-enter to confirm, then answer \texttt{Y} to all further questions.
+\\
 
 Now we can access MySQL:
 
 \begin{minted}{bash}
-    mysql -u root -p
+    sudo mysql
 \end{minted}
 
-And create a new database:
+And create a new user/database:
 
 \begin{minted}{mysql}
+    # create a new user - pick a secure password
+    CREATE USER 'laravel'@'localhost' IDENTIFIED BY '<password>';
+
+    # create a new database
     CREATE DATABASE laravel;
+
+    # grant the user access to the database
+    GRANT ALL PRIVILEGES ON laravel.* TO 'laravel'@'localhost';
+
+    # quit MySQL
     exit;
 \end{minted}
+
+There are plenty of \href{https://generatepasswords.org}{online password generators} if you want something secure.
 
 \subsection{Configure Laravel}
 
@@ -421,18 +451,12 @@ Update your \texttt{.env} file with the details of your database (the name of th
     nano .env
 \end{minted}
 
-Populate the database details:
+Populate the database details (using the password you picked just now):
 
 \begin{minted}{ini}
     DB_DATABASE=laravel
-    DB_USERNAME=root
-    DB_PASSWORD={PASSWORD FROM MYSQL SETUP EARLIER}
-\end{minted}
-
-Setup the app key (populated in \texttt{.env}):
-
-\begin{minted}{bash}
-    php artisan key:generate
+    DB_USERNAME=laravel
+    DB_PASSWORD=<password>
 \end{minted}
 
 Now, use \texttt{artisan} to setup the correct structure for the database:
@@ -443,121 +467,86 @@ Now, use \texttt{artisan} to setup the correct structure for the database:
 
 Success, everything is setup! You should now be able to make calls to your API.
 
-\pagebreak
-
-\begin{infobox}{Maximum Key Length Exceeded}
-    If you get a \texttt{Maximum key length exceeded} error you can override this in\\ \texttt{app/Provider/AppServiceProvider.js}:
-
-    \begin{minted}{bash}
-        nano /var/www/html/app/Providers/AppServiceProvider.php
-    \end{minted}
-
-    Add the following code to the top of the file:
-
-    \begin{minted}{php}
-        use Illuminate\Support\Facades\Schema;
-    \end{minted}
-
-    And add the following code in the boot method:
-
-    \begin{minted}{php}
-        public function boot()
-        {
-            Schema::defaultStringLength(191);
-        }
-    \end{minted}
-
-    In MySQL delete the database and start again:
-
-    \begin{minted}{bash}
-        mysql -u root -p
-    \end{minted}
-
-    \begin{minted}{mysql}
-        DROP DATABASE laravel;
-        CREATE DATABASE laravel;
-        exit;
-    \end{minted}
-
-    Then use \texttt{artisan} to migrate your database:
-
-    \begin{minted}{bash}
-        php artisan migrate
-    \end{minted}
-\end{infobox}
-
 
 \section{HTTPS \& SSL Certificates}
 
-HTTPS = HTTP \textbf{Secure} encrypts all information sent between the client and the server and should always be used if the API requires any sort of authentication. Nowadays it is considered good practice to use HTTPS on \textit{all} websites, as it can prevent a number of security issues.
+\textbf{HTTP Secure} (HTTPS) encrypts all information sent between the client and the server and should \textit{always} be used if the site receives any personal data or uses any sort of authentication.
 \\
 
-First step, we'll need to set up a real domain to point to our server. If you don't have one to use ask Oli to set you up a \texttt{something.developme.space} one.
+Nowadays it is considered good practice to use HTTPS on \textit{all} websites, as it can prevent a number of security issues.
 \\
 
-We install \texttt{certbot-auto} on our AWS EC2 instance, which we can use to have SSL certificates issued for us, with:
-
-\begin{minted}{bash}
-    wget https://dl.eff.org/certbot-auto
-    chmod a+x certbot-auto
-\end{minted}
-
-Then we issue a certificate (replace \texttt{YOUR.DOMAIN} with actual domain without \texttt{http(s)://} or any trailing slashes):
-
-\begin{minted}{bash}
-    sudo ./certbot-auto --debug certonly -d YOUR.DOMAIN
-\end{minted}
-
-Choose option 3 for how to verify and enter path \texttt{/var/www/html/public} as your web root.
+First step, we'll need to set up a real domain to point to our server. If you don't have one to use ask the instructor to set you up a \texttt{something.developme.space} one.
 \\
 
-Next we create a new Apache configuration file so we can configure requests to \texttt{https://YOUR.DOMAIN} to use this certificate.
+Now update the Nginx config to use this domain, edit the config file:
+
+\begin{minted}{bash}
+    sudo nano /etc/nginx/sites-available/default
+\end{minted}
+
+Change the \texttt{server\_name}:
+
+\begin{minted}{nginx}
+    server_name <YOUR.DOMAIN>;
+\end{minted}
+
+Then restart Nginx:
+
+\begin{minted}{bash}
+    sudo nginx -s reload
+\end{minted}
+
+Next, we install \texttt{certbot} on our AWS EC2 instance, which we can use to have SSL certificates issued for us, with:
+
+\begin{minted}{bash}
+    sudo apt-get install certbot python-certbot-nginx
+\end{minted}
+
+Then we issue a certificate:
+
+\begin{minted}{bash}
+    sudo certbot --nginx
+\end{minted}
+
+Read the instructions carefully as you go along.
 \\
 
-First:
+You'll need to provide \texttt{certbot} with an email address so that it can warn you if a certificate is due to expire. It's up to you whether to sign-up for their email newsletter or not.
+\\
 
-\begin{minted}{bash}
-    sudo nano /etc/httpd/conf.d/vhost.conf
-\end{minted}
+When offered the choice, select the relevant domain name from the list (there will probably only be one option). When offered whether to redirect traffic pick \texttt{2: Redirect}, this will ensure that all traffic goes via HTTPS.
+\\
 
-Then enter contents below, replacing the \textit{four} instances of \texttt{YOUR.DOMAIN} below with your actual domain without \texttt{http(s)://} or any trailing slashes:
+Now if you go to your website again it should automatically send you to an HTTPS version.
+\\
 
-\begin{minted}{apache}
-    <VirtualHost *:80>
-        ServerName YOUR.DOMAIN
+Certbot will even automatically generate new certificates for you every 90 days - assuming you keep your instance running that long.
 
-        # redirect all traffic to the HTTPS version (port 443)
-        RewriteEngine on
-        RewriteRule ^ https://%{SERVER_NAME}%{REQUEST_URI} [END,NE,R=permanent]
-    </VirtualHost>
 
-    <IfModule mod_ssl.c>
-        <VirtualHost *:443>
-            ServerName YOUR.DOMAIN
+\section{Terminating an Instance}
 
-            DocumentRoot /var/www/html/public
+AWS doesn't give you free hosting forever, so at some point you may want to terminate your instance, otherwise it will start charging you.
+\\
 
-            <IfModule mod_dir.c>
-                DirectoryIndex index.php index.pl index.cgi index.html index.xhtml index.htm
-            </IfModule>
+To terminate an instance:
 
-            Include /etc/letsencrypt/options-ssl-apache.conf
-            SSLCertificateFile /etc/letsencrypt/live/YOUR.DOMAIN/fullchain.pem
-            SSLCertificateKeyFile /etc/letsencrypt/live/YOUR.DOMAIN/privkey.pem
-        </VirtualHost>
-    </IfModule>
-\end{minted}
+\begin{itemize}
+    \item Go to "EC2" in the AWS Console
+    \item Click on "Instances" in the left-hand menu
+    \item Select the EC2 Instance you want to terminate
+    \item Click on the "Actions" button (above the instances list)
+    \item Select "Instance State" then "Terminate"
+    \item Agree to terminate the instance
+\end{itemize}
 
-Enable TLS support by installing the Apache module mod\_ssl:
+Terminating an instance will delete the server including any files and setup on it. Make sure you definitely want to do this!
 
-\begin{minted}{bash}
-    sudo yum install -y mod24_ssl
-\end{minted}
 
-Finally restart Apache to use new configuration with:
+\section{Additional Resources}
 
-\begin{minted}{bash}
-    sudo service httpd restart
-\end{minted}
-
-For reference, here is AWS's guide on \href{https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/SSL-on-amazon-linux-ami.html}{SSL on AMI instances}.
+\begin{itemize}[leftmargin=*]
+    \item \href{https://www.digitalocean.com/community/tutorials/how-to-install-linux-nginx-mysql-php-lemp-stack-ubuntu-18-04}{Digital Ocean: How To Install Linux, Nginx, MySQL, PHP (LEMP stack) on Ubuntu 18.04}
+    \item \href{https://www.digitalocean.com/community/tutorials/how-to-install-and-configure-laravel-with-lemp-on-ubuntu-18-04}{How to Install and Configure Laravel with LEMP on Ubuntu 18.04}
+    \item \href{https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/terminating-instances.html}{Terminating an EC2 Instance}
+\end{itemize}

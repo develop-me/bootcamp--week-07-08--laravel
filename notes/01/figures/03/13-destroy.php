@@ -1,8 +1,8 @@
 <?php
 
-public function destroy($id)
+public function destroy(Article $article)
 {
-  $article = Article::find($id);
+  // delete the article from the DB
   $article->delete();
 
   // use a 204 code as there is no content in the response

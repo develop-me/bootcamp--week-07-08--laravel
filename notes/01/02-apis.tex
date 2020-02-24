@@ -116,7 +116,7 @@ By convention we use something like the following for naming our routes:
     \texttt{GET} & \texttt{/articles} & Show all articles\\
     \texttt{POST} & \texttt{/articles} & Create new article\\
     \texttt{GET} & \texttt{/articles/1} & Show article with ID 1\\
-    \texttt{PUT} & \texttt{/articles/1} & Update article with ID 1\\
+    \texttt{PUT} / \texttt{PATCH} & \texttt{/articles/1} & Update article with ID 1\\
     \texttt{DELETE} & \texttt{/articles/1} & Delete article with ID 1\\
     \texttt{GET} & \texttt{/articles/1/comments} & Show comments for article with ID 1\\
     \hline
@@ -155,13 +155,32 @@ This means that you only have to write the main bit of your app once in the back
 \img{14cm}{01/img/postman}{0em}{Postman}
 
 APIs are not designed for people, so when you're testing them with Postman you need to get used to writing/reading JSON. Remember, it's just a slightly stricter JS object/array syntax.
-\\
 
-Key things to remember:
+\subsection{Postman Tips}
 
-\begin{itemize}
+\begin{itemize}[leftmargin=*]
     \item Make sure you set the \texttt{Accept: application/json} header
+
+        \img{12cm}{01/img/headers}{1em}{\textbf{Always} set this header}
+
+    \pagebreak
+
     \item Make sure you use ``raw'' and then ``JSON (application/json)'' for the Body
+
+        \img{12cm}{01/img/raw}{1em}{Make sure you use JSON for the Body}
+
+    \item Duplicate tabs rather than creating new ones or editing the one you already have
+
+        \img{9cm}{01/img/duplicate}{1em}{It's easier to duplicate tabs}
+
+    \item Use ``Two Pane View'' (\texttt{Cmd + Alt + V} or icon in the bottom right)
+
+        \img{5cm}{01/img/split}{1em}{In two pane view you don't have to scroll to see the response}
+
+    \item Make sure you don't have any errors in your JSON before submitting data
+
+        \img{12cm}{01/img/error}{1em}{If there's an error in your JSON you'll get confusing validation errors}
+
     \item Use Collections to save routes you're likely to use more than once
 \end{itemize}
 
@@ -170,6 +189,9 @@ Key things to remember:
 \section{Additional Resources}
 
 \begin{itemize}[leftmargin=*]
+    \item \href{https://www.howtogeek.com/343877/what-is-an-api/}{What is an API?}
+    \item \href{https://restfulapi.net}{REST API Tutorial}
+    \item \href{https://www.smashingmagazine.com/2018/01/understanding-using-rest-api/}{Understanding and Using REST APIs}
     \item \href{https://any-api.com}{Any API}: documentation and interactive consoles for tonnes of public APIs
     \item \href{https://webapplog.com/graphql/}{Why GraphQL is taking over APIs}
     \item \href{https://ponyfoo.com/articles/graphql-in-depth-what-why-and-how}{GraphQL in Depth: What, Why, and How}

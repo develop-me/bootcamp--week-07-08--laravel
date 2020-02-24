@@ -7,7 +7,7 @@ class Article extends Model
   // just accept an array of strings
   // we don't want to pass request in as there's no
   // reason models should know about about the request
-  public function setTags(array $strings)
+  public function setTags(array $strings) : Article
   {
     $tags = Tag::fromStrings($strings);
 

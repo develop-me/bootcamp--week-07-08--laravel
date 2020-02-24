@@ -7,6 +7,8 @@ We can't reference the article or tag ID from the other table in this case, as t
 
 It is possible to store additional information about the relationship on a pivot table, which Eloquent makes available on the model's \texttt{pivot} property, but in our case this won't be necessary.
 
+\pagebreak
+
 
 \begin{infobox}{Termlists}
     It's quite common with databases to have tables which effectively just store a list of strings with an associated ID: e.g. countries, cities, genders, etc. These are sometimes referred to as \textbf{termlists} (because it's a list of terms):
@@ -69,7 +71,7 @@ It is possible to store additional information about the relationship on a pivot
 
 
 
-\subsection{Database Migration}
+\section{Database Migration}
 
 We'll need a \texttt{Tag} model shortly, so let's create that at the same time as the database migration using \texttt{artisan}:
 
@@ -91,7 +93,7 @@ We're not done yet. If we create two tables we need to make sure we update the \
 As a general rule, if you're creating multiple tables, you should always drop them in reverse order.
 
 
-\subsection{Eloquent Models}
+\section{Eloquent Models}
 
 First, we need to tell the \texttt{Tag} model not to worry about setting the timestamp columns, otherwise we'll get a MySQL error when we try to add a tag. We do this by setting the \texttt{public} property \texttt{timestamps} to \texttt{false}:
 
@@ -105,21 +107,188 @@ We'll also need to tell the \texttt{Article} model about tags. Again we'll use a
 
 \phpinputminted{02/figures/02/05-article-relationship}
 
-The API we're creating takes an array of tag strings (e.g. \texttt{["Wombats", "Fish", "Spoons"]}) as part of the \texttt{POST}/\texttt{PUT} request when creating/updating an article. We'll need to make sure that we don't create the same tag more than once. Let's add a \texttt{static} method to the \texttt{Tag} class so that we can pass it an array of strings and it will return a collection of \texttt{Tag} objects: if the tag already exists it will find it in the database and if the tag doesn't exist it will create it for us. We'll call the method \texttt{fromStrings}:
 
-\phpinputminted{02/figures/02/06-Tag-fromStrings}
+\section{TDD}
 
-Because we're using \texttt{create()}, which uses mass assignment, we'll also need to add a \texttt{\$fillable} property to the \texttt{Tag} model:
+The API we're creating takes an array of tag strings (e.g. \texttt{["Wombats", "Fish", "Spoons"]}) as part of the \texttt{POST}/\texttt{PUT} request when creating/updating an article. We'll need to make sure that we don't create the same tag more than once.
+\\
 
-\phpinputminted{02/figures/02/07-Tag-fillable}
+This is going to involve some custom code, so let's use TDD!
+\\
 
-Now, let's use \texttt{artisan tinker} to see if this works:
+We want to create a method that takes an array of strings and gives us back a \textit{collection} of \texttt{Tag} models. This should be a \texttt{static} method on the \texttt{Tag} class.
+\\
 
-\phpinputminted{02/figures/02/08-tinker}
+First, create a new test:
+
+\begin{minted}{bash}
+    artisan make:test TagTest --unit
+\end{minted}
+
+We're storing tags in the database, so we'll need to setup our test to use our test database:
+
+\begin{minted}{php}
+    namespace Tests\Unit;
+
+    use Tests\TestCase;
+    use Illuminate\Foundation\Testing\DatabaseMigrations;
+
+    class TagTest extends TestCase
+    {
+        use DatabaseMigrations;
+
+        // ...etc.
+    }
+\end{minted}
+
+To keep stuff really simple, let's first write a method that takes a \textit{single} string and give us back a \texttt{Tag}. Let's write our first test:
+
+\begin{minted}{php}
+    public function testFromString()
+    {
+        // call the Tag::fromString static method
+        $result = Tag::fromString("Test");
+
+        // check we get back a Tag
+        // using assertInstanceOf to check the class
+        $this->assertInstanceOf(Tag::class, $result);
+
+        // check the tag has the right name
+        $this->assertSame("Test", $result->name);
+    }
+\end{minted}
+
+And get it \textbf{red}:
+
+\begin{minted}{php}
+    // create the method
+    static public function fromString()
+    {
+    }
+\end{minted}
+
+\textbf{Run your tests}. \textbf{Red}. Let's get it \textbf{green}, but in the most minimal way possible:
+
+\begin{minted}{php}
+    protected $fillable = ["name"];
+
+    static public function fromString() : Tag
+    {
+        return new Tag(["name" => "Test"]);
+    }
+\end{minted}
+
+\textbf{Run your tests}. \textbf{Green}. Obviously it needs to work for \textit{any} string, so let's add another test:
+
+\begin{minted}{php}
+    // test a different tag
+    $result = Tag::fromString("Hammock");
+    $this->assertInstanceOf(Tag::class, $result);
+    $this->assertSame("Hammock", $result->name);
+\end{minted}
+
+\textbf{Run your tests}. Unsurprisingly it's \textbf{red}. Let's get it \textbf{green} again:
+
+\begin{minted}{php}
+    static public function fromString(string $string) : Tag
+    {
+        return new Tag(["name" => $string]);
+    }
+\end{minted}
+
+\textbf{Run your tests}. Back to \textbf{green}. But our method isn't done. It should store the tag \textit{in the database}. Let's add another assertion:
+
+\begin{minted}{php}
+    // get the first tag from the database
+    $tagFromDB = Tag::all()->first();
+
+    // check we get a tag
+    $this->assertInstanceOf(Tag::class, $tagFromDB);
+
+    // check it's got the right name
+    $this->assertSame("Test", $tagFromDB->name);
+\end{minted}
+
+\textbf{Run your tests}. \textbf{Red}. Let's update the method to store the tag in the database:
+
+\begin{minted}{php}
+    static public function fromString(string $string) : Tag
+    {
+        return Tag::create(["name" => $string]);
+    }
+\end{minted}
+
+\textbf{Run your tests}. \textbf{Green} again. But, we're still not done. We need to only add a tag to the database if it \textit{doesn't} already exist. Let's add a test for this:
+
+\begin{minted}{php}
+    // test no duplicates
+    $result = Tag::fromString("Test");
+    $allTags = Tag::where("name", "Test");
+    $this->assertSame(1, $allTags->count());
+\end{minted}
+
+\textbf{Run your tests}. Back to \textbf{red}. We're running the \texttt{fromString()} method again, which \textit{should} give us back the same tag as before and not add an additional one to the database. So if we get all the tags back we should only get one. Currently this is going to fail, because we \textit{always} create a new tag.
+\\
+
+Let's update our \texttt{fromString()} method to get this green again:
+
+\begin{minted}{php}
+    static public function fromString(string $string) : Tag
+    {
+        $tag = Tag::where("name", $string)->first();
+        return $tag ? $tag : Tag::create(["name" => $string]);
+    }
+\end{minted}
+
+\textbf{Run your tests}. \textbf{Green} again. We're now checking if the tag already exists in the database. If it does then we return the version from the database, otherwise we create a new tag.
+\\
+
+That's our \texttt{fromString()} method finished. Let's get \texttt{fromStrings()} working next. Again, let's write a failing test to start with:
+
+\begin{minted}{php}
+    public function testFromStrings()
+    {
+        // call the fromStrings method
+        $result = Tag::fromStrings(["Test", "Hammock"]);
+
+        // check it's a Collection
+        $this->assertInstanceOf(Collection::class, $result);
+
+        // check the first item is "Test"
+        $this->assertSame("Test", $result[0]->name);
+
+        // check the second item is "Hammock"
+        $this->assertSame("Hammock", $result[1]->name);
+    }
+\end{minted}
+
+\textbf{Run your tests}. Should be \textbf{red}. Let's fix that:
+
+\begin{minted}{php}
+    static public function fromStrings(array $strings) : Collection
+    {
+        return collect($strings)->map([Tag::class, "fromString"]);
+    }
+\end{minted}
+
+\textbf{Run your tests}. Hurrah \textbf{green}! Looks like everything is working.
+\\
+
+We might later discover that sometimes tags have whitespace around them, so we could add some tests for that. Or a user might provide the same tag twice by accident, so we could add some tests for that. The more tests we add the more confident we can be about our code.
+\\
+
+Finished versions of both classes are on GitHub:
+
+\begin{itemize}
+    \item \href{https://github.com/develop-me/bootcamp--laravel-project/blob/develop/app/Tag.php}{\texttt{Tag} class}
+    \item \href{https://github.com/develop-me/bootcamp--laravel-project/blob/develop/tests/Unit/TagTest.php}{\texttt{TagTest} class}
+\end{itemize}
 
 
+\section{Controller Logic}
 
-\subsection{Controller Logic}
+\textbf{The following steps should really be performed with TDD.} See the \href{https://github.com/develop-me/bootcamp--laravel-project/tree/develop/tests/Unit}{project on GitHub for a full set of tests}.
+\\
 
 We won't need to add any new routes for tags because they get added as part of the article \texttt{POST}/\texttt{PUT} request. But we will need to update the \texttt{store} and \texttt{update} methods in the \texttt{Articles} controller.
 \\
@@ -143,14 +312,14 @@ And then update the \texttt{Articles} controller:
 \phpinputminted{02/figures/02/11-Articles-tags-redux}
 
 
-\subsection{Validation}
+\section{Validation}
 
 We'll need to add validation rules for tags to \texttt{ArticleRequest}. We'll use the \texttt{array} validation type for the \texttt{tags} field. We can also use the \texttt{.*} notation to add validation for the items inside the \texttt{tags} array. In this case we want them to be strings with a maximum length of 30 (we used a \texttt{VARCHAR(30)} for tags):
 
 \phpinputminted{02/figures/02/12-validation}
 
 
-\subsection{Resource}
+\section{Resource}
 
 Finally, let's update our article resources to include tags as an array. In \texttt{ArticleResource} and \texttt{ArticleListResource}:
 
@@ -161,6 +330,5 @@ Finally, let's update our article resources to include tags as an array. In \tex
 \section{Additional Resources}
 
 \begin{itemize}[leftmargin=*]
-    \item \href{http://laravel.com/docs/master/eloquent-relationships#one-to-many}{Eloquent: One to Many Relationships}
     \item \href{http://laravel.com/docs/master/eloquent-relationships#many-to-many}{Eloquent: Many to Many Relationships}
 \end{itemize}

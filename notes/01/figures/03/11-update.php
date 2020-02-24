@@ -2,11 +2,8 @@
 
 // request is passed in because we ask for it with type hinting
 // and the URL parameter is always passed in
-public function update(Request $request, $id)
+public function update(Request $request, Article $article)
 {
-    // find the article with the given id
-    $article = Article::find($id);
-
     // get the request data
     $data = $request->all();
 
