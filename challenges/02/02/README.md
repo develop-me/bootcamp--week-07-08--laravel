@@ -6,6 +6,8 @@
 
 When practising TDD we often use "katas": well known exercises (like FizzBuzz) that you can repeat over time and see how your code changes.
 
+We'll look at using TDD for building our app tomorrow.
+
 ### Rules
 
 - Add each test, one-by-one
@@ -14,11 +16,59 @@ When practising TDD we often use "katas": well known exercises (like FizzBuzz) t
 - **Do not move on to the next test until you get green for *all* your current tests**
 
 
+### Adder
+
+Create a new class `App\Adder` and add an *empty* `add` method.
+
+Create a new test `AdderTest` and add the following `__construct()` method:
+
+```php
+public function __construct()
+{
+    parent::__construct();
+    $this->adder = new Adder();
+}
+```
+
+**Do not add the next test until you are at green**. Don't even *look* at the next test if you can help it.
+
+You don't need to know what the method's really doing (although you can probably guess). Just get each test working:
+
+1) Only get this test to pass - don't jump ahead:
+
+```php
+public function testOnePlus0()
+{
+    $this->assertSame(1, $this->adder>add(1, 0));
+}
+```
+
+2)
+
+```php
+public function testOnePlusOne()
+{
+    $this->assertSame(2, $this->adder>add(1, 1));
+}
+```
+
+3)
+
+```php
+public function testTenPlus5()
+{
+    $this->assertSame(15, $this->adder>add(10, 5));
+}
+```
+
+4) Hopefully not necessary, but refactor if you need to!
+
+
 ### Roman Numerals
 
 Create a new class `App\RomanNumerals` and add an *empty* `toNumeral` method.
 
-Add the following `__construct()` method:
+Create a new test `RomanNumeralsTest` and add the following `__construct()` method:
 
 ```php
 public function __construct()
@@ -28,9 +78,10 @@ public function __construct()
 }
 ```
 
-Create a new test `RomanNumeralsTest`.
 
-**Do not add the next test until you are at green**.
+**Do not add the next test until you are at green**. Don't even *look* at the next test if you can help it.
+
+You don't need to know Roman numerals to get this working, just do it one test at a time.
 
 1)
 
@@ -204,3 +255,10 @@ public function test3394()
 ```
 
 20) If you've got 19 conditionals, now is the time to refactor!
+
+
+### Tricksy
+
+Pick a [kata](http://codingdojo.org/kata/).
+
+Remember, write each test in turn. Don't write a new test until you've got your current test passing. And never get ahead of yourself. Only write code to pass the tests. Write more tests if you want to change what the code does.
