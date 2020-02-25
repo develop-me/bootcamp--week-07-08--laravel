@@ -4,7 +4,7 @@
 
 ## Unit Testing (Chapter 5)
 
-1) Make a new `Animal` and check that its properties are what you expect. (This is testing Laravel rather than code we've written, so would not be a good test in a real app, but it's a good starting point)
+1) Make a new `Animal` and check that all and *only* properties listed in `$fillable` are added to the `Animal` object.
 
 1) Create a method on `Animal` called `dangerous`. It should return `false` if the animal's biteyness is `2` or less and `true` otherwise. Add tests for all five possible values of `biteyness`.
 
