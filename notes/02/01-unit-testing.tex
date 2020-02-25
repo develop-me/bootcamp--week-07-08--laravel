@@ -1,6 +1,9 @@
 \textbf{Unit Testing} is when we test small parts of our code to check that it works as we expect. This can save us having to dump bits of code to see what's going on.
 \\
 
+Because unit tests are bits of code, we can run them as often as we like. This is much more efficient than manually testing/re-testing your code.
+\\
+
 Laravel makes it very easy to unit test code. All our unit tests live in the \texttt{tests/Unit} directory. You can see an example test called \texttt{ExampleTest.php} already in there.
 
 \section{Running Tests}
@@ -76,13 +79,14 @@ Technically speaking you only really need \texttt{assertTrue}, but the other met
 Let's write some assertions about an \texttt{Article}:
 
 \begin{minted}{php}
-    public function testTitle()
+    public function testFillable()
     {
         $article = new Article([
             "title" => "Hello",
             "content" => "Blah blah blah",
         ]);
 
+        // title should be set, as it's in $fillable
         $this->assertTrue($article->title === "Hello");
     }
 \end{minted}
@@ -103,6 +107,25 @@ Make sure to re-run your tests every time you make any changes:
 
 \begin{minted}{bash}
     vendor/bin/phpunit --filter Unit
+\end{minted}
+
+We should also test that values not in \texttt{\$fillable} are not added:
+
+\begin{minted}{php}
+    public function testFillable()
+    {
+        $article = new Article([
+            "title" => "Hello",
+            "content" => "Blah blah blah",
+            "danger" => "Aaaargh!",
+        ]);
+
+        // title should be set, as it's in $fillable
+        $this->assertSame("Hello", $article->title);
+
+        // danger shouldn't be set, as it's not in $fillable
+        $this->assertSame(null, $article->danger);
+    }
 \end{minted}
 
 Let's add a \texttt{truncate} method to our \texttt{Article} model:
@@ -148,7 +171,7 @@ We can now test this by adding the following to \texttt{ArticleTest}:
 
 \subsection{Using the Constructor}
 
-You'll notice that we use the same \texttt{Article} object in both methods, we could set this up in the \texttt{\_\_construct} method to save creating it twice:
+You'll notice that we use the same \texttt{Article} object in both tests, we could set this up in the \texttt{\_\_construct} method to save creating it twice:
 
 \begin{minted}{php}
     private $article;
