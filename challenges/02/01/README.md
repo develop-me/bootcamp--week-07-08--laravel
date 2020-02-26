@@ -8,8 +8,6 @@
 
 1) Create a method on `Animal` called `dangerous`. It should return `false` if the animal's biteyness is `2` or less and `true` otherwise. Create tests for all five possible values of `biteyness`.
 
-1) Create a test to check that your `AnimalResource` doesn't return the `created_at` and `updated_at` properties.
-
 
 ### Testing With Databases
 

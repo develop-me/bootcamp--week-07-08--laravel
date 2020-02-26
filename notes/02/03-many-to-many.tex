@@ -131,11 +131,11 @@ We're storing tags in the database, so we'll need to setup our test to use our t
     namespace Tests\Unit;
 
     use Tests\TestCase;
-    use Illuminate\Foundation\Testing\DatabaseMigrations;
+    use Illuminate\Foundation\Testing\RefreshDatabase;
 
     class TagTest extends TestCase
     {
-        use DatabaseMigrations;
+        use RefreshDatabase;
 
         // ...etc.
     }

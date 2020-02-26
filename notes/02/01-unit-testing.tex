@@ -11,7 +11,7 @@ Laravel makes it very easy to unit test code. All our unit tests live in the \te
 To run all of your unit tests run the following:
 
 \begin{minted}{bash}
-    vendor/bin/phpunit --filter Unit
+    vendor/bin/phpunit --testsuite Unit
 \end{minted}
 
 You should get a message saying:
@@ -20,7 +20,7 @@ You should get a message saying:
     OK (1 test, 1 assertion)
 \end{minted}
 
-If you don't include the \texttt{--filter Unit} bit, it will also run \textbf{Feature Tests}, which let you test broader functionality, but we're not interested in this at the moment.
+If you don't include the \texttt{--testsuite Unit} bit, it will also run \textbf{Feature Tests}, which let you test broader functionality, but we're not interested in this at the moment.
 \\
 
 You can now delete the \texttt{tests/Unit/ExampleTest.php} file, as we'll create our own tests next.
@@ -44,8 +44,7 @@ Let's have a look at the test class:
 \begin{minted}{php}
     namespace Tests\Unit;
 
-    use Illuminate\Foundation\Testing\RefreshDatabase;
-    use Tests\TestCase;
+    use PHPUnit\Framework\TestCase;
 
     class ArticleTest extends TestCase
     {
@@ -56,7 +55,7 @@ Let's have a look at the test class:
     }
 \end{minted}
 
-Test class names need to \textit{end} with \texttt{Test} and to extend \texttt{TestCase} – this is a class provided by Laravel that does most of the heavy-lifting for us. Under-the-hood, that class is itself extending a class provided by PHPUnit, the de facto PHP testing library.
+Test class names need to \textit{end} with \texttt{Test} and to extend \texttt{TestCase} – this is a class provided by PHPUnit that does most of the heavy-lifting for us.
 \\
 
 Test methods need to \textit{start} with \texttt{test}. You can do whatever you need to inside a test method, but importantly you should always \textbf{assert} something.
@@ -66,7 +65,7 @@ Test methods need to \textit{start} with \texttt{test}. You can do whatever you 
 ``Asserting'' something just means saying ``This should be the case''. So if we assert that something is true, we're saying ``This value should be true''. An assertion can be correct, in which case the test passes, or incorrect, in which case the test fails.
 \\
 
-There's a \href{https://phpunit.readthedocs.io/en/9.0/assertions.html}{huge number of possible assertions}, but for now we'll stick to some basics:
+PHPUnit provides a \href{https://phpunit.readthedocs.io/en/9.0/assertions.html}{huge number of possible assertions} and Laravel \href{https://laravel.com/docs/master/http-tests#available-assertions}{provides some of its own too}, but for now we'll stick to some basics:
 
 \begin{itemize}
     \item \texttt{assertTrue}: assert that something is \texttt{true}
@@ -94,6 +93,7 @@ Let's write some assertions about an \texttt{Article}:
 We create a new \texttt{Article} and then assert it's true that it's \texttt{title} property is equal to \texttt{"Hello"}.
 \\
 
+
 We could of course write this using \texttt{assertSame}:
 
 \begin{minted}{php}
@@ -106,8 +106,25 @@ Using \texttt{assertSame} is better, as if the test fails PHPUnit will tell you 
 Make sure to re-run your tests every time you make any changes:
 
 \begin{minted}{bash}
-    vendor/bin/phpunit --filter Unit
+    vendor/bin/phpunit --testsuite Unit
 \end{minted}
+
+
+\pagebreak
+
+
+\begin{infobox}{\texttt{Call to member function connection() on null}}
+    If you're not doing anything involving databases this \textit{shouldn't} be necessary, but if you are testing a model and that model has a property that represents a \textit{date}, Eloquent needs to know what database type you are using. In order to do this we need to setup the Laravel app with all of its environment and configuration settings.
+    \\
+
+    To do this we need to extend the \textit{Laravel} \texttt{TestCase} class. Replace the \\ \texttt{use PHPUnit\textbackslash{}Framework\textbackslash{}TestCase} line with:
+
+    \begin{minted}{php}
+        use Tests\TestCase;
+    \end{minted}
+
+    Ideally we wouldn't need to do this, as it slows down our tests.
+\end{infobox}
 
 We should also test that values not in \texttt{\$fillable} are not added:
 
@@ -169,24 +186,23 @@ We can now test this by adding the following to \texttt{ArticleTest}:
 \end{minted}
 
 
-\subsection{Using the Constructor}
+\subsection{\texttt{setUp}}
 
-You'll notice that we use the same \texttt{Article} object in both tests, we could set this up in the \texttt{\_\_construct} method to save creating it twice:
+You'll notice that we use the same \texttt{Article} object in both tests, we could set this up in the \texttt{setUp} method, which is automatically run before each test:
 
 \begin{minted}{php}
     private $article;
 
-    public function __construct()
+    public function setUp() : void
     {
-        // make sure we call the parent's constructor
-        parent::__construct();
+        // make sure we call the parent's setUp() method
+        parent::setUp();
 
         // setup the article
         $this->article = new Article([
             "title" => "Hello",
             "content" => "Blah blah blah",
         ]);
-
     }
 
     public function testTitle()
@@ -243,7 +259,7 @@ Then we need to tell PHPUnit to use that database instead of the normal one. We 
 We need to make a few changes to our test before we can work with the database.
 \\
 
-First, we need to extend the \textit{Laravel} \texttt{TestCase} class. Replace the \\ \texttt{use PHPUnit\textbackslash{}Framework\textbackslash{}TestCase} line with:
+If you haven't already, you'll need to extend the \textit{Laravel} \texttt{TestCase} class. Replace the \texttt{use PHPUnit\textbackslash{}Framework\textbackslash{}TestCase} line with:
 
 \begin{minted}{php}
     use Tests\TestCase;
@@ -255,7 +271,7 @@ We can also tell Laravel to automatically refresh (clear and then migrate) the d
 Add the following \texttt{use} statement:
 
 \begin{minted}{php}
-    use Illuminate\Foundation\Testing\DatabaseMigrations;
+    use Illuminate\Foundation\Testing\RefreshDatabase;
 \end{minted}
 
 Then, as the very first line in your class add the following:
@@ -263,7 +279,7 @@ Then, as the very first line in your class add the following:
 \begin{minted}{php}
     class ArticleTest extends TestCase
     {
-        use DatabaseMigrations;
+        use RefreshDatabase;
 
         // ...rest of class code
     }
@@ -319,7 +335,7 @@ Then we'll edit the test file:
     namespace Tests\Unit\Http\Controllers\API;
 
     // setup to use database
-    use Illuminate\Foundation\Testing\DatabaseMigrations;
+    use Illuminate\Foundation\Testing\RefreshDatabase;
     use Tests\TestCase;
 
     // use classes we'll need
@@ -329,7 +345,7 @@ Then we'll edit the test file:
     {
         // the database migrations trait
         // ensures the database is cleared between tests
-        use DatabaseMigrations;
+        use RefreshDatabase;
 
         // a test for the controller's store() method
         public function testStore()
@@ -358,7 +374,7 @@ First, we do the usual database test setup bits and pieces. Then in our test we 
 As always, don't forget to run your tests:
 
 \begin{minted}{bash}
-    vendor/bin/phpunit --filter Unit
+    vendor/bin/phpunit --testsuite Unit
 \end{minted}
 
 If all tests pass we can be sure that the \texttt{store} method is doing what we expect: taking the data from the request, storing it in the database, and returning it.
