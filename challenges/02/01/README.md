@@ -4,11 +4,9 @@
 
 ## Unit Testing (Chapter 5)
 
-1) Make a new `Animal` and check that all and *only* properties listed in `$fillable` are added to the `Animal` object.
+1) Write a test that makes a new `Animal` and checks that all and *only* properties listed in `$fillable` are added to the `Animal` object.
 
-1) Create a method on `Animal` called `dangerous`. It should return `false` if the animal's biteyness is `2` or less and `true` otherwise. Add tests for all five possible values of `biteyness`.
-
-1) Create a test to check that your `AnimalResource` doesn't return the `created_at` and `updated_at` properties.
+1) Create a method on `Animal` called `dangerous`. It should return `false` if the animal's biteyness is `2` or less and `true` otherwise. Create tests for all five possible values of `biteyness`.
 
 
 ### Testing With Databases

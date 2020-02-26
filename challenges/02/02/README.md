@@ -20,17 +20,22 @@ We'll look at using TDD for building our app tomorrow.
 
 Create a new class `App\Adder` and add an *empty* `add` method.
 
-Create a new test `AdderTest` and add the following `__construct()` method:
+Create a new test `AdderTest` and add the following `setUp()` method:
 
 ```php
-public function __construct()
+public function setUp()
 {
-    parent::__construct();
     $this->adder = new Adder();
 }
 ```
 
 **Do not add the next test until you are at green**. Don't even *look* at the next test if you can help it.
+
+Run your tests with:
+
+```php
+    vendor/bin/phpunit --filter Adder
+```
 
 You don't need to know what the method's really doing (although you can probably guess). Just get each test working:
 
@@ -39,7 +44,7 @@ You don't need to know what the method's really doing (although you can probably
 ```php
 public function testOnePlus0()
 {
-    $this->assertSame(1, $this->adder>add(1, 0));
+    $this->assertSame(1, $this->adder->add(1, 0));
 }
 ```
 
@@ -48,7 +53,7 @@ public function testOnePlus0()
 ```php
 public function testOnePlusOne()
 {
-    $this->assertSame(2, $this->adder>add(1, 1));
+    $this->assertSame(2, $this->adder->add(1, 1));
 }
 ```
 
@@ -57,7 +62,7 @@ public function testOnePlusOne()
 ```php
 public function testTenPlus5()
 {
-    $this->assertSame(15, $this->adder>add(10, 5));
+    $this->assertSame(15, $this->adder->add(10, 5));
 }
 ```
 
@@ -68,12 +73,11 @@ public function testTenPlus5()
 
 Create a new class `App\RomanNumerals` and add an *empty* `toNumeral` method.
 
-Create a new test `RomanNumeralsTest` and add the following `__construct()` method:
+Create a new test `RomanNumeralsTest` and add the following `setUp()` method:
 
 ```php
-public function __construct()
+public function setUp()
 {
-    parent::__construct();
     $this->rn = new RomanNumerals();
 }
 ```
@@ -81,7 +85,15 @@ public function __construct()
 
 **Do not add the next test until you are at green**. Don't even *look* at the next test if you can help it.
 
+Run your tests with:
+
+```php
+    vendor/bin/phpunit --filter RomanNumerals
+```
+
 You don't need to know Roman numerals to get this working, just do it one test at a time.
+
+Remember, **Refactor** is part of the "Red, Green, Refactor" loop. If your code starts getting ungainly once you've got a green, stop and refactor before adding another test.
 
 1)
 
@@ -109,6 +121,9 @@ public function test3()
     $this->assertSame("III", $this->rn->toNumeral(3));
 }
 ```
+
+**Hint**: Now might be a good chance to do a bit of refactoring. Maybe look at [`str_repeat`](http://www.php.net/manual/en/function.str-repeat.php)
+
 
 4)
 
@@ -182,6 +197,8 @@ public function test20()
 }
 ```
 
+**Hint**: You can probably refactor those last two
+
 12)
 
 ```php
@@ -200,6 +217,9 @@ public function test49()
 }
 ```
 
+**Hint**: `IX` seems familiar
+
+
 14)
 
 ```php
@@ -217,6 +237,8 @@ public function test99()
     $this->assertSame("XCIX", $this->rn->toNumeral(99));
 }
 ```
+
+**Hint**: `IX` again...
 
 16)
 

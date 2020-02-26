@@ -54,7 +54,7 @@ Put the following in \texttt{app/FizzBuzz.php}:
 Now, create a test:
 
 \begin{minted}{bash}
-    aritsan make:test FizzBuzzTest --unit
+    artisan make:test FizzBuzzTest --unit
 \end{minted}
 
 And update that file to look like this:
@@ -301,7 +301,7 @@ Hooks live in the \texttt{.git/hooks} directory inside your project. So we need 
 \begin{minted}{bash}
     #!/bin/bash
 
-    vendor/bin/phpunit --filter Unit
+    vendor/bin/phpunit --testsuite Unit
 \end{minted}
 
 This is just the command that we've been running manually.
