@@ -23,7 +23,7 @@ Create a new class `App\Adder` and add an *empty* `add` method.
 Create a new test `AdderTest` and add the following `setUp()` method:
 
 ```php
-public function setUp()
+public function setUp() : void
 {
     $this->adder = new Adder();
 }
@@ -76,7 +76,7 @@ Create a new class `App\RomanNumerals` and add an *empty* `toNumeral` method.
 Create a new test `RomanNumeralsTest` and add the following `setUp()` method:
 
 ```php
-public function setUp()
+public function setUp() : void
 {
     $this->rn = new RomanNumerals();
 }
@@ -152,6 +152,8 @@ public function test6()
 }
 ```
 
+**Hint**: 6 is 5 + 1
+
 7)
 
 ```php
@@ -161,6 +163,8 @@ public function test7()
 }
 ```
 
+**Hint**: 7 is 5 + 2
+
 8)
 
 ```php
@@ -169,6 +173,8 @@ public function test8()
     $this->assertSame("VIII", $this->rn->toNumeral(8));
 }
 ```
+
+**Hint**: 8 is 5 + 3
 
 9)
 
@@ -191,15 +197,26 @@ public function test10()
 11)
 
 ```php
+public function test10()
+{
+    $this->assertSame("XIV", $this->rn->toNumeral(14));
+}
+```
+
+**Hint**: 14 is 10 + 4
+
+12)
+
+```php
 public function test20()
 {
     $this->assertSame("XX", $this->rn->toNumeral(20));
 }
 ```
 
-**Hint**: You can probably refactor those last two
+**Hint**: 20 is 10 * 2
 
-12)
+13)
 
 ```php
 public function test40()
@@ -208,7 +225,7 @@ public function test40()
 }
 ```
 
-13)
+14)
 
 ```php
 public function test49()
@@ -220,12 +237,21 @@ public function test49()
 **Hint**: `IX` seems familiar
 
 
-14)
+15)
 
 ```php
 public function test50()
 {
     $this->assertSame("L", $this->rn->toNumeral(50));
+}
+```
+
+16)
+
+```php
+public function test90()
+{
+    $this->assertSame("XC", $this->rn->toNumeral(90));
 }
 ```
 
@@ -252,13 +278,51 @@ public function test100()
 17)
 
 ```php
+public function test400()
+{
+    $this->assertSame("CD", $this->rn->toNumeral(400));
+}
+```
+
+18)
+
+```php
+public function test499()
+{
+    $this->assertSame("CDXCIX", $this->rn->toNumeral(499));
+}
+```
+
+**Hint**: 499 is 400 + 90 + 9
+
+19)
+
+```php
 public function test500()
 {
     $this->assertSame("D", $this->rn->toNumeral(500));
 }
 ```
 
-18)
+20)
+
+```php
+public function test900()
+{
+    $this->assertSame("CM", $this->rn->toNumeral(900));
+}
+```
+
+21)
+
+```php
+public function test999()
+{
+    $this->assertSame("CMXCIX", $this->rn->toNumeral(999));
+}
+```
+
+22)
 
 ```php
 public function test1000()
@@ -267,16 +331,16 @@ public function test1000()
 }
 ```
 
-19)
+23)
 
 ```php
-public function test3394()
+public function test3994()
 {
     $this->assertSame("MMMCMXCIV", $this->rn->toNumeral(3994));
 }
 ```
 
-20) If you've got 19 conditionals, now is the time to refactor!
+24) If you've got 23 conditionals, now is the time to refactor!
 
 
 ### Tricksy
