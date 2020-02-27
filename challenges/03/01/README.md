@@ -11,7 +11,7 @@ The "Section 7.x" bits refer to the relevant section in the notes
     - A `treatments` term-list table:
         - `id`
         - `name`
-    - A `animals_treatments` pivot table:
+    - A `animal_treatment` pivot table:
         - `id`
         - `animal_id`
         - `treatment_id`
