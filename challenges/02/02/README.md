@@ -184,7 +184,18 @@ public function test15()
 
 10) Write a few tests of your own for numbers between 15 and 100. Hopefully they'll all go green straight away.
 
-11) Refactor to your heart's content!
+11) Now for any numbers divisible by 7, `Rarr` should get added to the mix:
+
+    ```
+    7: Rarr
+    21: FizzRarr
+    35: BuzzRarr
+    105: FizzBuzzRarr
+    ```
+
+    Write some appropriate tests, one at a time, getting it to work for each one.
+
+12) If you've got more than one conditional then think about refactoring!
 
 ### Code Cracker
 
