@@ -71,7 +71,7 @@
 - Ownership
     - `/var/www/html`
     - `touch index.html` - won't work
-    - `sudo chown -R ubuntu /var/www/html/`
+    - `sudo chown -R ubuntu /var/www/`
     - `touch index.html`
     - `nano index.html`
     - `<h1>Hello, world!</h1>`
