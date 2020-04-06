@@ -107,6 +107,33 @@ Scotch Box includes a ready made \texttt{Vagrantfile}, so all we need to do is c
 
 Once that's finished, we're ready to start using our shiny new virtual machine.
 
+
+\section{Getting In}
+
+It's often necessary to get onto the VM to run a few commands. First, make sure your machine is running, then run:
+
+\begin{minted}{bash}
+    vagrant ssh
+\end{minted}
+
+If it asks you for a password, it's \texttt{vagrant}.
+\\
+
+Once you've run this command you'll notice that your command-line probably looks a bit different. That's because you're now seeing the command-line of the VM guest. Anything you run now will be running on the VM.
+\\
+
+Luckily all the commands are the same,\footnote{Macs are built on-top of Unix – which is what Linux is based on – and Windows users are using WSL, which \textit{is} Linux} so you should be able to work your way around. Just remember that the directory structure is going to be a bit different. This is quite dependent on which box you built your VM from, so you may need to look at the relevant documentation to know where things live.
+
+\subsection{Getting Out}
+
+You can get back to your own machine by running:
+
+\begin{minted}{bash}
+    exit
+\end{minted}
+
+This should take you back to the command-line you're familiar with on your own machine.
+
 \section{Additional Resources}
 
 \begin{itemize}[leftmargin=*]
