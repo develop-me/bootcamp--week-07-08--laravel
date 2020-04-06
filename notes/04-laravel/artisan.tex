@@ -1,0 +1,35 @@
+\texttt{artisan} is Laravel's command-line interface. It can do all sorts of things:
+
+\begin{itemize}
+    \item Create most of the files that you'll need for you
+    \item Help setup your databases
+    \item Tell you information about your project
+    \item Let you try out bits of code
+    \item Optimize your code
+    \item Put your site in/out of maintenance mode
+    \item Inspire you to become a better person
+\end{itemize}
+
+And a bunch of other stuff too. We'll be using \texttt{artisan} \textit{a lot}.
+\\
+
+It's important to run all of your \texttt{artisan} commands on the Vagrant machine. Some of the commands work if you run them on your own machine, but not anything to do with databases. To avoid getting any errors \textit{always} run \texttt{artisan} on Vagrant:
+
+\begin{minted}{bash}
+    vagrant ssh # login box  - password is "vagrant" if needed
+    cd code # Homestead puts everything inside the code directory
+    artisan <artisan-command> # artisan command you wish to run
+\end{minted}
+
+It's probably easiest to have a terminal tab/window open that you just keep logged into the Vagrant box at all times.
+
+\section{Available Commands}
+
+If you run \texttt{artisan list} it will show you all of the commands it supports.
+
+
+\section{Additional Resources}
+
+\begin{itemize}[leftmargin=*]
+    \item \href{http://laravel.com/docs/master/artisan}{Artisan}
+\end{itemize}
