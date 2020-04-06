@@ -18,11 +18,6 @@ When writing test-driven code you enter the ``Red, Green, Refactor'' loop.
 
 Remember, ``refactoring'' means: rewriting a piece of code without changing what it does.
 
-\begin{infobox}{Failures vs Errors}
-    Both failures \textit{and} errors result in \textbf{red} - code that's not doing what we want it to. However, we shouldn't start aiming for green until we have a \textbf{red} \textit{failure}. So sort any errors first (syntax errors, missing files).
-\end{infobox}
-
-
 \section{Why?}
 
 This might seem like a crazy way to write code, but it forces you to think about what you're actually doing. The \textbf{red} stage make you think ``What does this code \textit{actually} need to do?''. The \textbf{green} phase lets you think about how to get it working in the simplest possible way. The \textbf{refactor} phase lets you improve your code without worrying about breaking anything.
@@ -33,32 +28,28 @@ If you use TDD for \textit{every line of code in your application}, then you hav
 
 Initially, you probably think that writing code this way will be much slower. And to start with it will be. But if you can get into the right mindset, you may find that it allows you to reason about you code in a much more straightforward manner. And when it comes to making changes later – which is what you'll spend most of your time doing – you'll find you save a huge amount of time and mental effort.
 
-\section{FizzBuzz}
+\section{Roman Numerals}
 
-Let's write FizzBuzz using TDD. We'll use TDD for more practical purposes later.
+Let's write a class that converts an integer into a Roman Numeral using TDD.
 \\
 
-We'll need two classes, \texttt{FizzBuzz} and \texttt{FizzBuzzTest}.
+We'll need two classes, \texttt{RomanNumeral} and \texttt{RomanNumeralTest}.
 \\
 
-Put the following in \texttt{app/FizzBuzz.php}:
+Put the following in \texttt{app/RomanNumeral.php}:
 
 \begin{minted}{php}
     namespace App;
 
-    class FizzBuzz
+    class RomanNumeral
     {
-        public function forNumber()
-        {
-
-        }
     }
 \end{minted}
 
 Now, create a test:
 
 \begin{minted}{bash}
-    artisan make:test FizzBuzzTest --unit
+    artisan make:test RomanNumeralTest --unit
 \end{minted}
 
 And update that file to look like this:
@@ -67,301 +58,71 @@ And update that file to look like this:
     namespace Tests\Unit;
 
     use PHPUnit\Framework\TestCase;
+    use App\RomanNumeral;
 
-    class FizzBuzzTest extends TestCase
+    class RomanNumeralTest extends TestCase
     {
-        public function testForNumber()
-        {
+        // store the RomanNumeral object
+        private $rn;
 
+        // create a new instance of the object
+        // when the test starts
+        public function setUp() : void
+        {
+            parent::setUp();
+            $this->rn = new RomanNumeral();
         }
     }
 \end{minted}
 
-Now run your tests. Seriously:
-
-\begin{minted}{bash}
-    vendor/bin/phpunit --filter FizzBuzz
-\end{minted}
-
-We've limited testing just to \texttt{FizzBuzz} so we don't get any noise. You should see that the tests pass (because there aren't any), but we get a message telling us we didn't perform any assertions.
-\\
-
-It's important to run your tests even when you know they'll fail, because sometimes they \textit{won't}, which might mean you've set your tests up wrong!
-\\
-
-1)
-
-```php
-public function test1()
-{
-    $this->assertSame("I", $this->rn->toNumeral(1));
-}
-```
-
-2)
-
-```php
-public function test2()
-{
-    $this->assertSame("II", $this->rn->toNumeral(2));
-}
-```
-
-3)
-
-```php
-public function test3()
-{
-    $this->assertSame("III", $this->rn->toNumeral(3));
-}
-```
-
-**Hint**: Now might be a good chance to do a bit of refactoring. Maybe look at [`str_repeat`](http://www.php.net/manual/en/function.str-repeat.php)
-
-
-4)
-
-```php
-public function test4()
-{
-    $this->assertSame("IV", $this->rn->toNumeral(4));
-}
-```
-
-5)
-
-```php
-public function test5()
-{
-    $this->assertSame("V", $this->rn->toNumeral(5));
-}
-```
-
-6)
-
-```php
-public function test6()
-{
-    $this->assertSame("VI", $this->rn->toNumeral(6));
-}
-```
-
-**Hint**: 6 is 5 + 1
-
-7)
-
-```php
-public function test7()
-{
-    $this->assertSame("VII", $this->rn->toNumeral(7));
-}
-```
-
-**Hint**: 7 is 5 + 2
-
-8)
-
-```php
-public function test8()
-{
-    $this->assertSame("VIII", $this->rn->toNumeral(8));
-}
-```
-
-**Hint**: 8 is 5 + 3
-
-9)
-
-```php
-public function test9()
-{
-    $this->assertSame("IX", $this->rn->toNumeral(9));
-}
-```
-
-10)
-
-```php
-public function test10()
-{
-    $this->assertSame("X", $this->rn->toNumeral(10));
-}
-```
-
-11)
-
-```php
-public function test10()
-{
-    $this->assertSame("XIV", $this->rn->toNumeral(14));
-}
-```
-
-**Hint**: 14 is 10 + 4
-
-12)
-
-```php
-public function test20()
-{
-    $this->assertSame("XX", $this->rn->toNumeral(20));
-}
-```
-
-**Hint**: 20 is 10 * 2
-
-13)
-
-```php
-public function test40()
-{
-    $this->assertSame("XL", $this->rn->toNumeral(40));
-}
-```
-
-14)
-
-```php
-public function test49()
-{
-    $this->assertSame("XLIX", $this->rn->toNumeral(49));
-}
-```
-
-**Hint**: `IX` seems familiar
-
-
-15)
-
-```php
-public function test50()
-{
-    $this->assertSame("L", $this->rn->toNumeral(50));
-}
-```
-
-16)
-
-```php
-public function test90()
-{
-    $this->assertSame("XC", $this->rn->toNumeral(90));
-}
-```
-
-15)
-
-```php
-public function test99()
-{
-    $this->assertSame("XCIX", $this->rn->toNumeral(99));
-}
-```
-
-**Hint**: `IX` again...
-
-16)
-
-```php
-public function test100()
-{
-    $this->assertSame("C", $this->rn->toNumeral(100));
-}
-```
-
-17)
-
-```php
-public function test400()
-{
-    $this->assertSame("CD", $this->rn->toNumeral(400));
-}
-```
-
-18)
-
-```php
-public function test499()
-{
-    $this->assertSame("CDXCIX", $this->rn->toNumeral(499));
-}
-```
-
-**Hint**: 499 is 400 + 90 + 9
-
-19)
-
-```php
-public function test500()
-{
-    $this->assertSame("D", $this->rn->toNumeral(500));
-}
-```
-
-20)
-
-```php
-public function test900()
-{
-    $this->assertSame("CM", $this->rn->toNumeral(900));
-}
-```
-
-21)
-
-```php
-public function test999()
-{
-    $this->assertSame("CMXCIX", $this->rn->toNumeral(999));
-}
-```
-
-22)
-
-```php
-public function test1000()
-{
-    $this->assertSame("M", $this->rn->toNumeral(1000));
-}
-```
-
-23)
-
-```php
-public function test3994()
-{
-    $this->assertSame("MMMCMXCIV", $this->rn->toNumeral(3994));
-}
-```
-
-24) If you've got 23 conditionals, now is the time to refactor!
-
-Right, let's get our first fail. In \texttt{FizzBuzzTest}:
+Right, let's get our first fail. In \texttt{RomanNumeralTest}:
 
 \begin{minted}{php}
-    public function testForNumber()
+    public function test1()
     {
-        $fizzbuzz = new FizzBuzz();
-        $this->assertSame("1", $fizzbuzz->forNumber(1));
+        $this->assertSame("I", $this->rn->forNumber(1));
     }
 \end{minted}
 
-Now, \textbf{run your tests}. You should see that you get a failure saying \texttt{Failed asserting that null is identical to \textquotesingle{}1\textquotesingle{}}. This is \textit{good}, according to TDD we can't start writing in FizzBuzz \textit{until} we have a failing test. Start with \textbf{red}.
+Now run your tests:
+
+\begin{minted}{bash}
+    vendor/bin/phpunit --filter RomanNumeral
+\end{minted}
+
+We've limited testing just to \texttt{RomanNumeral} so we don't get any noise.
 \\
 
-Let's get our test passing. In \texttt{FizzBuzz}:
+You should see that we get an error saying \texttt{Call to undefined method \\ App\textbackslash{}RomanNumeral::forNumber()}. This is a \textbf{red}, but not the kind that we want.
+
+\begin{infobox}{Failures vs Errors}
+    Both failures \textit{and} errors result in \textbf{red} - code that's not doing what we want it to. However, we shouldn't start aiming for green until we have a \textbf{red} \textit{failure}. So sort any errors first (syntax errors, missing files).
+\end{infobox}
+
+Now add an empty method to \texttt{RomanNumeral}:
 
 \begin{minted}{php}
-    public function forNumber(int $number) : string
+    public function forNumber()
     {
-        return "1";
+    }
+\end{minted}
+
+Now, \textbf{run your tests} again. This time you should see that you get a failure saying \texttt{Failed asserting that null is identical to \textquotesingle{}I\textquotesingle{}}. This is \textit{good}, according to TDD we can't start trying to solve the problem in \texttt{RomanNumeral} \textit{until} we have a failing test. Start with \textbf{red}.
+\\
+
+Let's get our test passing. In \texttt{RomanNumeral}:
+
+\begin{minted}{php}
+    public function forNumber() : string
+    {
+        return "I";
     }
 \end{minted}
 
 \textbf{Run your tests}. Our first \textbf{green}!
 \\
 
-Now, you're thinking is probably a mixture of confusion and expletives. Of course they passed! But the method \textit{always} returns \texttt{"1"}.
+Now, you're probably thinking a mixture of confusion and expletives. Of course the test passed! But the method \textit{always} returns \texttt{"I"}.
 \\
 
 But, remember the rules of TDD: write the \textit{smallest amount of code} that you can to pass the test. And that's just what we did. Just remember, \textit{we're not finished yet}.
@@ -370,7 +131,10 @@ But, remember the rules of TDD: write the \textit{smallest amount of code} that 
 We can't really refactor our code at the moment, it's about as simple as it can be. So let's get back to \textbf{red}. Add a new test:
 
 \begin{minted}{php}
-    $this->assertSame("2", $fizzbuzz->forNumber(2));
+    public function test2()
+    {
+        $this->assertSame("II", $this->rn->forNumber(2));
+    }
 \end{minted}
 
 \textbf{Run your tests}. Totes \textbf{red}.
@@ -381,21 +145,24 @@ Let's fix that:
 \begin{minted}{php}
     public function forNumber(int $number) : string
     {
-        // wrap what's passed in as a string
-        return "{$number}";
+        if ($number === 2) {
+            return "II";
+        }
+
+        return "I";
     }
 \end{minted}
 
 \textbf{Run your tests}. \textbf{Green}!
 \\
 
-It's important that we didn't write it like this initially. We should only write things that make a test pass and we didn't need to write it this way until we added the second test. If you skip stages you're also \textit{skipping tests} which means your code might not be as tested as you think.
-\\
-
-Again, no refactoring necessary. So let's get back to \textbf{red}:
+We could maybe refactor using a ternary, but let's leave it as is for now. Let's get back to \textbf{red}:
 
 \begin{minted}{php}
-    $this->assertSame("Fizz", $fizzbuzz->forNumber(3));
+    public function test3()
+    {
+        $this->assertSame("III", $this->rn->forNumber(3));
+    }
 \end{minted}
 
 \textbf{Run your tests}. \textbf{Red}. And let's get it working:
@@ -404,32 +171,72 @@ Again, no refactoring necessary. So let's get back to \textbf{red}:
     public function forNumber(int $number) : string
     {
         if ($number === 3) {
-            return "Fizz";
+            return "III";
         }
 
-        return "{$number}";
+        if ($number === 2) {
+            return "II";
+        }
+
+        return "I";
     }
 \end{minted}
 
-\textbf{Run your tests}. \textbf{Green.} You'll notice it's slowly starting to resemble the answer to FizzBuzz that you're familiar with, but TDD is forcing us to do it bit by bit.
+\textbf{Run your tests}. \textbf{Green.}
 \\
 
-We could maybe refactor at this point (maybe use a ternary?), but it's best not to refactor \textit{too} soon, so let's leave it as is for now.
-\\
-
-Next test:
+Now you've maybe noticed a pattern? We're just repeating \texttt{I} the number of times stored in \texttt{\$number}. And PHP has a way to repeat a string a specified number of times, so let's refactor:
 
 \begin{minted}{php}
-    $this->assertSame("4", $fizzbuzz->forNumber(4));
+    public function forNumber(int $number) : string
+    {
+        return str_repeat("I", $number);
+    }
 \end{minted}
 
-\textbf{Run your tests}. \textbf{Green!} Didn't even have to do anything that time.
+\textbf{Run your tests}. Still \textbf{green}!
 \\
+
+We've simplified our code massively and all our tests are still passing, so we're guaranteed it still does everything it did before (and \textit{only} what it did before).
+\\
+
+It's important that we didn't write it like this initially. We should only write things that make a test pass and we shouldn't try to refactor too soon. It was only when a pattern became clear after the third test that it made sense to write it this way. If you skip stages you're also \textit{skipping tests} which means your code might not be as tested as you think.
+\\
+
 
 Next test:
 
 \begin{minted}{php}
-    $this->assertSame("Buzz", $fizzbuzz->forNumber(5));
+    public function test4()
+    {
+        $this->assertSame("IV", $this->rn->forNumber(4));
+    }
+\end{minted}
+
+\textbf{Run your tests}. \textbf{Red} again.
+\\
+
+\texttt{IV} doesn't fit the previous pattern, so let's give it its own \texttt{if} statement:
+
+\begin{minted}{php}
+    public function forNumber(int $number) : string
+    {
+        if ($number === 4) {
+            return "IV";
+        }
+
+        return str_repeat("I", $number);
+    }
+\end{minted}
+
+
+Next test:
+
+\begin{minted}{php}
+    public function test5()
+    {
+        $this->assertSame("V", $this->rn->forNumber(5));
+    }
 \end{minted}
 
 \textbf{Run your tests}. \textbf{Red} again. Let's fix it:
@@ -437,100 +244,314 @@ Next test:
 \begin{minted}{php}
     public function forNumber(int $number) : string
     {
-        if ($number === 3) {
-            return "Fizz";
-        }
-
         if ($number === 5) {
-            return "Buzz";
+            return "V";
         }
 
-        return "{$number}";
+        if ($number === 4) {
+            return "IV";
+        }
+
+        return str_repeat("I", $number);
     }
 \end{minted}
 
 \textbf{Run your tests}. Back to \textbf{green}.
 \\
 
-Next test:
+But two \texttt{if} statements is starting to feel a bit much. In situations like this you could use a \texttt{switch} statement. \textit{Or} you could use a \textbf{dictionary}:
 
 \begin{minted}{php}
-    $this->assertSame("Fizz", $fizzbuzz->forNumber(6));
-\end{minted}
+    // values we want to check
+    private $dictionary = [
+        5 => "V",
+        4 => "IV",
+    ];
 
-\textbf{Run your tests}. \textbf{Red}.
-\\
-
-Again, notice how TDD is forcing us to think about what we want to happen at every stage.
-\\
-
-Let's get it working. Update the first \texttt{if} statement to use \texttt{\%}:
-
-\begin{minted}{php}
-    if ($number % 3 === 0) {
-        return "Fizz";
-    }
-\end{minted}
-
-\textbf{Run your tests}. \textbf{Green}. Don't be tempted to do the same for \texttt{5} just yet: you've not written a test for it.
-\\
-
-We don't need to test every single possible value, just the ones we're interested in. So let's skip to \texttt{10}.
-
-\begin{minted}{php}
-    $this->assertSame("Buzz", $fizzbuzz->forNumber(10));
-\end{minted}
-
-\textbf{Run your tests}. Here's the \textbf{red} you were looking for. Now we can fix it:
-
-\begin{minted}{php}
-    if ($number % 5 === 0) {
-        return "Buzz";
-    }
-\end{minted}
-
-\textbf{Run your tests}. \textbf{Green} again. Now let's add our final test case:
-
-\begin{minted}{php}
-    $this->assertSame("FizzBuzz", $fizzbuzz->forNumber(15));
-\end{minted}
-
-\textbf{Run your tests}. \textbf{Red} again.
-\\
-
-Let's go for the simplest solution to start with:
-
-\begin{minted}{php}
     public function forNumber(int $number) : string
     {
-        if ($number % 3 === 0 && $number % 5 === 0) {
-            return "FizzBuzz";
+        // go through each value
+        // if it's in the dictionary
+        // return the corresponding value
+        foreach ($this->dictionary as $value => $numeral) {
+            if ($number === $value) {
+                return $numeral;
+            }
         }
 
-        // ...etc.
+        // otherwise just do as before
+        return str_repeat("I", $number);
     }
 \end{minted}
 
-\textbf{Run your tests}. Back to \textbf{Green}.
+\textbf{Run your tests}. \textbf{Green}!
 \\
 
-We've written all the tests, now we can \textbf{refactor}. But we can refactor \textit{without worrying about breaking things}: if the tests pass then it still does everything we want it to do.
+A dictionary is just a key-value pair mapping one value to another, e.g. \texttt{IV} to \texttt{4}. If you ever find yourself writing a lot of \texttt{if} statements on the same value or needing to use a \texttt{switch} statement then you can often use a dictionary instead.
 \\
 
-\hr
+Again, we've refactored our code and tested it. We can be sure that it does everything that it did before we made the changes.
+\\
 
-Some refactorings later:
+Let's keep going:
+
+\begin{minted}{php}
+    public function test6()
+    {
+        $this->assertSame("VI", $this->rn->forNumber(6));
+    }
+\end{minted}
+
+\textbf{Test}. \textbf{Red}.
+\\
+
+Add it to the top of the dictionary (hopefully a pattern might begin to appear):
+
+\begin{minted}{php}
+    6 => "VI",
+\end{minted}
+
+\textbf{Test}. \textbf{Green}. Can't see a pattern, so move on.
+
+\begin{minted}{php}
+    public function test7()
+    {
+        $this->assertSame("VII", $this->rn->forNumber(7));
+    }
+\end{minted}
+
+\textbf{Test}. \textbf{Red}.
+\\
+
+Add it to the top of the dictionary:
+
+\begin{minted}{php}
+    7 => "VII",
+\end{minted}
+
+\textbf{Test}. \textbf{Green}. An inkling of a pattern now, but let's make sure.
+
+\begin{minted}{php}
+    public function test8()
+    {
+        $this->assertSame("VIII", $this->rn->forNumber(8));
+    }
+\end{minted}
+
+\textbf{Test}. \textbf{Red}.
+\\
+
+Add it to the top of the dictionary:
+
+\begin{minted}{php}
+    8 => "VIII",
+\end{minted}
+
+\textbf{Test}. \textbf{Green}.
+\\
+
+OK, there's definitely something going on here. The last three values are just \texttt{V} with \texttt{I} repeated. So \texttt{6} is just \texttt{V + I}, \texttt{7} is \texttt{V + II}, \&tc. And we've already got some code for adding the \texttt{I} bit. So let's refactor:
+
+\begin{minted}{php}
+    // back to just 5 and 4
+    private $dictionary = [
+        5 => "V",
+        4 => "IV",
+    ];
+
+    public function forNumber(int $number) : string
+    {
+        // keep track of result
+        $result = "";
+
+        foreach ($this->dictionary as $value => $numeral) {
+            // if $number is bigger than or equal to
+            // the current dictionary value
+            if ($number >= $value) {
+                // concatenate the numeral onto the result
+                $result .= $numeral;
+
+                // subtract the value from number
+                $number -= $value;
+            }
+        }
+
+        // add I on as many times as necessary
+        return $result . str_repeat("I", $number);
+    }
+\end{minted}
+
+\textbf{Run your tests}. \textbf{Green} times are here again.
+\\
+
+We spotted a pattern, refactored, and then checked that everything still works by running our tests.
+\\
+
+Let's move on:
+
+\begin{minted}{php}
+    public function test9()
+    {
+        $this->assertSame("IX", $this->rn->forNumber(9));
+    }
+\end{minted}
+
+\textbf{Run your tests}. \textbf{Red} as a red thing.
+\\
+
+This one doesn't fit the pattern we've previously spotted, so add it to the dictionary:
+
+\begin{minted}{php}
+    9 => "IX",
+\end{minted}
+
+\textbf{Run your tests}. \textbf{Green}.
+\\
+
+Now for ten:
+
+\begin{minted}{php}
+    public function test10()
+    {
+        $this->assertSame("X", $this->rn->forNumber(10));
+    }
+\end{minted}
+
+\textbf{Run your tests}. \textbf{Red} as a red thing.
+\\
+
+Again, this doesn't fit any pattern we've previously spotted, so add it to the dictionary:
+
+\begin{minted}{php}
+    10 => "X",
+\end{minted}
+
+\textbf{Run your tests}. Purest \textbf{green}.
+\\
+
+Guess what? Time for eleven:
+
+\begin{minted}{php}
+    public function test11()
+    {
+        $this->assertSame("XI", $this->rn->forNumber(11));
+    }
+\end{minted}
+
+\textbf{Run your tests}. Our first free \textbf{green}!
+\\
+
+And if you wrote tests for \texttt{12} (\texttt{"XII"}) through to \texttt{19} (\texttt{"XIX"}) you'd find they would all be green too.
+\\
+
+But our luck runs out at 20:
+
+\begin{minted}{php}
+    public function test20()
+    {
+        $this->assertSame("XX", $this->rn->forNumber(20));
+    }
+\end{minted}
+
+\textbf{Run your tests}. Back to \textbf{red}.
+\\
+
+For now, let's just add it to the dictionary:
+
+\begin{minted}{php}
+    20 => "XX",
+\end{minted}
+
+\textbf{Run your tests}. \textbf{Green}zo.
+\\
+
+And let's try 30:
+
+\begin{minted}{php}
+    public function test30()
+    {
+        $this->assertSame("XXX", $this->rn->forNumber(30));
+    }
+\end{minted}
+
+\textbf{Run your tests}. \textbf{Red} as a radish.
+\\
+
+Again, let's just add it to the dictionary:
+
+\begin{minted}{php}
+    30 => "XXX",
+\end{minted}
+
+\textbf{Run your tests}. \textbf{Green}. But, again, we can see a pattern here: we've just got an extra \texttt{X} per \texttt{10}. Let's refactor:
 
 \begin{minted}{php}
     public function forNumber(int $number) : string
     {
-        $result = $number % 3 ? "" : "Fizz";
-        $result .= $number % 5 ? "" : "Buzz";
-        return $result ? $result : "{$number}";
+        $result = "";
+
+        foreach ($this->dictionary as $value => $numeral) {
+            // change the if to a while
+            // will repeat on a number until it
+            // gets lower than it
+            while ($number >= $value) {
+                $result .= $numeral;
+                $number -= $value;
+            }
+        }
+
+        return $result . str_repeat("I", $number);
     }
 \end{minted}
 
-The above is the result of many many refactorings. Some of them didn't work. But because I ran the tests \textit{every} time, I knew I'd made a mistake. I was free to try things and came up with a solution I genuinely wasn't expecting.
+\textbf{Run your tests}. Still \textbf{green}!
+\\
+
+And we can actually refactor again. The repeated \texttt{I} can be dealt with by adding it to our dictionary:
+
+\begin{minted}{php}
+    private $dictionary = [
+        // ... other values
+        1 => "I",
+    ];
+
+    public function forNumber(int $number) : string
+    {
+        $result = "";
+
+        foreach ($this->dictionary as $value => $numeral) {
+            while ($number >= $value) {
+                $result .= $numeral;
+                $number -= $value;
+            }
+        }
+
+        // just return result
+        return $result;
+    }
+\end{minted}
+
+\textbf{Run your tests}. Stiller \textbf{green}! A double refactoring. No special cases for \texttt{I} anymore.
+\\
+
+We're still not done, but the rest is pretty trivial as we've worked out the main pattern. Try adding tests for the following and getting it to work:
+
+\begin{itemize}
+    \item 40 = XL
+    \item 50 = L
+    \item 90 = XC
+    \item 100 = C
+    \item 400 = CD
+    \item 500 = D
+    \item 900 = CM
+    \item 1,000 = M
+    \item 3,994 = MMMCMXCIV
+\end{itemize}
+
+Now pick a number between 1,000 and 10,000 and check if it works for that too!
+\\
+
+You can see the final versions of \href{https://github.com/develop-me/bootcamp--laravel-project/blob/develop/app/RomanNumeral.php}{\texttt{RomanNumeral}} and \href{https://github.com/develop-me/bootcamp--laravel-project/blob/develop/tests/Unit/RomanNumeralTest.php}{\texttt{RomanNumeralTest}} on GitHub.
 
 
 \section{Git Hooks}
