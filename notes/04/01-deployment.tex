@@ -500,7 +500,7 @@ Then restart Nginx:
 Next, we install \texttt{certbot} on our AWS EC2 instance, which we can use to have SSL certificates issued for us, with:
 
 \begin{minted}{bash}
-    sudo apt-get install certbot python-certbot-nginx
+    sudo apt-get install -y certbot python-certbot-nginx
 \end{minted}
 
 Then we issue a certificate:
