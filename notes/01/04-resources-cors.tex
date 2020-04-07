@@ -110,41 +110,16 @@ Although we can make requests to our API using Postman and the like, we won't be
 Modern browsers use something called \textbf{Cross-Origin Resource Sharing} to handle this. They expect certain HTTP headers to be set on API responses to say who can and can't use the API.
 \\
 
-We don't want to write the code for this ourselves as it's fairly complicated. Luckily, \href{https://github.com/fruitcake/laravel-cors}{someone else has done it for us}.
+As of Laravel 7.0, CORS support is built-in,\footnote{Using the  \href{https://github.com/fruitcake/laravel-cors}{fruitcake/laravel-cors} package} so we don't need do do anything to get it working.
 \\
 
-Install the CORS library with \texttt{composer}:
-
-\begin{minted}{bash}
-    composer require fruitcake/laravel-cors
-\end{minted}
-
-Then run the following command:
-
-\begin{minted}{bash}
-    php artisan vendor:publish --tag="cors"
-\end{minted}
-
-This copies the necessary config files out of the \texttt{vendor} directory.
+We can tweak the CORS settings in \texttt{config/cors.php}, but the default values are fine for our purposes.
 \\
-
-We need to tell Laravel that it should use the CORS library as \textbf{middleware} for every HTTP request that gets made. Middleware is code that runs before/after the controller code to modify the request/response in some way.
-\\
-
-To add the CORS middleware, in \texttt{app/Http/Kernel.php}:
-
-\phpinputminted{01/figures/04/09-middleware}
-
-We'll also need to update the CORS config file to tell it to only work on the \texttt{/api} end-point. In \texttt{config/cors.php}:
-
-\begin{minted}{php}
-    'paths' => ['api/*'],
-\end{minted}
 
 CORS only kicks in if you have an \texttt{Origin} header, which Postman doesn't send by default. But, if you want to check it's working, you can add one:
 
 \begin{minted}{diff}
-    Origin: https://wombat.pyjamas
+    Origin: wombats.co.uk
 \end{minted}
 
 You should get back an \texttt{Access-Control-Allow-Origin} header in the response.
