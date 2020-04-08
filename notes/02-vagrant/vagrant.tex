@@ -1,98 +1,114 @@
 When we're developing server-side code we need to run it somewhere. Obviously we'll want to run it on our own computer, but every computer has a slightly different setup. For example, different versions of macOS have different versions of PHP and Windows doesn't have built-in PHP support.
 \\
 
-Ideally we want to develop on something that's as close to the production server as possible. Otherwise there might be bugs in our code that are ``environment'' specific. Setting up our local machines to match the server might not be possible: the specific versions may not be available for your particular setup.
+Ideally we want to develop on something that's as close to the production server as possible. Otherwise there might be bugs in our code that are \textbf{environment} specific. Setting up our local machines to match the server might not be possible: the specific versions may not be available for your particular setup.
+
+\section{Virtual Machines}
+
+Vagrant allows us to run a \textbf{virtual machine} (VM) on our computer. A virtual machine is a computer made entirely out of software. As far as it is concerned it's a real computer, but in reality it's all just \texttt{0}s and \texttt{1}s. It's the Matrix basically.
 \\
 
-Vagrant allows us to run a ``virtual machines'' (guests) on our computer (host).
+A virtual machine is often referred to as the \textbf{guest} and the computer it runs on as the \textbf{host}.
 \\
 
-Ideally we'd like a LAMP virtual machine to test our code on.
+Ideally we'd like a LEMP virtual machine to test our code on.
 
-\subsection{Vagrant Configuration with \texttt{Vagrantfile}}
 
-When working with Vagrant boxes we start off with a file called \texttt{Vagrantfile} that has the configuration details of the virtual computer we're creating.
+\section{Configuring Vagrant}
+
+When working with Vagrant boxes we start off with a file called \texttt{Vagrantfile} that has the configuration details of the virtual machine we're creating.
 \\
 
-\textbf{\texttt{config.vm.box}}
-
-The box temple to build the Vagrant box from - see \href{vagrantbox.es}{https://www.vagrantbox.es/} for other boxes
+We generally have one \texttt{Vagrantfile} per project, as each project will probably have a slightly different setup and should be kept separate.
 \\
 
-\textbf{\texttt{config.vm.network}}
+There are various key bits of configuration:
 
-The IP address of the Vagrant box. Useful for communicating with the Vagrant box.
-\\
+\begin{itemize}
 
-If running lots of boxes at ones, then they should have different IP addresses.
-\\
+    \item \texttt{config.vm.box}: The ``box'' to build the Vagrant instance from. A box is just a pre-made VM setup: usually an operating system with some pre-installed and configured software. See \href{https://app.vagrantup.com/boxes/search}{Vagrant Cloud} for a list of available boxes.
 
-\textbf{\texttt{config.vm.hostname}}
+    \item \texttt{config.vm.network}: The IP address of the Vagrant box. Useful for communicating with the Vagrant box. If running lots of boxes at once, they should have different IP addresses.
 
-The local domain name to use for the box (resolves to the IP address above) if the \href{vagrant-hostsupdater}{https://github.com/cogitatio/vagrant-hostsupdater} plugin is installed.
-\\
+    \item \texttt{config.vm.hostname}: The local domain name to use for the box (resolves to the IP address above) if the \href{https://github.com/cogitatio/vagrant-hostsupdater}{vagrant-hostsupdater} plugin is installed.
 
-\textbf{\texttt{config.vm.synced\_folder}}
+    \item \texttt{config.vm.synced\_folder}: Which folder on the host (your machine) to sync into the guest virtual machine. This is how you get your files ``onto'' the Vagrant box.
 
-Which folder on the host to sync into the guest virtual machine. This is how you get your files ``into'' the Vagrant box or web server.
+\end{itemize}
 
-\subsection{Controlling Our Vagrant Box}
 
-We control our Vagrant box using the command line, and must first navigate to the directory that has our \texttt{Vagrantfile} of the machine we wish to control (or one of its sub folders).
+\section{Using Vagrant}
 
-\subsubsection{Turning On A Vagrant Box}
+We control our Vagrant machine using the command-line, and must first navigate to the directory that has our \texttt{Vagrantfile} of the machine we wish to control (or one of its subdirectories).
+
+\subsection{Starting a Vagrant Machine}
+
+To start a vagrant machine:
 
 \begin{minted}{bash}
     vagrant up
 \end{minted}
 
-If the box hasn't been created yet, then this will also provision (create) the box.
+This can take quite a long time the first time you run it, particularly if you've not used the box before, as it will need to download it (and they tend to be quite large - it's an entire computer in software after all) and once it's up and running it may well \textbf{provision} it (run the initial configuration).
+\\
 
-\subsubsection{Turning Off A Vagrant Box}
+If a machine has been run before then this process can still take a few minutes, depending on whether you've left it running previously.
 
-While a Vagrant box is running it is using our computers resources (CPU and RAM), so when not needed it should be turned off.
+\begin{infobox}{\texttt{.vagrant} Directory}
+    When a Vagrant machine is created a hidden \texttt{.vagrant} directory is created in the same directory as the \texttt{Vagrantfile}. This keeps track of the virtual machine.
+    \\
+
+    For that reason you should be careful moving or restructuring your project folder once the machine is created.
+\end{infobox}
+
+
+\subsection{Stopping a Vagrant Machine}
+
+While a Vagrant machine is running it is using your computer's resources (CPU and RAM), so when not needed it should be turned off:
 
 \begin{minted}{bash}
-    vagrant down
+    vagrant halt
 \end{minted}
 
-\subsubsection{Deleting A Vagrant Box}
+A stopped Vagrant machine still uses hard-drive space.
+
+\subsection{Deleting a Vagrant Machine}
 
 \begin{minted}{bash}
     vagrant destroy
 \end{minted}
 
-This command will delete the virtual machine and its virtual hard drive. Any data that is "inside" that machine will be lost, for example data in databases.
-\\
+This command will delete the virtual machine and its virtual hard drive. Any data that is on that machine will be lost. Usually this is just the databases as most files will be on the host machine and these are not removed.
 
-However, any files that also exist on the host (e.g. in the public folder) will remain.
-
-\subsection{Role of the \texttt{.vagrant} Directory}
-
-When a Vagrant box is created a hidden \texttt{.vagrant} directory is also created, which keeps track of the virtual machine.
-\\
-
-For that reason you should avoid moving or restructing your project folder one the box is created.
 
 \section{Scotch Box}
 
-\href{Scotch Box}{https://box.scotch.io} is a pre-built Vagrant setup that includes PHP and MySQL running on an Ubuntu Linux operating system, perfect for LAMP development.
+\href{https://box.scotch.io}{Scotch Box} is a pre-built Vagrant setup that includes PHP and MySQL running on an Ubuntu Linux operating system, perfect for LAMP/LEMP development.
 \\
 
-It also includes other useful tools for backend developers, like MailHog that helps us test email sending from our websites and apps.
+It also includes other useful tools for server-side developers, like MailHog that helps us test email sending from our websites and apps.
 
-\begin{infobox}{Getting Started with Scotch Box}
-    
-    \begin{minted}{bash}
-        git clone https://github.com/scotch-io/scotch-box my-project
+\subsection{Getting Started}
 
-        cd my-project
+Scotch Box includes a ready made \texttt{Vagrantfile}, so all we need to do is clone it and then run \texttt{vagrant up}:
 
-        vagrant up
-    \end{minted}
-\end{infobox}
+\begin{minted}{bash}
+    # clone scotch box into `my-project`
+    git clone https://github.com/scotch-io/scotch-box my-project
 
-When working with a Scotch Box guest you can put your files into the \texttt{public} folder, and these will be synced into the guest.
-\\
+    # go into `my-project` directory
+    cd my-project
 
-E.g. with the structure \texttt{./my-project/public/about.html} your web page is accessible at \texttt{http://192.168.33.10/about.html} or \texttt{http://scotchbox/about.html}
+    # run vagrant up
+    vagrant up
+\end{minted}
+
+Once that's finished, we're ready to start using our shiny new virtual machine.
+
+\section{Additional Resources}
+
+\begin{itemize}[leftmargin=*]
+    \item \href{https://www.vagrantup.com}{Vagrant}
+    \item \href{https://box.scotch.io}{Scotch Box}
+    \item \href{https://app.vagrantup.com/boxes/search}{Vagrant Boxes}
+\end{itemize}
