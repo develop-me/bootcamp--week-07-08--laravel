@@ -18,7 +18,7 @@ When writing test-driven code you enter the ``Red, Green, Refactor'' loop.
 
 Remember, ``refactoring'' means: rewriting a piece of code without changing what it does.
 
-\section{Why?}
+\subsection{Why?}
 
 This might seem like a crazy way to write code, but it forces you to think about what you're actually doing. The \textbf{red} stage make you think ``What does this code \textit{actually} need to do?''. The \textbf{green} phase lets you think about how to get it working in the simplest possible way. The \textbf{refactor} phase lets you improve your code without worrying about breaking anything.
 \\
@@ -153,10 +153,10 @@ Let's fix that:
     }
 \end{minted}
 
-\textbf{Run your tests}. \textbf{Green}!
+\textbf{Run your tests}. \textbf{Green}! Perhaps not the most elegant code in the world, but it passes all our tests (and \textit{only} those tests), so it's good enough for TDD.
 \\
 
-We could maybe refactor using a ternary, but let's leave it as is for now. Let's get back to \textbf{red}:
+Let's get back to \textbf{red}:
 
 \begin{minted}{php}
     public function test3()
@@ -259,7 +259,7 @@ Next test:
 \textbf{Run your tests}. Back to \textbf{green}.
 \\
 
-But two \texttt{if} statements is starting to feel a bit much. In situations like this you could use a \texttt{switch} statement. \textit{Or} you could use a \textbf{dictionary}:
+Two \texttt{if} statements is starting to feel a bit much, but there isn't a clear pattern. In situations like this you could use a \texttt{switch} statement. \textit{Or} you could use a \textbf{dictionary}:
 
 \begin{minted}{php}
     // values we want to check
@@ -287,7 +287,7 @@ But two \texttt{if} statements is starting to feel a bit much. In situations lik
 \textbf{Run your tests}. \textbf{Green}!
 \\
 
-A dictionary is just a key-value pair mapping one value to another, e.g. \texttt{IV} to \texttt{4}. If you ever find yourself writing a lot of \texttt{if} statements on the same value or needing to use a \texttt{switch} statement then you can often use a dictionary instead.
+A dictionary is just a key-value pair that maps one value to another, e.g. \texttt{IV} to \texttt{4}. If you ever find yourself writing a lot of \texttt{if} statements on the same value or needing to use a \texttt{switch} statement then you can often use a dictionary instead.
 \\
 
 Again, we've refactored our code and tested it. We can be sure that it does everything that it did before we made the changes.
@@ -384,7 +384,7 @@ OK, there's definitely something going on here. The last three values are just \
 \textbf{Run your tests}. \textbf{Green} times are here again.
 \\
 
-We spotted a pattern, refactored, and then checked that everything still works by running our tests.
+We spotted a pattern, refactored, and then checked that everything still works by running our tests. If you got a red during this process then you know that you've not quite solved the problem, so you can either keep trying to refactor or just go back to what you had before.
 \\
 
 Let's move on:
@@ -417,7 +417,7 @@ Now for ten:
     }
 \end{minted}
 
-\textbf{Run your tests}. \textbf{Red} as a red thing.
+\textbf{Run your tests}. \textbf{Red} as\textellipsis{} a different, but equally red, thing.
 \\
 
 Again, this doesn't fit any pattern we've previously spotted, so add it to the dictionary:
@@ -429,7 +429,7 @@ Again, this doesn't fit any pattern we've previously spotted, so add it to the d
 \textbf{Run your tests}. Purest \textbf{green}.
 \\
 
-Guess what? Time for eleven:
+Guess what? It's eleven o'clock:\footnote{Actual time may vary}
 
 \begin{minted}{php}
     public function test11()
@@ -438,10 +438,10 @@ Guess what? Time for eleven:
     }
 \end{minted}
 
-\textbf{Run your tests}. Our first free \textbf{green}!
+\textbf{Run your tests}. Our first \textit{free} \textbf{green}! These are always nice – it suggests you're on the right track.
 \\
 
-And if you wrote tests for \texttt{12} (\texttt{"XII"}) through to \texttt{19} (\texttt{"XIX"}) you'd find they would all be green too.
+And if you wrote tests for \texttt{12} (\texttt{"XII"}) through to \texttt{19} (\texttt{"XIX"}) you'd find they would all be green too. Go for it – I can wait.
 \\
 
 But our luck runs out at 20:
@@ -453,7 +453,7 @@ But our luck runs out at 20:
     }
 \end{minted}
 
-\textbf{Run your tests}. Back to \textbf{red}.
+\textbf{Run your tests}. \textbf{Red} as a doornail.\footnote{A red doornail}
 \\
 
 For now, let's just add it to the dictionary:
@@ -483,9 +483,16 @@ Again, let's just add it to the dictionary:
     30 => "XXX",
 \end{minted}
 
-\textbf{Run your tests}. \textbf{Green}. But, again, we can see a pattern here: we've just got an extra \texttt{X} per \texttt{10}. Let's refactor:
+\textbf{Run your tests}. \textbf{Green}. But, again, we can see a pattern here: we've just got an extra \texttt{X} for every additional \texttt{10}. Let's refactor:
 
 \begin{minted}{php}
+    private $numerals = [
+        10 => "X",
+        9 => "IX",
+        5 => "V",
+        4 => "IV",
+    ];
+
     public function forNumber(int $number) : string
     {
         $result = "";
@@ -504,10 +511,10 @@ Again, let's just add it to the dictionary:
     }
 \end{minted}
 
-\textbf{Run your tests}. Still \textbf{green}!
+\textbf{Run your tests}. Still \textbf{green}! Nice.
 \\
 
-And we can actually refactor again. The repeated \texttt{I} can be dealt with by adding it to our dictionary:
+And we can refactor again. Our previous bit of code got us repeated \texttt{X}s, which suggests the repeated \texttt{I}s can be dealt with by adding it to our dictionary:
 
 \begin{minted}{php}
     private $dictionary = [
@@ -531,27 +538,55 @@ And we can actually refactor again. The repeated \texttt{I} can be dealt with by
     }
 \end{minted}
 
-\textbf{Run your tests}. Stiller \textbf{green}! A double refactoring. No special cases for \texttt{I} anymore.
+\textbf{Run your tests}. Stiller \textbf{green}!\footnote{Green steel?} A double refactoring. No special cases for \texttt{I} anymore.
 \\
 
 We're still not done, but the rest is pretty trivial as we've worked out the main pattern. Try adding tests for the following and getting it to work:
+\\
 
-\begin{itemize}
-    \item 40 = XL
-    \item 50 = L
-    \item 90 = XC
-    \item 100 = C
-    \item 400 = CD
-    \item 500 = D
-    \item 900 = CM
-    \item 1,000 = M
-    \item 3,994 = MMMCMXCIV
-\end{itemize}
+\begin{small}
+    \begin{tabu}{l X}
+        \texttt{40} & \texttt{"XL"} \\
+        \texttt{50} & \texttt{"L"} \\
+        \texttt{90} & \texttt{"XC"} \\
+        \texttt{100} & \texttt{"C"} \\
+        \texttt{400} & \texttt{"CD"} \\
+        \texttt{500} & \texttt{"D"} \\
+        \texttt{900} & \texttt{"CM"} \\
+        \texttt{1000} & \texttt{"M"} \\
+        \texttt{3994} & \texttt{"MMMCMXCIV"} \\
+    \end{tabu}
+\end{small}
+
+\par\bigskip
 
 Now pick a number between 1,000 and 10,000 and check if it works for that too!
 \\
 
 You can see the final versions of \href{https://github.com/develop-me/bootcamp--laravel-project/blob/develop/app/RomanNumeral.php}{\texttt{RomanNumeral}} and \href{https://github.com/develop-me/bootcamp--laravel-project/blob/develop/tests/Unit/RomanNumeralTest.php}{\texttt{RomanNumeralTest}} on GitHub.
+
+
+\subsection{Debrief}
+
+We've written quite a complicated bit of code without ever having to tackle the \textit{whole} problem in one go. If I just asked you to write a bit of code that can take \textit{any} positive integer and convert it into a Roman numeral you probably wouldn't know where to start (I certainly wouldn't).
+\\
+
+But with TDD we break down the problem into tiny chunks that are much easier to work out:
+
+\begin{itemize}
+    \item \textbf{Red}: we write a failing test, which forces us to think about what we actually want the code to do in a \textit{specific} instance.
+    \item \textbf{Green}: write some code that gets the test work – but no more than that. We're not trying to solve the whole problem in one go.
+    \item \textbf{Refactor}: start spotting patterns in your code. Try to simplify the code using those patterns. If you still get a \textbf{green} then your idea has worked. But we're not having to spot the \textit{whole} pattern in one go, just a bit at a time, making small improvements as they occur to us.
+\end{itemize}
+
+We also now have code that is fully tested. We know that it works and we can feel completely free to refactor some more: if the tests still pass then it still does what we think it does. If, later on, we want the code to do something else, then we can add some more tests and get it working for those too. Again, if all the tests pass, we've not broken what it used to do. And if we later find bugs in our code, we can add tests for those too and, once we've fixed them, be sure that they never come back.
+\\
+
+Of course, we've only guaranteed that our code passes the (necessarily) finite set of tests that we've written. It's perfectly possible it might not work for \textit{all} possible scenarios. For example, what happens for \texttt{0}? But that brings up the questions what \textit{should} happen for \texttt{0}? We'll need another test if that's a value that might get passed in.
+\\
+
+This highlights the main issue with TDD: you have to write \textit{good} tests and they have to be \textit{representative} of how the code will be used. This is not a trivial task. As with most things in programming, it comes with practice. Lots of it.
+
 
 
 \section{Git Hooks}
@@ -573,7 +608,7 @@ Hooks live in the \texttt{.git/hooks} directory inside your project. So we need 
 \begin{minted}{bash}
     #!/bin/bash
 
-    vendor/bin/phpunit --testsuite Unit
+    vendor/bin/phpunit
 \end{minted}
 
 This is just the command that we've been running manually.
