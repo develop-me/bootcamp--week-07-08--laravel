@@ -1,15 +1,13 @@
 Databases are pieces of software that store structured data for us.
 \\
 
-The most common form of database is the ``relational database''. To get data in and out of a relational database we use a ``Structured Query Language'' (SQL).
+The most common form of database is the \textbf{relational database}. To get data in and out of a relational database we use a \textbf{Structured Query Language} (SQL).
 \\
 
 SQL comes in many flavours: MySQL, MariaDB, PostgreSQL, SQL Server, SQLite. We'll be using MySQL.
 
 
 \begin{infobox}{NoSQL}
-    % Needs de-ranting
-
     \quoteinline{It’s a curious thing about our industry: not only do we not learn from our mistakes, we also don’t learn from our successes}{Keith Braithwaite}
 
     It's become very trendy to use NoSQL databases to make API driven apps. The most popular being MongoDB.
@@ -33,28 +31,25 @@ SQL comes in many flavours: MySQL, MariaDB, PostgreSQL, SQL Server, SQLite. We'l
 
 \section{Database Structure}
 
-It's easiest to think of the structure of databases with an example. Let's say that we're going to create a blog which consists of lost of articles. Each article has a title and a body (the text of the article) as well as a creation date.
+It's easiest to think of the structure of databases with an example. Let's say that we're going to create a blog which consists of lots of articles. Each article has a title and content (the text of the article) as well as a creation date.
 \\
 
-We would have a single database
+We usually have a single SQL database per project: it stores all of the data for that specific project.
 \\
 
-An SQL database is made up of \textbf{tables}, which are in turn made up of \textbf{rows}, which have one or more \textbf{columns}.
+A database is made up of \textbf{tables}, which are in turn made up of \textbf{rows}, which have one or more \textbf{columns}.
 \\
 
-A table represents a collection of some \textit{thing}, say blog articles. A row is a single instance of that thing, an article. And a column represents a specific piece of information about that thing, say a title.
+A table represents a collection of some sort of \textit{thing}, e.g. blog articles. A row is a single instance of that thing, e.g. an article. And a column represents a specific piece of information about that thing, e.g. an article title:
 \\
 
-\begin{small}
-    \begin{tabu}{l l X}
-        \texttt{id} & \texttt{title}            & \texttt{body} \\
-        1           & Where Do Eels Come From?  & Nobody knows exactly  \\
-        2           & Do Moose Get Drunk?       & Maybe \\
-    \end{tabu}
-\end{small}
+\begin{tabu}{l l X}
+    \texttt{id} & \texttt{title}            & \texttt{content} \\
+    1           & Where Do Eels Come From?  & Nobody knows exactly  \\
+    2           & Do Moose Get Drunk?       & Maybe \\
+\end{tabu}
+
 \par\bigskip
-
-Generally we'd probably have one database per website.
 
 
 \section{Column Types}
@@ -80,18 +75,22 @@ Each column stores a specific type of data. Here are a few of the most common ty
 
 \section{IDs}
 
-A row in an SQL database always has to have one ``unique'' way of identifying it - otherwise there's no way to select/update a single row. For our purposes we'll just use a numeric ID. MySQL can automatically generate these for us.
+A row in an SQL database always has to have one \textbf{unique} way of identifying it – otherwise there's no way to select/update a single row. For our purposes we'll just use a numeric ID. MySQL can automatically generate these for us.
 \\
 
 These unique IDs are called the \texttt{PRIMARY KEY} and are often set to \texttt{AUTO\_INCREMENT}, so the first record has ID \texttt{1}, the next is assigned \texttt{2} and so on.
 \\
 
+If you're adding data to a database that already exists or that is shared with other people your IDs may not start at \texttt{1} and they might have gaps – that's not anything to worry about it.
+
 \begin{infobox}{Beyond IDs}
-    More complex systems (particularly ones spread across multiple servers) might need to use a more complex system such as ``UUID''s (\href{https://en.wikipedia.org/wiki/Universally\_unique\_identifier}{Universally Unique Identifiers}).
+    More complex systems (particularly ones spread across multiple servers) might need to use a more complex system such as \textbf{UUID}s (\href{https://en.wikipedia.org/wiki/Universally\_unique\_identifier}{Universally Unique Identifiers}).
     \\
 
-    The unique aspect can also be a combination of multiple columns. This can be very useful with complex relationships.
+    The unique aspect of a row can also be a combination of multiple columns. This can be very useful with complex relationships.
 \end{infobox}
+
+\pagebreak
 
 \section{SQL}
 
@@ -123,26 +122,23 @@ Once we've created a database we need to tell MySQL that we want to work with th
 
 \begin{infobox}{To \texttt{USE} or not to \texttt{USE}}
     If you don't run \texttt{USE} then you'll need to include the database name in all the SQL queries you run. As we often only work within one database at a time this adds typing.
+    \\
 
-    \textbf{Without \texttt{USE}}
+    Without \texttt{USE}:
+
     \begin{minted}{mysql}
         SELECT * FROM database_name.articles;
-
         SELECT * FROM database_name.comments;
-
         SELECT * FROM database_name.tags;
-
     \end{minted}
 
-    \textbf{Without \texttt{USE}}
+
+    With \texttt{USE}:
 
     \begin{minted}{mysql}
         USE database_name;
-
         SELECT * FROM articles;
-
         SELECT * FROM comments;
-
         SELECT * FROM tags;
     \end{minted}
 \end{infobox}
@@ -166,6 +162,16 @@ This is probably the most complex of the commands as we need to define our table
     );
 \end{minted}
 
+\begin{infobox}{Table and Column Naming}
+    Although it's not necessary, you should \textbf{always use snake case for your table and column names}: all lower-case with underscores in place of spaces.
+    \\
+
+    e.g. \texttt{user\_roles}, \texttt{created\_at}, \texttt{date\_of\_birth}
+    \\
+
+    If you don't do this you will run into all sorts of issues when it comes to working with your database.
+\end{infobox}
+
 \subsection{\texttt{SELECT}}
 
 We can use \texttt{SELECT} to get information out of a specific table:
@@ -180,37 +186,35 @@ If we're only interested in some of the columns we can specify this:
     SELECT id, title, body FROM articles;
 \end{minted}
 
-\subsection{\texttt{SELECT ... WHERE ...}}
+\subsubsection{\texttt{WHERE}}
 
 If we're only interested in some of the records we can filter using \texttt{WHERE}.
 \\
 
-To get the first 5 articles from the table:
+To get articles written before Jan 14th 2020:
 
 \begin{minted}{mysql}
-    SELECT * FROM articles WHERE id <= 5;
+    SELECT * FROM articles WHERE created_at < "2020-01-14";
 \end{minted}
 
-\subsection{\texttt{SELECT ... WHERE ... LIKE ...}}
+\subsubsection{\texttt{LIKE}}
 
-To search the database for parts of a field we use \texttt{LIKE}.
-\\
+To search the database for parts of a field we use \texttt{LIKE}:
 
 \begin{minted}{mysql}
     SELECT * FROM articles WHERE title LIKE '%wombats%';
 \end{minted}
 
-\textbf{Note:} the \texttt{\%} is a wildcard and allows us to look for articles that have ``wombat'' in the title at the start, end or middle.
+\textbf{Note:} the \texttt{\%} is a \textbf{wildcard} and allows us to look for articles that have ``wombat'' in the title at the start, end, or middle.
 
 \subsection{\texttt{INSERT}}
 
 To insert a new row of data (record) into your table:
 
 \begin{minted}{mysql}
-    INSERT INTO `articles` (`title`, `body`) VALUES ('Welocme to my blog!', 'In this essay I will...');
+    INSERT INTO articles (title, body) VALUES ('Welcome to my blog!', 'In this essay I will...');
 \end{minted}
 
-\textbf{Note:} use of different quote types \texttt{`} and \texttt{'}
 
 \subsection{\texttt{UPDATE}}
 
@@ -261,25 +265,39 @@ We can also use \texttt{DROP} to remove an entire database:\footnote{Use with \t
     We'll be covering the \textit{structure} of these relationships later in the course, but we won't actually be using MySQL queries.
 \end{infobox}
 
-\section{Accessing MySQL Prompt on Vagrant Box}
 
-As the database is ``inside'' the box we need we first need to SSH in:
+\section{Using MySQL with Vagrant}
+
+As the database is on the Vagrant machine we first need to SSH in:
 
 \begin{minted}{bash}
-    cd folder-of-vagrant-project/
+    # go into the relevant project directory
+    cd my-project
 
-    vagrant up # if not already running
+    # start vagrant - if not already running
+    vagrant up
 
-    vagrant SSH
+    # get onto the vagrant box
+    vagrant ssh
+\end{minted}
 
-    mysql -u username -p # For Scotch Box username and password are "root"
+Once we're on the Vagrant machine:
 
-    # when finished
+\begin{minted}{bash}
+    # login to mysql
+    # for Scotch Box username and password are "root"
+    mysql -u username -p
+\end{minted}
 
-    exit # go from MySQL prompt back to command line inside the box
+And once you're done:
 
-    exit # exit SSH back to your host machine
+\begin{minted}{bash}
+    # in MySQL
+    # go from MySQL prompt back to command-line on the Vagrant machine
+    exit
 
+    # exit SSH back to your host machine
+    exit
 \end{minted}
 
 \section{Additional Resources}
