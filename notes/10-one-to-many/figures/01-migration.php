@@ -4,13 +4,13 @@ public function up()
 {
   Schema::create("comments", function (Blueprint $table) {
     // create the basic comments columns
-    $table->bigIncrements("id");
+    $table->id();
     $table->string("email", 100); // use a VARCHAR
     $table->text("comment"); // could be any length
     $table->timestamps();
 
     // create the article_id column
-    $table->bigInteger("article_id")->unsigned();
+    $table->foreignId("article_id")->unsigned();
 
     // set up the foreign key constraint
     // this tells MySQL that the article_id column
