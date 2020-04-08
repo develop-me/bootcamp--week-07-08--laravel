@@ -77,6 +77,15 @@ And route to:
     Route::get('articles/{article}', "Articles@show");
 \end{minted}
 
+\begin{infobox}{View All Routes}
+    A useful command to see all routes setup, the HTTP methods for them, which controllers and which methods will be run:
+
+    \begin{minted}{bash}
+        artisan route:list
+    \end{minted}
+
+\end{infobox}
+
 \section{Additional Resources}
 
 \begin{itemize}[leftmargin=*]

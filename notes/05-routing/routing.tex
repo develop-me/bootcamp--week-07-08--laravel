@@ -1,23 +1,63 @@
-Routing is the process of determining what code should be run based on the given URL. This is a concept you'll come across a lot when developing websites. In fact, we'll come across it again next week when we look at React.
+Routing is the process of determining what code should be run based on the given URL. This is a concept you'll come across a lot when developing websites. In fact, we'll come across it again when we look at React.
 \\
 
-When a user loads a page in a Laravel app, after setting everything up, Laravel has a look to see if the URL matches any of the defined \textbf{routes} (which live in the \texttt{routes} directory). A route represents a specific URL and HTTP method combination. If Laravel finds a match it then runs the code that the route points to.
+When a user loads a page in a Laravel app, after setting everything up, Laravel has a look to see if the URL matches any of the defined \textbf{routes} (which live in the \texttt{routes} directory). A route represents a specific URL. If Laravel finds a match it then runs the code that the route points to.
 \\
 
-First, let's add a route to handle \texttt{GET} requests sent to \texttt{/articles}. This will point to code that handles show a list of articles.
+We'll create the routes in \texttt{routes/web.php}. If you have a look in there you'll see that it already contains a route:
+
+\begin{minted}{php}
+    <?php
+
+    use Illuminate\Support\Facades\Route;
+
+    Route::get('/', function () {
+        return view('welcome');
+    });
+\end{minted}
+
+We use a static method of the \texttt{Route} class to say that if the user visits \texttt{/} (the \textbf{root}\footnote{Yes, it's the root route} URL – e.g. the homepage of our site) we should return a \textbf{view} called ``welcome''. This is why, if you visit your Laravel site, you'll see a ``Laravel'' page. But if you go to any other URL you'll get a 404.
 \\
 
-Add a \texttt{POST} route for \texttt{/articles} to \texttt{routes/web.php}:
+Let's update this so that it loads a file of our own creation.
+\\
 
-\phpinputminted{05-routing/figures/01-route-post}
+Create a file \texttt{resources/views/home.blade.php}:
 
-We use the \texttt{\$router} object, which is provided to use by Laravel. It has methods for each of the HTTP methods (e.g. \texttt{\$router->get()}, \texttt{\$router->post()}, etc.). These methods take a URL fragment as the first argument and a controller  method as a second argument (we'll get to these in a second). So the code above says If the user makes a \texttt{GET} request to \texttt{/articles}, run the \texttt{index()} method of the \texttt{Articles} controller.
+\inputminted{html}{05-routing/figures/01-home.html}
 
-\begin{infobox}{View all routes}
-    A useful command to see all routes setup, the HTTP methods for them, which controllers and which methods will be run:
+And now update \texttt{routes/web.php} to point to this file:
 
-    \begin{minted}{bash}
-        artisan route:list
-    \end{minted}
+\begin{minted}{php}
+    Route::get('/', function () {
+        return view('home');
+    });
+\end{minted}
 
-\end{infobox}
+By default Laravel looks in \texttt{resources/views} for views, so this will load the file we've just created.
+
+
+\section{URL Parameters}
+
+Next, let's add a route for an article.
+\\
+
+First create the file \texttt{resources/views/article.blade.php}:
+
+\inputminted{html}{05-routing/figures/02-article.html}
+
+And then add another route to \texttt{routes/web.php}:
+
+\begin{minted}{php}
+    Route::get('/articles/{article}', function () {
+        return view('article');
+    });
+\end{minted}
+
+Now if you visit the URL \texttt{/articles/1} in your browser, you should see the article view that you just created. It will also work if you go to \texttt{articles/2}. In fact it will work for \texttt{articles/anything}. That's because the \texttt{\{article\}} bit is a \textbf{URL parameter}: a placeholder for \textit{any} value. We'll look at how we can work with this value later.
+
+\section{Additional Resources}
+
+\begin{itemize}[leftmargin=*]
+    \item \href{http://laravel.com/docs/master/routing}{Laravel: Routing}
+\end{itemize}
