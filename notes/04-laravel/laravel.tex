@@ -29,19 +29,16 @@ Here are some of the key features of Laravel:
     It's become very trendy to use Node for server-side code.
     \\
 
-    However, there is no established framework (or combination of libraries) in the Node ecosystem that provide anything close to what Laravel offers. This means that two seemingly similar Node back-ends might be written completely differently. There are also certain essential bits of tooling, like database migrations, that are not well supported. In fact, Node is in a very similar sort of position to where PHP was pre-Laravel: lots of options, but none of them quite offering everything that you need. Give it a few more years and this will almost certainly change.
+    However, there is no established framework (or combination of libraries) in the Node ecosystem that provide anything close to what Laravel offers. This means that two seemingly similar Node back-ends might be written completely differently. There are also certain essential bits of tooling, like database migrations, that are not currently well supported. In fact, Node is in a very similar sort of position to where PHP was pre-Laravel: lots of options, but none of them quite offering everything that you need. Give it a few more years and this will almost certainly change.
     \\
 
-    So why is Node so popular for building back-ends? Companies think ``We've got front-end developers who can already write JavaScript, let's use them to write the back-end too!''. This is wrong-headed for two reasons: firstly, back-end code has very little in common with front-end code. Secondly, if you really have to do this, you'd be much better getting developers to learn a new programming language, like PHP, Ruby, or C\#, and using frameworks like Laravel, Ruby on Rails, or .NET. It turns out most the energy comes with learning the framework rather than the programming language, so you'd be better using a framework that does most the work for you.
-    \\
-
-    That's not to say Node doesn't have its uses. It's great for doing stuff with web-sockets and streaming data (trying to use PHP for those is horrible). And if you enjoy functional programming then Node lets you write largely functional code (again not something PHP is good for). Personally, if I'm going to be writing object-oriented code anyway, I'd always go for Laravel.
+    Node is really great for doing stuff with web-sockets and streaming data (trying to use PHP for those is horrible). And if you enjoy functional programming then Node lets you write largely functional code (again not something PHP is good for). But if you want to quickly create a web app or API, you'll be ready to go much quicker using something like Laravel.
 \end{infobox}
 
 
 \section{Setup}
 
-Laravel provides an installer app that lets you create the scaffolding for a Laravel app. You'll need to install it using the following command:
+Laravel provides an installer app that creates the app scaffolding for you. You'll need to install it using the following command:
 
 \begin{minted}{bash}
     composer global require laravel/installer
@@ -58,7 +55,7 @@ To create a new Laravel project run:
     laravel new project-name
 \end{minted}
 
-Obviously you should call your project something more descriptive (and make sure it's a directory-friendly name - no spaces, all lowercase).
+Obviously you should call your project something more descriptive (and make sure it's a directory-friendly name – no spaces, all lowercase).
 
 \section{Running Laravel}
 
@@ -68,7 +65,7 @@ There are various ways to get Laravel up and running. If you're on a Mac you can
 There are two ways to setup Homestead: globally and locally. The global way is more efficient in terms of hard drive usage, but it's also a bit of a pain to get setup properly. For this reason I recommend going with the local setup.
 \\
 
-First, we need to add the Homestead files to our project. \textit{In the newly created project directory} run:
+First, we need to add the Homestead files to our project. \textbf{In the newly created project directory} run:
 
 \begin{minted}{bash}
     # inside your project folder (cd project-name first!) run
@@ -105,16 +102,8 @@ You'll also need to edit the \texttt{.env} file to use the default Homestead dat
     DB_PASSWORD=secret
 \end{minted}
 
-Now you can get Vagrant up and running:
-
-\begin{minted}{bash}
-    vagrant up
-\end{minted}
-
-This can take a while the first time as it will need to download the appropriate Homestead box\footnote{This can be \textit{really} slow. Unfortunately the Homestead box is hosted on a really under-powered server. If you get a download time of several hours it can sometimes be worth cancelling and retrying a few minutes later.}, then get the VM up and running, and then \textbf{provision} (in this case, run the Laravel setup scripts) the VM.
-
 \begin{infobox}{The \texttt{.env} File}
-    There are certain configuration options that rather than being application specific are ``environment'' (i.e. the machine that the app is running on) specific.
+    There are certain configuration options that rather than being application specific are \textbf{environment} (i.e. the machine that the app is running on) specific.
     \\
 
     For example, when you're developing your application you can probably get away with using \texttt{root} as the root MySQL password, as it's only on your Vagrant box. You might also want to show full error messages when something goes wrong.
@@ -126,6 +115,14 @@ This can take a while the first time as it will need to download the appropriate
     These sort of configuration options go in the \texttt{.env} file. This file is specific to each computer that it runs on, so should not be copied or added to version control. Instead, when running on a new machine, you should copy the \texttt{.env.example} file and edit that. This will make sure that you don't accidentally copy across settings that are specific to another machine.
 \end{infobox}
 
+Now you can get Vagrant up and running:
+
+\begin{minted}{bash}
+    vagrant up
+\end{minted}
+
+This can take a while the first time as it will need to download the appropriate Homestead box\footnote{This can be \textit{really} slow. Unfortunately the Homestead box is hosted on a really under-powered server. If you get a download time of several hours it can sometimes be worth cancelling and retrying a few minutes later.}, then get the VM up and running, and then \textbf{provision} (in this case, run the Laravel setup scripts) the VM.
+\\
 
 \section{Getting Started}
 
@@ -150,7 +147,11 @@ Once Vagrant has finished loading:
     Then run the following on the VM:
 
     \begin{minted}[frame=topline]{bash}
-        artisan key:generate # generate a new app key
+        # get into Laravel directory
+        cd code
+
+        # generate a new app key
+        artisan key:generate
     \end{minted}
 \end{infobox}
 
