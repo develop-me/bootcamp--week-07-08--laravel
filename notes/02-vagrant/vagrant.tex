@@ -1,17 +1,19 @@
 When we're developing server-side code we need to run it somewhere. Obviously we'll want to run it on our own computer, but every computer has a slightly different setup. For example, different versions of macOS have different versions of PHP and Windows doesn't have built-in PHP support.
 \\
 
-Ideally we want to develop on something that's as close to the production server as possible. Otherwise there might be bugs in our code that are \textbf{environment} specific. Setting up our local machines to match the server might not be possible: the specific versions may not be available for your particular setup.
+Ideally we want to develop on something that's as close to the production server as possible. Otherwise there might be bugs in our code that are \textbf{environment} specific. Setting up our local machines to match the server might not be possible: the specific versions may not be available for your particular setup and, unless you use Linux, the operating system will be completely different.
+
 
 \section{Virtual Machines}
 
-Vagrant allows us to run a \textbf{virtual machine} (VM) on our computer. A virtual machine is a computer made entirely out of software. As far as it is concerned it's a real computer, but in reality it's all just \texttt{0}s and \texttt{1}s. It's the Matrix basically.
+Vagrant allows us to run a \textbf{virtual machine} (VM) on our computer. A virtual machine is a computer made entirely out of software. As far as the VM is concerned it's a real computer, but in reality it's all just \texttt{0}s and \texttt{1}s. It's the Matrix basically.\footnote{There is no spoon}
 \\
 
-A virtual machine is often referred to as the \textbf{guest} and the computer it runs on as the \textbf{host}.
-\\
+\begin{infobox}{Terminology}
+    A virtual machine is often referred to as the \textbf{guest} and the computer it runs on as the \textbf{host}.
+\end{infobox}
 
-Ideally we'd like a LEMP virtual machine to test our code on.
+Vagrant does all sorts of clever tricks to make it so that the guest VM has access to the files on the host computer. It does a bunch more clever tricks to make it so that the host computer can access the guest VM. If we're still going for protracted Matrix references, it's sort of like Morpheus.\footnote{Fine, I'll stop. It'll be B*Witched lyrics next\textellipsis}
 
 
 \section{Configuring Vagrant}
@@ -26,13 +28,13 @@ There are various key bits of configuration:
 
 \begin{itemize}
 
-    \item \texttt{config.vm.box}: The ``box'' to build the Vagrant instance from. A box is just a pre-made VM setup: usually an operating system with some pre-installed and configured software. See \href{https://app.vagrantup.com/boxes/search}{Vagrant Cloud} for a list of available boxes.
+    \item \texttt{config.vm.box}: The \textbf{box} to build the Vagrant instance from. A box is just a pre-made VM setup: usually an operating system with some pre-installed and configured software. See \href{https://app.vagrantup.com/boxes/search}{Vagrant Cloud} for a list of available boxes.
 
-    \item \texttt{config.vm.network}: The IP address of the Vagrant box. Useful for communicating with the Vagrant box. If running lots of boxes at once, they should have different IP addresses.
+    \item \texttt{config.vm.network}: The IP address of the guest VM. Useful for communicating with the VM. If running lots of VMs at once, they should have different IP addresses.
 
-    \item \texttt{config.vm.hostname}: The local domain name to use for the box (resolves to the IP address above) if the \href{https://github.com/cogitatio/vagrant-hostsupdater}{vagrant-hostsupdater} plugin is installed.
+    \item \texttt{config.vm.hostname}: The local domain name to use for the VM (resolves to the IP address above) if the \href{https://github.com/cogitatio/vagrant-hostsupdater}{vagrant-hostsupdater} plugin is installed.
 
-    \item \texttt{config.vm.synced\_folder}: Which folder on the host (your machine) to sync into the guest virtual machine. This is how you get your files ``onto'' the Vagrant box.
+    \item \texttt{config.vm.synced\_folder}: Which folder on the host to sync into the guest virtual machine. This is how you get your files ``onto'' the VM.
 
 \end{itemize}
 
@@ -43,7 +45,7 @@ We control our Vagrant machine using the command-line, and must first navigate t
 
 \subsection{Starting a Vagrant Machine}
 
-To start a vagrant machine:
+To start a Vagrant VM:
 
 \begin{minted}{bash}
     vagrant up
@@ -52,25 +54,25 @@ To start a vagrant machine:
 This can take quite a long time the first time you run it, particularly if you've not used the box before, as it will need to download it (and they tend to be quite large - it's an entire computer in software after all) and once it's up and running it may well \textbf{provision} it (run the initial configuration).
 \\
 
-If a machine has been run before then this process can still take a few minutes, depending on whether you've left it running previously.
+If a VM has been run before then this process can still take a few minutes, depending on whether you've left it running previously.
 
 \begin{infobox}{\texttt{.vagrant} Directory}
-    When a Vagrant machine is created a hidden \texttt{.vagrant} directory is created in the same directory as the \texttt{Vagrantfile}. This keeps track of the virtual machine.
+    When a Vagrant VM is created a hidden \texttt{.vagrant} directory is created in the same directory as the \texttt{Vagrantfile}. This keeps track of the VM.
     \\
 
-    For that reason you should be careful moving or restructuring your project folder once the machine is created.
+    For that reason you should be careful moving or restructuring your project folder once the VM is created.
 \end{infobox}
 
 
 \subsection{Stopping a Vagrant Machine}
 
-While a Vagrant machine is running it is using your computer's resources (CPU and RAM), so when not needed it should be turned off:
+While a Vagrant VM is running it is using your computer's resources (CPU and RAM), so when not needed it should be turned off:
 
 \begin{minted}{bash}
     vagrant halt
 \end{minted}
 
-A stopped Vagrant machine still uses hard-drive space.
+A stopped Vagrant VM still uses hard-drive space.
 
 \subsection{Deleting a Vagrant Machine}
 
@@ -78,12 +80,12 @@ A stopped Vagrant machine still uses hard-drive space.
     vagrant destroy
 \end{minted}
 
-This command will delete the virtual machine and its virtual hard drive. Any data that is on that machine will be lost. Usually this is just the databases as most files will be on the host machine and these are not removed.
+This command will delete the VM and its virtual hard drive. Any data that is on the VM will be lost. Usually this is just the databases as most files will be on the host machine and these are not removed.
 
 
 \section{Scotch Box}
 
-\href{https://box.scotch.io}{Scotch Box} is a pre-built Vagrant setup that includes PHP and MySQL running on an Ubuntu Linux operating system, perfect for LAMP/LEMP development.
+\href{https://box.scotch.io}{Scotch Box} is a Vagrant box that includes PHP and MySQL running on an Ubuntu Linux operating system, perfect for LAMP/LEMP development.
 \\
 
 It also includes other useful tools for server-side developers, like MailHog that helps us test email sending from our websites and apps.
