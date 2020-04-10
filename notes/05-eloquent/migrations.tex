@@ -1,0 +1,175 @@
+Most Laravel sites are going to be \textbf{database driven}: storing and retrieving data from a database.
+\\
+
+Realistically, you're never going to know the complete structure of your database when you start building a site. Specifications will change over time and features will be added and removed. The structure you end up with at the end might be very different from what you started with.
+\\
+
+For this reason, we need a way to keep the structure of the database up-to-date with the rest of the app: it's no good writing code that tries to access a non-existent table or column.
+\\
+
+Keeping the database structure up-to-date becomes particularly tricky if there are multiple developers working on the same codebase. In the bad ole days developers would share a ``dump'' of the database: i.e. a complete copy of all of the tables, columns, and data. But this is bad for a couple of reasons:
+
+\begin{itemize}
+    \item Say you have two developers working on the site. One of them, Asha, is working on stuff to do with money and the various related tables. The other developer, Jiro, is working on stuff to do with users and the tables related to that. If Asha does a dump of her database and passes it over to Jiro, then it's not going to have all the user tables that Jiro has created, so he'd need to recreate them manually.
+
+    \item Sharing the structure of the database is desirable, but we probably don't want to share the test data that other developers have been putting in. The things that people type in as test data are probably best kept to themselves. Anyone looking at a database I've populated manually would think I was obsessed with wombats, fish, and spoons.\footnote{And I really don't care for fish.}
+\end{itemize}
+
+This is where \textbf{database migrations} come in. A database migration is a file that contains instructions on how to update a database: for example, create a new table called \texttt{spoons} with \texttt{id INT}, \texttt{type VARCHAR(50)}, and \texttt{runcible TINYINT} columns. This file can then be run in order to update the structure of the database.
+\\
+
+A migration only needs to run once (e.g. the table only needs creating a single time), so there also needs to be a way to keep track of which database migration files have run and which haven't. Laravel will handle all of this for us.
+
+
+
+\section{Creating a Migration}
+
+The Homestead box creates a database called \texttt{homestead} which Laravel has been setup to use by the provisioning script.\footnote{Take a look in the \texttt{.env} file if you want to see.} The \texttt{homestead} database is empty by default, so we'll need to add the structure that we need for our site.
+\\
+
+We're going to build a simple blog which will allow us to create articles which have a title and an article body. So we want to create a table called \texttt{articles} with \texttt{id}, \texttt{title}, and \texttt{content} columns.
+\\
+
+Make sure you're inside the Vagrant VM and in the \texttt{code} directory and then run:
+
+\begin{minted}{shell}
+    artisan make:model Article -m
+\end{minted}
+
+This creates an Article model class\footnote{We'll look at models shortly.} (\texttt{app/Article.php}) as well as a database migration (\texttt{database/migrations/<timestamp>\_create\_articles\_table.php}).
+\\
+
+Look inside the database migration and you'll see the following:
+
+\inputminted{php}{05-eloquent/figures/01-migration.php}
+
+As you can see, a migration consists of an \texttt{up} method and a \texttt{down} method. The \texttt{up} method's job is to make the changes that we want to the database. The \texttt{down} method's job is to reverse the changes that \texttt{up} made: this allows us to \textbf{rollback} a migration if we made a mistake.
+\\
+
+You can see that both methods are already partly written for us. The \texttt{up} method is creating an \texttt{articles} table with an \texttt{id} column and the \texttt{down} method will remove the \texttt{articles} table. In fact, we won't need to change the \texttt{down} method at all.
+
+\pagebreak
+
+\begin{infobox}{Timestamps}
+    You'll notice that that \texttt{up} method also includes \texttt{\$table->timestamps()}. This adds \texttt{created\_at} and \texttt{updated\_at} columns, which Laravel will automatically keep up-to-date for us.
+    \\
+
+    These columns can be very useful when working with more complex data tables. Later we'll look at a case when they are perhaps not necessary, but for now, it's best to keep them.
+\end{infobox}
+
+However, we do need to update the \texttt{up} method to include the other columns:
+
+\phpinputminted{05-eloquent/figures/02-migration-up}
+
+We've added the \texttt{title} column as a ``string'' with maximum length of 100: in MySQL this is the same as \texttt{VARCHAR(100)}.\footnote{It doesn't use \texttt{varchar} because Laravel supports lots of different SQL engines, not all of which use the same types as MySQL.} We've also added a \texttt{content} column with the ``text'' type – this is for storing arbitrarily long bits of text.
+
+\begin{infobox}{Table and Column Naming}
+    Remember, you should \textbf{use snake-case for table and column names}: all lower-case with an underscore instead of a space. If you don't you're opening yourself up to a lot of issues later on.
+\end{infobox}
+
+
+\section{Running Migrations}
+
+We've now created our database migration, but until we \textit{run} it nothing will happen.\footnote{It's important to note that database migrations are not part of the Laravel app: they do not run whenever the app loads, only when you run them with \texttt{artisan}.} We run all migrations that haven't yet been run with:
+
+\begin{minted}{shell}
+    artisan migrate
+\end{minted}
+
+If you look at the database now you'll see that the \texttt{articles} table has been created.
+\\
+
+You will need to run \texttt{artisan migrate} whenever you add new database migrations or if you pull down code that someone else has written.
+
+\begin{infobox}{Migration Sets}
+    Laravel creates a \texttt{migrations} table in your database to keep track of which migrations have already run.
+    \\
+
+    When you run \texttt{artisan migrate} it will run \textit{all} of the migrations that haven't been run yet in one go.
+    \\
+
+    When we refer to a migration ``set'' we mean one or more migrations that ran at the same time.
+\end{infobox}
+
+
+\section{Rollback}
+
+If you made a mistake, you can run \texttt{artisan migrate:rollback} to undo the last set of migrations that you ran, make any changes, and then run \texttt{artisan migrate} again.
+\\
+
+If you want to rollback multiple sets of migrations then you can use:
+
+\begin{minted}{php}
+    # rollback last two sets of migrations
+    artisan migrate:rollback --step=2
+\end{minted}
+
+If you make changes to a migration file you will need to run that migration again using \texttt{migrate:rollback} followed by \texttt{migrate}.
+
+
+\begin{infobox}{When migrations go bad}
+    Sometimes database migrations go wrong: you might mistype a table name or something, then when you try to run the migrations you just get a bunch of errors. Often no amount of \texttt{up}ing and \texttt{down}ing can get you out of this. There are two useful commands to try:
+
+    \begin{minted}{bash}
+        # runs all of the down methods, then runs all the ups again
+        artisan migrate:refresh
+
+        # wipes the database, then runs all the ups again
+        artisan migrate:fresh
+    \end{minted}
+
+    Be aware that running either of these command will wipe \textit{all} data in your database.
+\end{infobox}
+
+
+\section{Changing Existing Tables}
+
+Sometimes you'll need to update database tables that already exist.
+\\
+
+First, you'll need to create a new migration. Say we wanted to add users to our \texttt{articles} table to keep track of who wrote what article. We'd use:
+
+\begin{minted}{bash}
+    aristan make:migration add_users_to_articles_table --table=articles
+\end{minted}
+
+It's important to give your migration a descriptive name (using snake-case). Notice that you can use the \texttt{--table} option to specify a table: this will automatically generate much of the migration code for us.
+\\
+
+You can write the migration much the same as before, except anything you do will be working with the existing table.
+\\
+
+Be careful to update the \texttt{down()} method to undo \textit{everything} that you write in the \texttt{up()} method.
+
+
+\subsection{Changing Existing Columns}
+
+To change existing \textit{columns} of a table (as opposed to adding or removing columns to an existing database), you'll need to install an additional package:
+
+\begin{minted}{bash}
+    composer require doctrine/dbal
+\end{minted}
+
+You can now use the \texttt{change()} method:
+
+\begin{minted}{php}
+    Schema::table('articles', function (Blueprint $table) {
+        $table->string("title", 50)->change();
+    });
+\end{minted}
+
+
+\begin{infobox}{Changing Existing Migration Files}
+    If your database doesn't contain any important data and you've not yet shared the migration with anyone else then sometimes it can be easier to go back and edit your original migration file and use \texttt{artisan migrate:refresh}.
+    \\
+
+    If you're working on the project with someone else and you've already shared the migration with them you shouldn't do this unless you've agreed in advance that it's the best thing to do. In this instance, make sure everyone runs \texttt{artisan migrate:refresh}, otherwise your database structures will get out of sync.
+\end{infobox}
+
+
+
+\section{Additional Resources}
+
+\begin{itemize}[leftmargin=*]
+    \item \href{http://laravel.com/docs/master/migrations}{Database Migrations}
+\end{itemize}
