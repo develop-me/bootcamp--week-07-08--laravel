@@ -43,10 +43,10 @@ A database is made up of \textbf{tables}, which are in turn made up of \textbf{r
 A table represents a collection of some sort of \textit{thing}, e.g. blog articles. A row is a single instance of that thing, e.g. an article. And a column represents a specific piece of information about that thing, e.g. an article title:
 \\
 
-\begin{tabu}{l l X}
-    \texttt{id} & \texttt{title}            & \texttt{content} \\
-    1           & Where Do Eels Come From?  & Nobody knows exactly  \\
-    2           & Do Moose Get Drunk?       & Maybe \\
+\begin{tabu}{l l l X}
+    \texttt{id} & \texttt{title}            & \texttt{content}     & \texttt{created\_at} \\
+    1           & Where Do Eels Come From?  & Nobody knows exactly & 2020-04-16 \\
+    2           & Do Moose Get Drunk?       & Maybe                & 2020-04-17 \\
 \end{tabu}
 
 \par\bigskip
@@ -65,7 +65,7 @@ Each column stores a specific type of data. Here are a few of the most common ty
         \texttt{INT}        & Whole numbers          & Signed (\texttt{+}/\texttt{-}) and unsigned  \\
         \texttt{TINYINT}    & Small whole numbers    & Often used to store boolean values (\texttt{0} and \texttt{1})  \\
         \texttt{DECIMAL}    & Decimal point numbers  & Need to specify a precision \\
-        \texttt{DATE}       & Dates                  &  \\
+        \texttt{DATE}       & Dates                  & \texttt{YYYY-MM-DD} format  \\
         \texttt{DATETIME}   & Storing times          & If you don't need to support time-zones \\
         \texttt{TIMESTAMP}  & Storing accurate times & If you do need to support time-zones \\
     \end{tabu}
@@ -268,37 +268,23 @@ We can also use \texttt{DROP} to remove an entire database:\footnote{Use with \t
 
 \section{Using MySQL with Vagrant}
 
-As the database is on the Vagrant machine we first need to SSH in:
-
-\begin{minted}{bash}
-    # go into the relevant project directory
-    cd my-project
-
-    # start vagrant - if not already running
-    vagrant up
-
-    # get onto the vagrant box
-    vagrant ssh
-\end{minted}
-
-Once we're on the Vagrant machine:
+SSH into your Vagrant machine (with \texttt{vagrant ssh}), then run:
 
 \begin{minted}{bash}
     # login to mysql
     # for Scotch Box username and password are "root"
-    mysql -u username -p
+    mysql -u <username> -p
 \end{minted}
 
 And once you're done:
 
-\begin{minted}{bash}
+\begin{minted}{mysql}
     # in MySQL
     # go from MySQL prompt back to command-line on the Vagrant machine
     exit
-
-    # exit SSH back to your host machine
-    exit
 \end{minted}
+
+You may need to run \texttt{exit} a \textit{second} time to leave the Vagrant VM.
 
 \section{Additional Resources}
 
