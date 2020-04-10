@@ -137,14 +137,47 @@ It's important to give your migration a descriptive name (using snake-case). Not
 \\
 
 You can write the migration much the same as before, except anything you do will be working with the existing table.
-\\
 
-Be careful to update the \texttt{down()} method to undo \textit{everything} that you write in the \texttt{up()} method.
+\pagebreak
 
+For example, to add a \texttt{user\_id} column to \texttt{articles}:
+
+\begin{minted}{php}
+    public function up()
+    {
+        Schema::table("articles", function (Blueprint $table) {
+            // add a new column
+            $table->foreignId("user_id");
+        });
+    }
+\end{minted}
+
+Be careful to update the \texttt{down()} method to undo \textit{everything} that you write in the \texttt{up()} method:
+
+\begin{minted}{php}
+    public function down()
+    {
+        Schema::table("articles", function (Blueprint $table) {
+            // drop the column added in up()
+            $table->dropColumn("user_id");
+        });
+    }
+\end{minted}
+
+
+\begin{infobox}{Changing Existing Migration Files}
+    If your database doesn't contain any important data and you've not yet shared the migration with anyone else then sometimes it can be easier to go back and edit your original migration file and use \texttt{artisan migrate:refresh}.
+    \\
+
+    If you're working on the project with someone else and you've already shared the migration with them you shouldn't do this unless you've agreed in advance that it's the best thing to do. In this instance, make sure everyone runs \texttt{artisan migrate:refresh}, otherwise your database structures will get out of sync.
+\end{infobox}
+
+
+\pagebreak
 
 \subsection{Changing Existing Columns}
 
-To change existing \textit{columns} of a table (as opposed to adding or removing columns to an existing database), you'll need to install an additional package:
+To change existing \textit{columns} of a table (as opposed to adding or removing columns of an existing table), you'll need to install an additional package:
 
 \begin{minted}{bash}
     composer require doctrine/dbal
@@ -157,14 +190,6 @@ You can now use the \texttt{change()} method:
         $table->string("title", 50)->change();
     });
 \end{minted}
-
-
-\begin{infobox}{Changing Existing Migration Files}
-    If your database doesn't contain any important data and you've not yet shared the migration with anyone else then sometimes it can be easier to go back and edit your original migration file and use \texttt{artisan migrate:refresh}.
-    \\
-
-    If you're working on the project with someone else and you've already shared the migration with them you shouldn't do this unless you've agreed in advance that it's the best thing to do. In this instance, make sure everyone runs \texttt{artisan migrate:refresh}, otherwise your database structures will get out of sync.
-\end{infobox}
 
 
 
