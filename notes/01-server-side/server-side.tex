@@ -1,15 +1,16 @@
-PHP is a general purpose programming language which is most commonly used \textbf{server-side}.\footnote{Others you may have heard of include Ruby, Python, Perl, and JavaScript}
-\\
-
-``Server-side'' means the code runs on a web server, as opposed to in a web-browser (\textbf{client-side}). Common things that server-side code is used for include sending email, working with files, and interacting with a database.
+\textbf{Server-side} code runs on a web server, as opposed to in a web-browser (\textbf{client-side}). Common things that server-side code is used for include sending email, working with files, and interacting with a database.
 
 \img{12cm}{01-server-side/img/centralised-architecture.png}{0em}{Server-side Architecture}
 
 Probably the two biggest concerns of server-side programming are \textbf{performance} and \textbf{security}: making sure code runs quickly, controlling who can access files, storing data securely, \&tc.
+\\
+
+We'll be using PHP for most of our server-side code,\footnote{It's free, popular, and you spent all last week learning it} but you can use almost any programming language for the same purpose: Ruby, Python, Java, Haskell, and even JavaScript.
+
 
 \section{Web Servers}
 
-PHP doesn't have to be run on a web server, as you have experienced by running PHP using the command-line, but to build apps that can be of use and be accessed by other people, we need a web server.
+PHP doesn't have to be run on a web server, as you have experienced by running PHP using the command-line, but to build apps that can be accessed by other people from a web-browser, we need a web server.
 \\
 
 A web server is just a piece of software that runs on a computer that is connected to the internet and ``serves'' files to a user who requests them. Every time you visit a website you're talking to a web server. We'll look into precisely how this works when we look at HTTP later in the course.
@@ -18,7 +19,7 @@ A web server is just a piece of software that runs on a computer that is connect
 Common web servers are NGINX (``Engine X'') and Apache on Linux, or IIS (Internet Information Services) on Windows.
 
 \begin{infobox}{LAMP/LEMP}
-    The most common server \textbf{stack} in the world running 72.5\% of websites:
+    \textbf{LAMP}/\textbf{LEMP} is most common server \textbf{stack} in the world. More than 70\% of websites are built with it:
     \\
 
     \begin{tabu}{l X}
@@ -30,7 +31,7 @@ Common web servers are NGINX (``Engine X'') and Apache on Linux, or IIS (Interne
 
     \par\bigskip
 
-    LAMP is the older of the two and, as such, still the most heavily used. But there is an ongoing movement towards LEMP as NGINX generally provides much better performance for modern web applications.
+    LAMP is the older of the two and, as such, still the most heavily used. But LEMP is becoming increasingly popular as NGINX was designed specifically for high performance with modern web applications.
 \end{infobox}
 
 \section{Additional Resources}
