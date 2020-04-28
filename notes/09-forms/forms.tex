@@ -1,6 +1,70 @@
 If we want to submit data to the site we'll need a form.
+\\
 
-\section{The \texttt{method} Attribute}
+Let's create a simple form for creating a new blog post.
+\\
+
+In \texttt{resources/views/form.blade.php}:
+
+\inputminted{php}{09-forms/figures/01-form.blade.php}
+
+And add a route so that we can view it:
+
+\begin{minted}{php}
+    Route::group(["prefix" => "articles"], function () {
+        // add *above* route with URL parameter
+        // otherwise 'create' will get included in that
+        Route::get('create', "Articles@create");
+        Route::get('{article}', "Articles@show");
+    });
+\end{minted}
+
+Then in your \texttt{Articles} controller:
+
+\begin{minted}{php}
+    public function create()
+    {
+        return view("form");
+    }
+\end{minted}
+
+Now visit \texttt{/articles/create} and you should see the form we just created.
+
+\section{Form \texttt{method}}
+
+If you add some data and then try to submit the form you'll notice that the page refreshes and the URL now includes a lot of extra gumpf after a \texttt{?} character.
+
+\begin{minted}[fontsize=\footnotesize]{text}
+    /articles/create?title=Tea&content=These%20teas%20are%20the%20bees%20knees
+\end{minted}
+
+This is known as a \texttt{query string} and you'll see that it contains the data that you've just submitted.
+\\
+
+When data is submitted in this way we call it a \texttt{GET} request: the data is submitted as part of the URL. This is very useful for things like search forms, where each search query creates a different URL. However, it's no good for submitting lots of data as URLs have a limited length. It's also no good for submitting sensitive data, as all of the data in the URL gets added to your browser history, which has various security implications.
+\\
+
+That's where \texttt{POST} comes in. If we tell a browser to submit a form using \texttt{POST} it will submit the data as the \textbf{body} of the request. We'll look at exactly what this means later in the course, but for now all you need to know is that that data gets sent to the server, but it doesn't get added to the URL.
+
+\begin{tabu}{l l l X}
+    \textbf{Method} & \textbf{How it submits data}       & \textbf{Example usage} \\
+    \texttt{GET}    & Data is added to the URL           & A search form \\
+    \texttt{POST}   & Data in the body of the request    & Submitting complex/sensitive data \\
+\end{tabu}
+
+\par\bigskip
+
+By default a \texttt{<form>} will submit data as a \texttt{GET} request. To get it to use \texttt{POST} we'll need to add the \texttt{method} attribute to our template:
+
+\begin{minted}{html}
+    <form class="form" method="post">
+\end{minted}
+
+
+\begin{infobox}{\texttt{action}}
+    When we submit data to a form we need to tell it where to submit the data to. In a Laravel app it is normal to submit data to the same URL as the page, we can do this because rendering the page is a \texttt{GET} request, whereas submitting the form is usually a \texttt{POST} request. We do not need to specify an \texttt{action} attribute in this case.
+\end{infobox}
+
 
 \section{\texttt{GET} Requests}
 
@@ -11,6 +75,7 @@ Useful for search. Never use for submitting things like passwords.
 \texttt{POST} routes should \textbf{always} return a call to \texttt{redirect()}. This avoids resubmitting the form if the page is refreshed.
 
 \subsection{Mass Assignment Vulnerability}
+
 By default Laravel won't let you do things that might cause security problems. Accepting whatever the user gives you and sending it straight to the database is one of those cases: known as the \textbf{mass assignment vulnerability}.
 \\
 
