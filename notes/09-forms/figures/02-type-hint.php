@@ -1,11 +1,6 @@
 <?php
 
-public function store(ArticleRequest $request)
+public function createPost(ArticleRequest $request)
 {
-  // ... store code
-}
-
-public function update(ArticleRequest $request, Article $article)
-{
-  // ... update code
+  // ... create post code
 }

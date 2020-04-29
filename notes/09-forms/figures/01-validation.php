@@ -9,12 +9,12 @@ class ArticleRequest extends FormRequest
     return true;
   }
 
-  // an array of validation rules for each JSON property
+  // an array of validation rules for each submitted value
   public function rules()
   {
     return [
       "title" => ["required", "string", "max:100"],
-      "article" => ["required", "string"],
+      "content" => ["required", "string"],
     ];
   }
 }
