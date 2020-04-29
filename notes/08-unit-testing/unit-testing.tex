@@ -145,24 +145,7 @@ We should also test that values not in \texttt{\$fillable} are not added:
     }
 \end{minted}
 
-Let's add a \texttt{truncate} method to our \texttt{Article} model:
-
-\begin{minted}{php}
-    use Illuminate\Support\Str;
-\end{minted}
-
-\begin{minted}{php}
-    public function truncate()
-    {
-        // use the Laravel Str::limit method
-        return Str::limit($this->content, 20);
-    }
-\end{minted}
-
-We use Laravel's \href{http://laravel.com/docs/6.x/helpers#method-str-limit}{\texttt{Str::limit} helper method} to take the article content and limit it to 20 characters.
-\\
-
-We can now test this by adding the following to \texttt{ArticleTest}:
+Let's test our \texttt{truncate} method to our \texttt{Article} model by adding the following to \texttt{ArticleTest}:
 
 \begin{minted}{php}
     public function testTruncate()
@@ -309,13 +292,13 @@ Technically, this is blurring the lines between Unit tests and Feature tests, bu
 First, let's create a new test, putting it in an appropriate namespace:
 
 \begin{minted}{bash}
-    artisan make:test Http\\Controllers\\API\\ArticlesTest --unit
+    artisan make:test Http\\Controllers\\ArticlesTest --unit
 \end{minted}
 
 Then we'll edit the test file:
 
 \begin{minted}{php}
-    namespace Tests\Unit\Http\Controllers\API;
+    namespace Tests\Unit\Http\Controllers;
 
     // setup to use database
     use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -330,28 +313,27 @@ Then we'll edit the test file:
         // ensures the database is cleared between tests
         use RefreshDatabase;
 
-        // a test for the controller's store() method
-        public function testStore()
+        // a test for the controller's createPost() method
+        public function testCreatePost()
         {
             // use the "call" method to fake a
-            // POST request to /api/articles
-            // then get the original content (otherwise we'll get JSON)
-            $response = $this->call('POST', '/api/articles', [
+            // POST request to /articles/create
+            // then get the original content
+            $response = $this->call('POST', '/articles/create', [
                 "title" => "foo",
                 "content" => "bar",
-            ])->getOriginalContent();
+            ]);
 
-            // check we get the article back
-            $this->assertSame("bar", $response->content);
-
-            // test to see if it's been added to the database
+            // test to see if and article has been added to the database
+            // the database is wiped each test, so should be the first one
             $article = Article::all()->first();
+            $this->assertSame("foo", $article->title);
             $this->assertSame("bar", $article->content);
         }
     }
 \end{minted}
 
-First, we do the usual database test setup bits and pieces. Then in our test we make a fake \texttt{POST} call to \texttt{api/articles} and get the ``original content'' (this gives us back what was actually returned, rather than the JSON version). Then we test first to see if we got an article with the right \texttt{content} back and secondly to see if it was added to the database.
+First, we do the usual database test setup bits and pieces. Then in our test we make a fake \texttt{POST} call to \texttt{/articles/create}. Then we test to see if it was added to the database.
 \\
 
 As always, don't forget to run your tests:
@@ -360,17 +342,17 @@ As always, don't forget to run your tests:
     vendor/bin/phpunit --testsuite Unit
 \end{minted}
 
-If all tests pass we can be sure that the \texttt{store} method is doing what we expect: taking the data from the request, storing it in the database, and returning it.
+If all tests pass we can be sure that the \texttt{createPost} method is doing what we expect: taking the data from the request and storing it in the database.
 
 \subsection{When Controller Test Go Wrong}
 
 Controller tests might not always work and it can be hard to work out why.
 \\
 
-If you're fake request doesn't work for some reason (e.g. validation fails), then the \texttt{getOriginalContent()} method will return \texttt{null} (as there is no original content to return). Then any assertions on this will fail.
+If your fake request doesn't work for some reason (e.g. validation fails), then any assertions will also fail.
 \\
 
-The easiest way to work out what's going on is to make a \textit{real} request to your controller with the same data and see what happens. You should get an error which you can then work with.
+The easiest way to work out what's going on is to make a \textit{real} request in the browser with the same data and see what happens. You should get an error which you can then work with.
 
 
 
