@@ -1,20 +1,20 @@
-\section{Sessions}
-
-It can be useful to keep track of a user on a website. For example, if they login to the website, we want to keep track of them between pages.
-\\
-
-We can use a ``cookie'' to store a simple bit of text on the user's computer. This is sent back to the server every time that a request is made. The server can then use this to work out who the user is.
+Laravel makes it very easy to add user authentication to our app, including pre-built login, registration, and password reset forms. We can then authorise that user to do different things.
 
 
-\section{Storing Passwords}
+\begin{infobox}{Authentication vs Authorisation}
+    Authentication means checking that a user is who they say they are. This normally involves asking for a password that only that user could know.
+    \\
 
-\subsection{Rainbow Tables}
+    Authorisation is allowing a user to do different things based on who they are. For example, editing a blog post that they wrote, but not one that someone else wrote.
+    \\
 
-\subsection{Salting}
+    The two together are referred to as ``auth''. It's very easy to get them muddled and people frequently do.
+\end{infobox}
 
-\section{The Auth Package}
 
-First add the UI package to generate the forms for us:
+\section{Auth Scaffolding}
+
+First add the UI package which will generate the forms for us:
 
 \begin{minted}{php}
     composer require laravel/ui --dev
@@ -29,8 +29,151 @@ Then add the bootstrap Auth UI:
 You'll need to update all the views in \texttt{resources/views/auth} to use \texttt{@extends('app')} (instead of \texttt{layouts.app}). You can then remove the \texttt{resources/views/layouts} directory.
 \\
 
-We don't want to allow user registration, so we'll turn this off in \texttt{routes/web.php}:
+The above process will have added the necessary routes to our app. But we probably want to disable the user registration route. So update \texttt{routes/web.php}:
 
 \begin{minted}{php}
     Auth::routes(['register' => false]);
 \end{minted}
+
+Now you can go to \texttt{/login} and see the login form. However, you won't be able to login just yet as you haven't created a \texttt{User}.
+
+
+\section{\texttt{User} Model}
+
+The \texttt{User} model already exists inside the \texttt{app} directory and the relevant migrations were there when you did you first database migrations, so the tables are already in place too.
+\\
+
+The easiest way to create a new user is to use \texttt{artisan tinker}:
+
+\begin{minted}{php}
+    $user = new User();
+    $user->name = "Your Name"
+    $user->email = "your@email.horse"
+    $user->password = Hash::make("password")
+    $user->save()
+\end{minted}
+
+Now if you visit \texttt{/login} you should be able to login to your app.
+
+\pagebreak
+
+
+\begin{infobox}{Hashing Passwords}
+    It's really important not to store a user's password in plain text. If someone got their hands on the database – a ``hacker'' or just a malicious employee – they could see the password and then try it on other websites. Because most people reuse the same password on lots of sites, this works surprisingly well.
+    \\
+
+    We could \textbf{encrypt} a password: that means obscuring it in some way that is reversible. We could then store then encrypted version and decrypt it when necessary. However, because this is reversible, you still have the potential for someone to decrypt the password and view it.
+    \\
+
+    \textbf{Hashing} is the process of taking a string and turning it into a very-almost-certainly unique different string. For example ``fish'' might become:
+
+    \begin{minted}{text}
+        64875fcccaac069fcb3e0e201e7d5b9166641608
+    \end{minted}
+
+    As long as the hashing algorithm always gives the same output given the same input we don't need to ever reverse the process to see what the user's password is, we can just compare the hashed version in the database with a hashed version of what they typed into the login form.
+    \\
+
+    There are lots of different ways to hash a string. Some older ones like MD5 and SHA1 have known vulnerabilities that make them insecure.
+    \\
+
+    If you know the hashing algorithm used it's possible to build a \textbf{Rainbow Table}: a database of the hashes of all combinations of letters and digits up to a certain length. Then you can simply compare the hashed version to the results in the database and work out the password.
+    \\
+
+    \textbf{Salting} was invented to get around the issue of Rainbow Tables. If you append a long random string (the ``salt'') to the beginning of the user's password and keep track of this, you can make sure the string being hashed is longer than a Rainbow Table could conceivably store (more than about 30 characters becomes unrealistic for storage/performance). Then to check the password you just concatenate the password and the salt and check the result.
+    \\
+
+    However, even this has issues, as computers get faster over time and what's computationally expensive today might be cheap and easy in a few years. Modern hashing techniques, such as bcrypt, get around this by hashing the password repeatedly for a given amount of time. As computers get faster, the number of times it gets hashed will go up and up, meaning that it's \textit{always} computationally expensive to try and generate a Rainbow Table. Bcrypt also automatically salts the password and keeps track of this in the hash itself along with the specific hashing algorithm that was used and how many times it was hashed:
+
+    \begin{minted}{text}
+        $2y$10$Ng9xo7lGx8OFciETjR38auk9BgGM98.UqLjrakvt9Vu2REL1KiOXG
+         1  2  3                     4
+    \end{minted}
+
+    \begin{enumerate}
+        \item \texttt{2y}: It's the fixed version of the blowfish hashing algorithm
+        \item \texttt{10}: It's been hashed $2^{10}$ times
+        \item \texttt{Ng9xo7lGx8OFciETjR38au}: The salt (128 bits – 22 characters)
+        \item \texttt{k9BgGM98.UqLjrakvt9Vu2REL1KiOXG}: The hash (184 bits – 31 characters)
+    \end{enumerate}
+
+    In conclusion, use Laravel's \texttt{Hash} class and you'll be fine.
+\end{infobox}
+
+
+\section{Authentication}
+
+Now that our app understands the concept of a logged-in user, we can do various things with the \texttt{Auth} class in our controllers.
+\\
+
+First make sure to \texttt{use} it:
+
+\begin{minted}{php}
+    use Auth;
+\end{minted}
+
+Then we can use various static methods:
+
+\begin{minted}{php}
+    Auth::user() // gives back the User model
+    Auth::id() // gives back the user's id
+\end{minted}
+
+
+\section{Authorisation}
+
+We can make sure that some of the parts of our app are only visible to logged-in users, by using the \texttt{auth} \textbf{middleware}:
+
+\begin{minted}{php}
+    Route::group(["prefix" => "articles"], function () {
+        // put behind the auth middleware
+        // need to be logged in to use
+        Route::group(["middleware" => "auth"], function () {
+            Route::get('create', "Articles@create");
+            Route::post('create', "Articles@createPost");
+            Route::get('{article}/edit', "Articles@edit");
+            Route::post('{article}/edit', "Articles@editPost");
+        });
+
+        // don't need to be logged in to view or comment
+        Route::get('{article}', "Articles@show");
+        Route::post('{article}', "Articles@commentPost");
+    });
+\end{minted}
+
+We wrap the routes that we want to protect using the \texttt{middleware} group option. Now if we try to visit any of these routes without being logged in we'll be taken to the login form.
+\\
+
+We can use \href{http://laravel.com/docs/master/authorization}{Gates and Policies} to limit access even further – for example, only allowing a user to edit articles they've written – but this is beyond the scope of this chapter.
+
+
+\section{Under the Hood}
+
+Laravel does all of the hard-work for us, but it's useful to know a little bit about what's going on.
+
+\subsection{Cookies}
+
+It can be useful to keep track of a user on a website. For example, if they login to the website, we want to keep track of them between pages.
+\\
+
+We can use a \textbf{cookie} to store a simple bit of text on the user's computer. This is sent back to the server every time that a request is made. The server can then use this to work out who the user is.
+
+\subsection{Sessions}
+
+To use cookies we need to create a \textbf{session}. Laravel does this for us automatically. A session ID is a randomised string that gets generated when a user first visits your website. This is then stored in a cookie and used to identify the user on future requests. It's important that the session ID be hard to guess, otherwise anyone could manually create a cookie and guess at sessions IDs hoping to trick the server into thinking that it was you.
+\\
+
+More advanced session IDs take into account things like the user's IP address, browser, and other identifying features. If any of these suddenly change then that suggests someone else is trying to use the session ID and the session ID is revoked. Although this adds additional security, it's also quite CPU intensive, as such sessions tend to only be used for requests that are unlikely to be made in quick succession, such as a user browsing a website. For things like API requests, which can sometimes be made many times a second, alternative methods of authentication are required.
+
+
+\section{Additional Resources}
+
+\begin{itemize}[leftmargin=*]
+    \item \href{http://laravel.com/docs/master/authentication}{Laravel: Authentication}
+    \item \href{http://laravel.com/docs/master/authorization}{Laravel: Authorisation}
+    \item \href{http://laravel.com/docs/master/authorization}{Laravel: Gates and Policies}
+    \item \href{https://en.wikipedia.org/wiki/Cryptographic_hash_function}{Wikipedia: Cryptographic Hash Functions}
+    \item \href{https://en.wikipedia.org/wiki/Bcrypt}{Wikipedia: Bcrypt}
+    \item \href{https://en.wikipedia.org/wiki/HTTP_cookie}{Wikipedia: HTTP Cookies}
+    \item \href{https://en.wikipedia.org/wiki/Session_(computer_science)#Server-side_web_sessions}{Wikipedia: Sessions}
+\end{itemize}
