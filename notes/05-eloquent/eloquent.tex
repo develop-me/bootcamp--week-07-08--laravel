@@ -108,6 +108,25 @@ We've added a method called \texttt{truncate} to the \texttt{Article} class.  Th
     $article->truncate(); // truncated version of the content
 \end{minted}
 
+Another useful method that we might add to our \texttt{Article} model is one that tells us, in human-readable form, how long ago a blog-post was posted:
+
+\begin{minted}{php}
+    public function relativeDate()
+    {
+        return $this->created_at->diffForHumans();
+    }
+\end{minted}
+
+We get the \texttt{created\_at} property, which is automatically created for us by Laravel. This property is also automatically turned into a \texttt{Carbon} date object, so we can just call the \href{https://carbon.nesbot.com/docs/#api-humandiff}{Carbon methods} on it directly, such as \texttt{diffForHumans()}.
+
+\begin{minted}{php}
+    // get the article with ID 1
+    $article = Article::find(1);
+
+    // call the relativeDate method we've added to the class
+    $article->relativeDate(); // something like "1 day ago"
+\end{minted}
+
 
 
 \section{Additional Resources}
