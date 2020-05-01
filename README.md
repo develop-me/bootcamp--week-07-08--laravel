@@ -11,4 +11,4 @@
     - Many-to-Many Relationships
 - Day 3: Authentication
 - Day 4: Deployment
-- Day 5: Quiz
+- Day 5: Finishing Off Day
