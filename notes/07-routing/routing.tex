@@ -4,7 +4,7 @@ Routing is the process of determining what code should be run based on the given
 When a user loads a page in a Laravel app, after setting everything up, Laravel has a look to see if the URL matches any of the defined \textbf{routes} (which live in the \texttt{routes} directory). A route represents a specific URL. If Laravel finds a match it then runs the code that the route points to.
 \\
 
-We'll create the routes in \texttt{routes/web.php}. If you have a look in there you'll see that it already contains a route:
+If you have a look in \texttt{routes/web.php}, you'll see that it already contains a route:
 
 \begin{minted}{php}
     <?php
@@ -16,25 +16,23 @@ We'll create the routes in \texttt{routes/web.php}. If you have a look in there 
     });
 \end{minted}
 
-We use a static method of the \texttt{Route} class to say that if the user visits \texttt{/} (the \textbf{root}\footnote{Yes, it's the root route} URL – e.g. the homepage of our site) we should return a \textbf{view} called ``welcome''. This is why, if you visit your Laravel site, you'll see a ``Laravel'' page. But if you go to any other URL you'll get a 404.
+We use a static method of the \texttt{Route} class to say that if the user visits \texttt{/} (the \textbf{root}\footnote{Yes, it's the root route} URL – e.g. the homepage of our site) we should return a \textbf{view} called ``welcome''. This is why, if you visit your Laravel site, you'll see the \texttt{welcome.blade.php} template. But if you go to any other URL you'll get a 404.
 \\
 
-Let's update this so that it loads a file of our own creation.
-\\
-
-Create a file \texttt{resources/views/home.blade.php}:
-
-\inputminted{html}{07-routing/figures/01-home.html}
-
-And now update \texttt{routes/web.php} to point to this file:
+Let's add another route for an ``About'' page:
 
 \begin{minted}{php}
-    Route::get('/', function () {
-        return view('home');
+    Route::get('/about', function () {
+        return view('about');
     });
 \end{minted}
 
-By default Laravel looks in \texttt{resources/views} for views, so this will load the file we've just created.
+Next, create a template \texttt{resources/views/about.blade.php}:
+
+\inputminted{html}{07-routing/figures/01-about.blade.php}
+
+Now, visit \texttt{/about} if your browser and you should see the new page.
+
 
 
 \section{URL Parameters}
@@ -44,7 +42,7 @@ Next, let's add a route for an article.
 
 First create the file \texttt{resources/views/article.blade.php}:
 
-\inputminted{html}{07-routing/figures/02-article.html}
+\inputminted{html}{07-routing/figures/02-article.blade.php}
 
 And then add another route to \texttt{routes/web.php}:
 

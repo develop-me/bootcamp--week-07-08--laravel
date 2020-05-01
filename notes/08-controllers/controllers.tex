@@ -1,81 +1,155 @@
-\section{Controllers}
-
-\textbf{Controller} is another term that comes up a lot in software development. A controller's job is to bring together all the other bits of code that make up an app: to \textit{control} what happens. In Laravel, controllers are called by the router: they take the request, do whatever it is that needs doing, and then return a response.
+As our app gets more complicated, we don't want to have to put all of the logic that works out what to show to the user in the routes file: it would quickly become unmanageable.
 \\
 
-Run the following inside your Vagrant box to create an Articles controller:
+A \textbf{controller}'s job is to bring together all the other bits of code that make up an app: to \textit{control} what happens. In Laravel, controllers are called by the router: they take the request, do whatever it is that needs doing, and then return a response.
+\\
+
+First, we'll need a class. Run the following inside your Vagrant box to create an Articles controller:
 
 \begin{minted}{bash}
     artisan make:controller Articles
 \end{minted}
 
 This will create a file (\texttt{app/Http/Controllers/Articles.php}), which contains the boilerplate for a controller.
-\\
 
-\subsection{Controller Methods}
+\section{Controller Methods}
 
 You can define your own methods in your controller for handling different requests.
 \\
 
-This \texttt{show()} method is designed to find and show a single article, invoking the \texttt{articles/show.blade.php} template to do so.
+First, let's update our routes to use the \texttt{Articles} controller:
+
+\begin{minted}{php}
+    Route::get('/', "Articles@index");
+\end{minted}
+
+This is telling Laravel to run the \texttt{index} method of the \texttt{Articles} controller when the user visits the root route (\texttt{/}).
 \\
 
-The data (properties) from the Article model are passed into the view with the variable name \texttt{article}.
+If you try loading the site now you'll get a server error. We'll need to add the method to \texttt{Articles}:
 
 \begin{minted}{php}
     class Articles extends Controller
     {
-        // shows single article
-        public function show($id)
+        public function index()
         {
-            $article = Article::find($id);
-
-            return view("articles/show", [
-                "article" => $article
-            ]);
+            return view("welcome");
         }
     }
 \end{minted}
 
-Invoking this controller to handle a request would be done on the route, as such:
+This might just seem like we've made everything much more complicated for no obvious reason. But there are many advantages, one of which is that we can pass in data to the view much more easily.
+\\
+
+First, tell the \texttt{Articles} controller where to find your \texttt{Article} model class:
 
 \begin{minted}{php}
-    Route::get('articles/{id}', "Articles@show");
+    use App\Article;
 \end{minted}
+
+Then update your \texttt{index} method:
+
+\begin{minted}{php}
+    public function index()
+    {
+        return view("welcome", [
+            // pass in all the articles
+            "articles" => Article::all(),
+        ]);
+    }
+\end{minted}
+
+Now we can update our \texttt{welcome.blade.php} template so that we don't have to fetch the articles in the template itself:
+
+\begin{minted}{html}
+    @foreach ($articles as $article)
+\end{minted}
+
+Now we can potentially reuse the \texttt{welcome.blade.php} template for \textit{any} page that needs to show a list of articles, not just the homepage. So we should probably rename the file \texttt{articles.blade.php} and update the \texttt{Articles} controller:
+
+\begin{minted}{php}
+    public function index()
+    {
+        return view("articles", [
+            // pass in all the articles
+            "articles" => Article::all(),
+        ]);
+    }
+\end{minted}
+
+Next, let's get our page to show a specific article working properly (i.e. show the relevant article, rather than just some filler text).
+
+
+The data (properties) from the Article model are passed into the view with the variable name \texttt{article}.
+\\
+
+First update the route to use a method instead of putting all the code in the routes file:
+
+\begin{minted}{php}
+    Route::get("/articles/{article}", "Articles@show");
+\end{minted}
+
+Next, add the \texttt{show} method to the \texttt{Articles} controller:
+
+\begin{minted}{php}
+    public function show($id)
+    {
+        $article = Article::find($id);
+
+        return view("articles/show", [
+            "article" => $article
+        ]);
+    }
+\end{minted}
+
+The value from the URL parameter (the \texttt{\{article\}} bit in the route), gets passed in as the first argument to the method. So we can use this to find the relevant article and then pass it in.
+\\
+
+Now we can update our \texttt{article.blade.php} template:
+
+\begin{minted}{html}
+    @extends("app")
+
+    @section("content")
+      <div class="card">
+        <h2 class="card-header">{{ $article->title }}</h2>
+        <article class="card-body">
+          {{ $article->content }}
+        </article>
+      </div>
+    @endsection
+\end{minted}
+
+Now, if we visit \texttt{/articles/1} (assuming you have an article with the ID \texttt{1}), you should see the actual article text.
+\\
+
+However, if you visit \texttt{/articles/384938439}, you'll get an error (unless you got really carried away adding articles). That's because currently we don't check to see if we actually get an \texttt{Article} back from our call to \texttt{Article::find()}. So, sometimes, we get back \texttt{null}, that gets passed into the template, and then things go very wrong.
+\\
+
+Luckily, Laravel offers an elegant solution to this issue: \textbf{Route Model Binding}.
+
 
 \subsection{Route Model Binding}
 
-Laravel is able to resolve Eloquent models defined in routes or controller actions where the type-hinted variable name (\texttt{\$article} below) matches the route segment name (\texttt{\{article\}} below). For example:
+If, instead of just having the \texttt{\$id} parameter, we replace it with \texttt{Article \$article} Laravel is going to do some super-sneaky witchcraft:
 
 \begin{minted}{php}
-    Route::get('articles/{article}', function (App\Article $article) {
-        return $article->title;
-    });
-\end{minted}
-
-Since the \texttt{\$article} variable is type-hinted as the \texttt{App\\Article} Eloquent model and the variable name matches the \texttt{\{article\}} URI segment, Laravel will automatically inject the model instance that has an ID matching the corresponding value from the request URI.
-\\
-
-This can simplify the above \texttt{show()} method to:
-
-\begin{minted}{php}
-    class Articles extends Controller
+    public function show(Article $article)
     {
-        // shows single article
-        public function show(Article $article)
-        {
-            return view("articles/show", [
-                "article" => $article
-            ]);
-        }
+        return view("articles/show", [
+            "article" => $article
+        ]);
     }
 \end{minted}
 
-And route to:
+In standard PHP code, this wouldn't have any right to work, but in Laravel it does. That's because Laravel uses \textbf{reflection}: that's where rather than just running your code, it actually \textit{reads} your code and alters its behaviour accordingly. This is the sort of trick that should not be used too often: it takes more processing power and it's almost magical – and magical code is almost impossible to understand.
+\\
 
-\begin{minted}{php}
-    Route::get('articles/{article}', "Articles@show");
-\end{minted}
+So what's it actually doing? It reads your code, sees that you've asked for an \texttt{Article} and notices that it's in the place where you'd normally accept the value from the URL parameter. It then joins this up and, instead of just passing in the parameter value as a string, looks for an \texttt{Article} with a matching ID. If it finds one then it passes it in (so that your type declaration is still valid). If it doesn't then it doesn't even bother trying to run your controller method and just displays a 404 page instead.
+\\
+
+One thing to note, it's really important that the \texttt{\{article\}} bit in the route's URL parameter matches the model name, otherwise Route Model Binding won't be enabled.
+
 
 \begin{infobox}{View All Routes}
     A useful command to see all routes setup, the HTTP methods for them, which controllers and which methods will be run:
@@ -89,7 +163,6 @@ And route to:
 \section{Additional Resources}
 
 \begin{itemize}[leftmargin=*]
-    \item \href{https://laravel.com/docs/master/routing}{Routing}
-    \item \href{http://laravel.com/docs/master/controllers}{Controllers}
+    \item \href{http://laravel.com/docs/master/controllers}{Laravel: Controllers}
     \item \href{https://laraveldaily.com/how-to-structure-routes-in-large-laravel-projects/}{How to Structure Routes in Large Laravel Apps}
 \end{itemize}
