@@ -6,6 +6,7 @@
 - Add login functionality to your site
 - Make it so that only logged-in users can add/edit the data on the site
 - Add an indicator in your `<nav>` to say who is logged in (if at all)
+- Update your greeting on `welcome.blade.php` to greet the user with their name
 
 ### Tricksy
 

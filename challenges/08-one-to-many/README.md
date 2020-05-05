@@ -29,4 +29,3 @@ Now we can add animals to our owners.
 ## Tricksy
 
 - Add a form to the owner page so that you can add animals that they own
-- Create an appropriate unit test for the `dangerous` method of `Animal`. Test it for all five possible values.

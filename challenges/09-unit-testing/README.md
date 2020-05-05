@@ -8,10 +8,14 @@
 
 1) Create a method on `Owner` called `validPhoneNumber`. It should return `true` if the owner's telephone number is valid and `false` otherwise. Test it with at least five different values.
 
+1) Create an appropriate unit test for the `dangerous` method of `Animal`. Test it for all five possible values of biteyness.
+
 
 ### Testing With Databases
 
 1) Use `Owner::create()` and test that it gets added to the database (This is testing Laravel rather than code we've written, so would not be a good test in a real app, but it's a good starting point)
+
+1) Create a method on `Owner` called `numberOfPets()` that returns the number of pets an Owner owns. Create tests for it by adding data to the test database. Make sure you test it on at least an owner with zero, one, or two pets.
 
 
 ### Tricksy
