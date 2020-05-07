@@ -21,7 +21,7 @@ Read the [restful.training](https://github.com/develop-me/restful.training#restf
 
 ### Optional: Other APIs
 
-- Play around with the [Star Wars API](https://swapi.co/documentation)
+- Play around with the [Star Wars API](https://swapi.dev/documentation)
 
 - Sign up for a [Twilio trial account](https://www.twilio.com/try-twilio) and have a play around
 

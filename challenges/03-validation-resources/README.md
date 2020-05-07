@@ -28,7 +28,6 @@
 
 ### CORS (Section 4.3)
 
-- Get CORS working on your API
 - Check it's working by adding an `Origin` header to one of your requests
 
 
