@@ -1,4 +1,4 @@
-# Day 2: Afternoon
+# Day 3: Morning
 
 ## Many-to-Many
 
