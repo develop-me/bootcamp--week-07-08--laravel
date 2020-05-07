@@ -1,35 +1,8 @@
-# Day 1: Morning
-
-## Half-way reminder
-
-- code neatness
-- indentation
-- naming
-- debugging process
-
-## Server-side and Backend
-
-- PHP is server-side language
-- web servers runs PHP
-- what is role of server, why use it. Centralised architecture
-- LAMP/LEMP
-- Vagrant
-
-## Demo
-
-## [Exercise 01](https://github.com/develop-me/bootcamp--week-07--laravel/blob/master/challenges/01/01-scotchbox.md)
-
-- Can't access index.php directly (demo)
-- Hosts and IP addresses
-- Vagrantfile tour
-    - change IP for each box
-    - change hostname
-
 ## Databases
 
 - Intro to databases
 - Accessing
-    - SSH into your virtual server:
+    - SSH into your virtual VM:
         `vagrant ssh`
     - access MySQL with the root user account
         `mysql -u root -p`
@@ -40,8 +13,6 @@
 ## Demo
 
 - SQL to interact
-
-## [Exercise 02](https://github.com/develop-me/bootcamp--week-07--laravel/blob/master/challenges/01/02-mysql.md )
 
 ## Demo: Starting to run SQL queries
 
@@ -70,9 +41,6 @@
     (5, 'Josh Simons', 'Redland', 32);
     ```
 
-## [Exercise 03](https://github.com/develop-me/bootcamp--week-07--laravel/blob/master/challenges/01/03-practice-table.md)
-
-
 ## SQL conventions
 
 - "Special" words written in uppercase
@@ -83,8 +51,8 @@
     ```
 - Quotes and backticks
     ```sql
-    `table name`
-    `field name`
+    `table_name`
+    `field_name`
     'string value'
     "string value"
    ```
@@ -99,8 +67,6 @@ SELECT * FROM `graduates` WHERE `age` < 30;
 SELECT * FROM `graduates` WHERE `location` = 'Bedminster';
 ```
 
-## [Exercise 04](https://github.com/develop-me/bootcamp--week-07--laravel/blob/master/challenges/01/04-select.md)
-
 ## Demo: how to exit
 
 ```bash
@@ -109,16 +75,12 @@ vagrant@oli:~$ exit
 ~/Sites/scotchbox
 ```
 
-## [Exercise 05](https://github.com/develop-me/bootcamp--week-07--laravel/blob/master/challenges/01/05-add-column.md)
-
 ## "Relational" databases
 
 - planning (architecting) databases, change over time, efficiency
 - reduce duplication of data
 - example of blog articles, authors, login system, comments
 - example of `author_id` on `articles`
-
-## [Exercise 06](https://github.com/develop-me/bootcamp--week-07--laravel/blob/master/challenges/01/06-create.md)
 
 ## One-to-many
 
@@ -164,9 +126,6 @@ RIGHT JOIN
     ```
 - `ON DELETE CASCADE`
 
-## [Exercise 07](https://github.com/develop-me/bootcamp--week-07--laravel/blob/master/challenges/01/07.md)
-
-## [Exercise 08](https://github.com/develop-me/bootcamp--week-07--laravel/blob/master/challenges/01/08.md)
 
 ## Many-to-many
 - What if an animal can have many owners?

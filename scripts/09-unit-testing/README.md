@@ -42,8 +42,8 @@
 - Test `truncate` method of `Article`
     - Test once with short content
     - Test with long content
-- Setup reused article in `__construct`
-    - Make sure to run `parent::__construct()` first
+- Setup reused article in `setUp`
+    - Make sure to run `parent::setUp()` first
     - Store as property
     - Update tests
 
