@@ -15,8 +15,12 @@
 - Add `formattedPhoneNumber` method which formats the phone number appropriately
     e.g. 0117 492 7728
 
-Read the [Retrieving Models](https://laravel.com/docs/7.x/eloquent#retrieving-models) documentation. Then, in `artisan tinker`:
+Read the [Retrieving Models](https://laravel.com/docs/master/eloquent#retrieving-models) documentation. Then, in `artisan tinker`:
 
 - Get back just the owners who live in `Bristol`
 - Get back the owners in alphabetical order of their last names
 - Get back just the owners who have a telephone number starting with `0117`
+
+Read the [Database: Seeding](http://laravel.com/docs/master/seeding) documentation.
+
+- Add 100 new owners to the DB using seeding
