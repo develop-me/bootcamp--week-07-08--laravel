@@ -10,7 +10,7 @@ APIs typically use \textbf{tokens} to authenticate users. A token is just a rand
 The most common protocol for using tokens is OAuth2 and looks like this:
 
 \begin{enumerate}
-    \item The user makes a request to a dedicated authorisation endpoint, providing credentials such as username and password
+    \item The user makes a request to a dedicated authentication endpoint, providing credentials such as username and password
     \item The API checks whether these credentials are valid
     \item If valid, the API returns a token that is unique to the user
     \item The user makes all future requests supplying this token in the header
