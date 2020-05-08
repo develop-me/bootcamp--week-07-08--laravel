@@ -54,7 +54,10 @@
 - DO NOT USE SPACES OR HYPHENS OR FUNKY STUFF - snake_case
 - Run article migration: `artisan migrate`
 - Check database
-- Explain rollback: `artisan migrate:rollback` discuss "steps": `artisan migrate:rollback --step=2`
+- Explain rollback:
+    - `artisan migrate:rollback`: rolls back last "batch"
+    - `artisan migrate:rollback --step=1`: rolls back last individual migration
+    - `artisan migrate:rollback --step=2`: rolls back last two individual migrations
 - Write rollback and demo
 
 ## Adding columns

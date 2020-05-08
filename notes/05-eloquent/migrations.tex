@@ -81,14 +81,14 @@ If you look at the database now you'll see that the \texttt{articles} table has 
 
 You will need to run \texttt{artisan migrate} whenever you add new database migrations or if you pull down code that someone else has written.
 
-\begin{infobox}{Migration Sets}
+\begin{infobox}{Migration Batches}
     Laravel creates a \texttt{migrations} table in your database to keep track of which migrations have already run.
     \\
 
     When you run \texttt{artisan migrate} it will run \textit{all} of the migrations that haven't been run yet in one go.
     \\
 
-    When we refer to a migration ``set'' we mean one or more migrations that ran at the same time.
+    When we refer to a migration ``batch'' we mean one or more migrations that ran at the same time.
 \end{infobox}
 
 
@@ -97,11 +97,11 @@ You will need to run \texttt{artisan migrate} whenever you add new database migr
 If you made a mistake, you can run \texttt{artisan migrate:rollback} to undo the last set of migrations that you ran, make any changes, and then run \texttt{artisan migrate} again.
 \\
 
-If you want to rollback multiple sets of migrations then you can use:
+If you want to rollback a single migration, as opposed to the last batch, then you can use:
 
 \begin{minted}{php}
-    # rollback last two sets of migrations
-    artisan migrate:rollback --step=2
+    # rollback the last individual migration
+    artisan migrate:rollback --step=1
 \end{minted}
 
 If you make changes to a migration file you will need to run that migration again using \texttt{migrate:rollback} followed by \texttt{migrate}.
