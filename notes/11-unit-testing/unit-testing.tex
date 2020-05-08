@@ -1,0 +1,365 @@
+\textbf{Unit Testing} is when we test small parts of our code to check that it works as we expect. This can save us having to dump bits of code to see what's going on.
+\\
+
+Because unit tests are bits of code, we can run them as often as we like. This is much more efficient than manually testing/re-testing your code.
+\\
+
+Laravel makes it very easy to unit test code. All our unit tests live in the \texttt{tests/Unit} directory. You can see an example test called \texttt{ExampleTest.php} already in there.
+
+\section{Running Tests}
+
+To run all of your unit tests run the following:
+
+\begin{minted}{bash}
+    vendor/bin/phpunit --testsuite Unit
+\end{minted}
+
+You should get a message saying:
+
+\begin{minted}{text}
+    OK (1 test, 1 assertion)
+\end{minted}
+
+If you don't include the \texttt{--testsuite Unit} bit, it will also run \textbf{Feature Tests}, which let you test broader functionality, but we're not interested in this at the moment.
+\\
+
+You can now delete the \texttt{tests/Unit/ExampleTest.php} file, as we'll create our own tests next.
+
+
+\section{Generating Tests}
+
+Laravel can automatically generate unit tests for us:
+
+\begin{minted}{bash}
+    artisan make:test ArticleTest --unit
+\end{minted}
+
+There should now be a file called \texttt{ArticleTest} in the unit tests directory.
+
+
+\section{Writing Tests}
+
+Let's have a look at the test class:
+
+\begin{minted}{php}
+    namespace Tests\Unit;
+
+    use PHPUnit\Framework\TestCase;
+
+    class ArticleTest extends TestCase
+    {
+        public function testExample()
+        {
+            $this->assertTrue(true);
+        }
+    }
+\end{minted}
+
+Test class names need to \textit{end} with \texttt{Test} and to extend \texttt{TestCase} – this is a class provided by PHPUnit that does most of the heavy-lifting for us.
+\\
+
+Test methods need to \textit{start} with \texttt{test}. You can do whatever you need to inside a test method, but importantly you should always \textbf{assert} something.
+
+\subsection{Asserting}
+
+``Asserting'' something just means saying ``This should be the case''. So if we assert that something is true, we're saying ``This value should be true''. An assertion can be correct, in which case the test passes, or incorrect, in which case the test fails.
+\\
+
+PHPUnit provides a \href{https://phpunit.readthedocs.io/en/9.0/assertions.html}{huge number of possible assertions} and Laravel \href{https://laravel.com/docs/master/http-tests#available-assertions}{provides some of its own too}, but for now we'll stick to some basics:
+
+\begin{itemize}
+    \item \texttt{assertTrue}: assert that something is \texttt{true}
+    \item \texttt{assertSame}: assert that two things are the same type and value
+\end{itemize}
+
+Technically speaking you only really need \texttt{assertTrue}, but the other methods provide useful shorthands.
+\\
+
+Let's write some assertions about an \texttt{Article}:
+
+\begin{minted}{php}
+    public function testFillable()
+    {
+        $article = new Article([
+            "title" => "Hello",
+            "content" => "Blah blah blah",
+        ]);
+
+        // title should be set, as it's in $fillable
+        $this->assertTrue($article->title === "Hello");
+    }
+\end{minted}
+
+We create a new \texttt{Article} and then assert it's true that it's \texttt{title} property is equal to \texttt{"Hello"}.
+\\
+
+
+We could of course write this using \texttt{assertSame}:
+
+\begin{minted}{php}
+    $this->assertSame("Hello", $article->title);
+\end{minted}
+
+Using \texttt{assertSame} is better, as if the test fails PHPUnit will tell you what it was expecting to happen. Notice that we put the \textbf{expected} value first and the \textbf{actual} value second, if it's the other way round the PHPUnit output will be backwards.
+\\
+
+Make sure to re-run your tests every time you make any changes:
+
+\begin{minted}{bash}
+    vendor/bin/phpunit --testsuite Unit
+\end{minted}
+
+
+\pagebreak
+
+
+\begin{infobox}{\texttt{Call to member function connection() on null}}
+    If you're not doing anything involving databases this \textit{shouldn't} be necessary, but if you are testing a model and that model has a property that represents a \textit{date}, Eloquent needs to know what database type you are using. In order to do this we need to setup the Laravel app with all of its environment and configuration settings.
+    \\
+
+    To do this we need to extend the \textit{Laravel} \texttt{TestCase} class. Replace the \\ \texttt{use PHPUnit\textbackslash{}Framework\textbackslash{}TestCase} line with:
+
+    \begin{minted}{php}
+        use Tests\TestCase;
+    \end{minted}
+
+    Ideally we wouldn't need to do this, as it slows down our tests.
+\end{infobox}
+
+We should also test that values not in \texttt{\$fillable} are not added:
+
+\begin{minted}{php}
+    public function testFillable()
+    {
+        $article = new Article([
+            "title" => "Hello",
+            "content" => "Blah blah blah",
+            "danger" => "Aaaargh!",
+        ]);
+
+        // title should be set, as it's in $fillable
+        $this->assertSame("Hello", $article->title);
+
+        // danger shouldn't be set, as it's not in $fillable
+        $this->assertSame(null, $article->danger);
+    }
+\end{minted}
+
+Let's test our \texttt{truncate} method to our \texttt{Article} model by adding the following to \texttt{ArticleTest}:
+
+\begin{minted}{php}
+    public function testTruncate()
+    {
+        $article = new Article([
+            "title" => "Hello",
+            "content" => "Blah blah blah",
+        ]);
+
+        // doesn't need truncating
+        $this->assertSame("Blah blah blah", $article->truncate());
+
+        $article = new Article([
+            "title" => "Hello",
+            "content" => "Blah blah blah blah blah blah blah",
+        ]);
+
+        // should be truncated
+        $this->assertSame("Blah blah blah blah...", $article->truncate());
+    }
+\end{minted}
+
+
+\subsection{\texttt{setUp}}
+
+You'll notice that we use the same \texttt{Article} object in both tests, we could set this up in the \texttt{setUp} method, which is automatically run before each test:
+
+\begin{minted}{php}
+    private $article;
+
+    public function setUp() : void
+    {
+        // make sure we call the parent's setUp() method
+        parent::setUp();
+
+        // setup the article
+        $this->article = new Article([
+            "title" => "Hello",
+            "content" => "Blah blah blah",
+        ]);
+    }
+
+    public function testTitle()
+    {
+        // use the article *property*
+        $this->assertSame("Hello", $this->article->title);
+    }
+
+    public function testTruncate()
+    {
+        // use the article *property*
+        $this->assertSame("Blah blah blah", $this->article->truncate());
+
+        // ...rest of test
+    }
+\end{minted}
+
+
+\section{Testing with a Database}
+
+Sometimes we need to test things that involve the database. However, we don't want to pollute our normal database with test data. If we run the same test hundreds of times, we don't want to end up with the same test article hundreds of times. It's also harder to write tests if we don't know the state of the database before we start.
+\\
+
+For this reason we usually use a \textit{separate} database for testing. By default Laravel uses an \textbf{in-memory SQLite} database. You don't really need to worry about what that means as Laravel does all the work for us, but basically it's temporary and stored in memory (as opposed to on the hard-drive), so it's really fast.
+\\
+
+Laravel automatically sets this up for us in the \texttt{phpunit.xml} file.
+
+
+\subsection{Using the Test Database in Tests}
+
+We need to make a few changes to our test before we can work with the database.
+\\
+
+If you haven't already, you'll need to extend the \textit{Laravel} \texttt{TestCase} class. Replace the \texttt{use PHPUnit\textbackslash{}Framework\textbackslash{}TestCase} line with:
+
+\begin{minted}{php}
+    use Tests\TestCase;
+\end{minted}
+
+We can also tell Laravel to automatically refresh (clear and then migrate) the database for each test we run. This makes the database state more predictable.
+\\
+
+Add the following \texttt{use} statement:
+
+\begin{minted}{php}
+    use Illuminate\Foundation\Testing\RefreshDatabase;
+\end{minted}
+
+Then, as the very first line in your class add the following:
+
+\begin{minted}{php}
+    class ArticleTest extends TestCase
+    {
+        use RefreshDatabase;
+
+        // ...rest of class code
+    }
+\end{minted}
+
+This is called a \texttt{trait}: it effectively adds a method to your class.
+\\
+
+Now we can write tests involving the database.
+
+
+\subsection{Writing Database Tests}
+
+Now we can now write code that uses the database just as we normally would:
+
+\begin{minted}{php}
+    public function testDatabase()
+    {
+        // add an article to the database
+        Article::create([
+            "title" => "Hello",
+            "content" => "Blah blah blah",
+        ]);
+
+        // get the first article back from the database
+        $articleFromDB = Article::all()->first();
+
+        // check the titles match
+        $this->assertSame("Hello", $articleFromDB->title);
+    }
+\end{minted}
+
+Because the database is wiped before each test, we can be sure that the first article in the database is the one we just added.
+\\
+
+The test above isn't particularly useful, but when it comes to testing our controllers it can be.
+
+\begin{infobox}{\texttt{Cannot add a NOT NULL column with default value NULL}}
+    SQLite doesn't allow you to add new columns to an existing database table without making them \texttt{nullable} or giving them a \texttt{default} value. If you get the error above when you run your tests, you'll need to update your migrations to either set a default (\texttt{->default(\$value)}) value or make the column nullable \\ (\texttt{->nullable()}).
+\end{infobox}
+
+
+
+\section{Testing Controllers}
+
+Technically, this is blurring the lines between Unit tests and Feature tests, but it's very useful to be able to check that our controllers are doing what we expect.
+\\
+
+First, let's create a new test, putting it in an appropriate namespace:
+
+\begin{minted}{bash}
+    artisan make:test Http\\Controllers\\ArticlesTest --unit
+\end{minted}
+
+Then we'll edit the test file:
+
+\begin{minted}{php}
+    namespace Tests\Unit\Http\Controllers;
+
+    // setup to use database
+    use Illuminate\Foundation\Testing\RefreshDatabase;
+    use Tests\TestCase;
+
+    // use classes we'll need
+    use App\Article;
+
+    class ArticlesTest extends TestCase
+    {
+        // the database migrations trait
+        // ensures the database is cleared between tests
+        use RefreshDatabase;
+
+        // a test for the controller's createPost() method
+        public function testCreatePost()
+        {
+            // use the "call" method to fake a
+            // POST request to /articles/create
+            // then get the original content
+            $response = $this->call('POST', '/articles/create', [
+                "title" => "foo",
+                "content" => "bar",
+            ]);
+
+            // test to see if and article has been added to the database
+            // the database is wiped each test, so should be the first one
+            $article = Article::all()->first();
+            $this->assertSame("foo", $article->title);
+            $this->assertSame("bar", $article->content);
+        }
+    }
+\end{minted}
+
+First, we do the usual database test setup bits and pieces. Then in our test we make a fake \texttt{POST} call to \texttt{/articles/create}. Then we test to see if it was added to the database.
+\\
+
+As always, don't forget to run your tests:
+
+\begin{minted}{bash}
+    vendor/bin/phpunit --testsuite Unit
+\end{minted}
+
+If all tests pass we can be sure that the \texttt{createPost} method is doing what we expect: taking the data from the request and storing it in the database.
+
+\subsection{When Controller Test Go Wrong}
+
+Controller tests might not always work and it can be hard to work out why.
+\\
+
+If your fake request doesn't work for some reason (e.g. validation fails), then any assertions will also fail.
+\\
+
+The easiest way to work out what's going on is to make a \textit{real} request in the browser with the same data and see what happens. You should get an error which you can then work with.
+
+
+
+\section{Additional Resources}
+
+\begin{itemize}[leftmargin=*]
+    \item \href{https://github.com/sebastianbergmann/phpunit}{PHPUnit}
+    \item \href{http://laravel.com/docs/6.x/testing}{Laravel: Testing - Getting Started}
+    \item \href{https://github.com/JeroenDeDauw/nyancat-phpunit-resultprinter}{Nyan Cat PHPUnit Result Printer}
+\end{itemize}

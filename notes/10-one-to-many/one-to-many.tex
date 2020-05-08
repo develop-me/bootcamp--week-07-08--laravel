@@ -6,13 +6,12 @@ A naive approach\footnote{This was what I did my first time building a database.
 
 Another wrong-footed approach\footnote{Which I've seen in production software} would be to create a bunch of columns called \texttt{comment\_1}, \texttt{comment\_2}, \&c. This is arguably worse than the serialisation approach as it means the database structure limits the number of comments that can be stored - and we'd have to change the database structure if we wanted to store more comments\footnote{As I said, I've seen this in production software. And they charged the client for such database changes too!}. If we wanted to store more than just the comment text we'd also need \textit{multiple} columns for each comment: \texttt{comment\_text\_1}, \texttt{comment\_email\_1}, \&c.
 
+\pagebreak
+
 \section{Relational Databases}
 
 SQL is designed to be used with \textbf{Relational Database Management Systems} (RDBMS). The key word being \textit{relational}. Although each table in the database should represent one type of thing, the database allows us to map relationships between rows in one table to rows in another table. This is based on some \href{https://en.wikipedia.org/wiki/Relational\_algebra}{pretty rigorous mathematical logic}, so it's got well known performance characteristics.
-
-
-\pagebreak
-
+\\
 
 There are various types of relationship that we can store in SQL, but the two most common are:
 
@@ -32,17 +31,14 @@ There are various types of relationship that we can store in SQL, but the two mo
 \end{infobox}
 
 
-\pagebreak
-
-
-\section{One-to-Many Relationships: Comments}
+\section{One-to-Many Relationships}
 
 Each article can have \textbf{many} comments, but each comment can only belong to \textbf{one} article. So this is a one-to-many relationship. One-to-many relationships are asymmetrical, in that one sort of thing effectively belongs to another sort of thing.
 \\
 
 We can store this relationship by creating an \texttt{article\_id} column on the \texttt{comments} table that references the ID of the article each comment belongs to. Under the hood, MySQL can really efficiently use this structure to join together related data.
 
-\img{12cm}{10-one-to-many/img/one-to-many.eps}{1em}{One-to-many relationships}
+\img{10cm}{10-one-to-many/img/one-to-many.eps}{1em}{One-to-many relationships}
 
 
 \subsection{Database Migration}
@@ -67,7 +63,7 @@ A comment belongs to an article and has an email address and the comment text. A
         \item We can also cascade update operations, which can be useful if you aren't using \texttt{AUTO\_INCREMENT} for IDs
     \end{itemize}
 
-    Data integrity is really important, so it's always worthwhile spending the extra bit of effort to create a foreign key.
+    Data integrity is \textit{really} important, so it's always worthwhile spending the extra bit of effort to create a foreign key.
 \end{infobox}
 
 Update the \texttt{up} method of the newly created database migration:
@@ -101,44 +97,52 @@ We can use \texttt{artisan tinker} to get a bit of a better idea of how the ORM 
 \phpinputminted{10-one-to-many/figures/04-tinker}
 
 
-\subsection{Routing \& Controller Logic}
+\section{Adding Comments}
 
-Now that we've got the \texttt{Comment} model setup we can add the necessary controller logic to the API. We're going to want two new routes: one to add a comment to an article and one for showing all the comments that belong to a specific article. Both of these routes work with a specific article, so we'll need to get the ID as a URL parameter.
+First, we'll need a form. Create the following in \\ \texttt{resources/views/comments/form.blade.php}:
+
+\inputminted{html}{10-one-to-many/figures/comments-form.blade.php}
+
+You'll notice we've put all of the CSRF and validation logic in there already.
 \\
 
-We'll setup the following routes:
+Next, include this in the article template:
 
-\begin{itemize}
-    \item \texttt{POST /articles/<article\_id>/comments}: create a comment for the given article ID
-    \item \texttt{GET /articles/<article\_id>/comments}: get all comments for the given article ID
-\end{itemize}
+\begin{minted}{html}
+    <article class="card">
+        {{ /* article code */ }}
+    </article>
 
-We could add two methods to the \texttt{Articles} controller to handle these, but to keep things tidy let's create a new \texttt{Comments} controller:
+    <hr />
 
-\begin{minted}{shell}
-    artisan make:controller Comments --api
+    <h3>Comments</h3>
+
+    @include("comments/form")
 \end{minted}
 
-Now we can add the routes:
-
-\phpinputminted{10-one-to-many/figures/05-routes}
-
-\pagebreak
-
-Now we'll need to update the \texttt{Comments} controller. First, let the controller know about the \texttt{Comment} \textit{and} \texttt{Article} models:
+When we submit this form it's going to \texttt{POST} to \texttt{/articles/{article}}, so next we'll need to setup a route:
 
 \begin{minted}{php}
-    use App\Article;
+    // existing show route
+    Route::get('{article}', "Articles@show");
+
+    // add the *post* route below
+    Route::post('{article}', "Articles@commentPost");
+\end{minted}
+
+
+Now we'll need to update the \texttt{Articles} controller. First, let the controller know about the \texttt{Comment} model:
+
+\begin{minted}{php}
     use App\Comment;
 \end{minted}
 
-We'll do the \texttt{GET} request first as it's very simple. We'll use route model binding to get the correct article object passed in for us (or a 404 if it's not found). And then we just use the \texttt{comments} property to get the collection of all that article's comments:
-
-\phpinputminted{10-one-to-many/figures/06-index}
-
-Next, let's handle the \texttt{POST} request. This one is a little more involved, as we'll need to deal with the request JSON. Again, we'll use route model binding to get the article from the URL. Then we need to get the request data and create a new comment using it. However, we can't use the \texttt{Comment::create()} method, as we need to make sure it has a valid \texttt{article\_id} property, otherwise MySQL won't let us store it. Instead we'll pass the data in as the first argument when we create a new \texttt{Comment} object: this assigns the properties, as with \texttt{create()}, but doesn't save it to the database. We'll store it in the database using the article model:
+Next, let's add the controller method:
 
 \phpinputminted{10-one-to-many/figures/07-store}
+
+We'll use route model binding to get the article from the URL. Then we need to get the request data and create a new comment using it. However, we can't use the \texttt{Comment::create()} method, as we need to make sure it has a valid \texttt{article\_id} property, otherwise MySQL won't let us store it. Instead we'll pass the data in as the first argument when we create a new \texttt{Comment} object: this assigns the properties, as with \texttt{create()}, but doesn't save it to the database. Then we store it in the database using the article model.
+\\
 
 Passing the data in when we create the comment counts as mass assignment, so we need to make sure we update the \texttt{Comment} model's \texttt{fillable} property so we don't get a mass assignment vulnerability error:
 
@@ -157,7 +161,7 @@ Then update the \texttt{authorize()} and \texttt{rules()} methods:
 
 \phpinputminted{10-one-to-many/figures/09-CommentRequest}
 
-You'll also need to update the \texttt{Comments} controller to use the validated request. First let the controller know where to find the \texttt{CommentRequest} class:
+You'll also need to update the \texttt{Articles} controller to use the validated request. First let the controller know where to find the \texttt{CommentRequest} class:
 
 \begin{minted}{php}
     use App\Http\Requests\CommentRequest;
@@ -168,31 +172,15 @@ Then update the type-hinting to use \texttt{CommentRequest} instead of \texttt{R
 \phpinputminted{10-one-to-many/figures/10-request-type-hint}
 
 
+\subsection{Displaying the Comments}
 
+Finally, let's update our article page to display the comments:
 
-\subsection{Resource}
+\inputminted{html}{10-one-to-many/figures/comments-list.blade.php}
 
-Finally, we'll need to update how our comments get formatted in JSON. Again, we don't need to sent the timestamps columns and we also don't need the \texttt{article\_id} column: if you've made an API request to get the comment then you must already know the article ID.
-\\
+\section{Additional Resources}
 
-Use \texttt{artisan} to create a resource for comments:
-
-\begin{minted}{bash}
-    artisan make:resource CommentResource
-\end{minted}
-
-\pagebreak
-
-Then update the \texttt{toArray()} method to return only the columns we want:
-
-\phpinputminted{10-one-to-many/figures/11-resource}
-
-Now to use it in the controller. Tell the \texttt{Comments} controller where to find the resource class:
-
-\begin{minted}{php}
-    use App\Http\Resources\CommentResource;
-\end{minted}
-
-Then update the \texttt{index} and \texttt{store} methods:
-
-\phpinputminted{10-one-to-many/figures/12-controller-resource}
+\begin{itemize}[leftmargin=*]
+    \item \href{http://laravel.com/docs/7.x/eloquent-relationships}{Laravel: Eloquent Relationships}
+    \item \href{https://mysql.programmingpedia.net/en/tutorial/9600/one-to-many}{One-to-Many Relationships}
+\end{itemize}

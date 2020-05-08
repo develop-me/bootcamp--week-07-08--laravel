@@ -1,73 +1,198 @@
 If we want to submit data to the site we'll need a form.
+\\
 
-\section{The \texttt{method} Attribute}
+Let's create a simple form for creating a new blog post.
+\\
 
-\section{\texttt{GET} Requests}
+In \texttt{resources/views/form.blade.php}:
 
-Useful for search. Never use for submitting things like passwords.
+\inputminted{php}{09-forms/figures/01-form.blade.php}
+
+And add a route so that we can view it:
+
+\begin{minted}{php}
+    Route::group(["prefix" => "articles"], function () {
+        // add *above* route with URL parameter
+        // otherwise 'create' will get included in that
+        Route::get('create', "Articles@create");
+        Route::get('{article}', "Articles@show");
+    });
+\end{minted}
+
+Then in your \texttt{Articles} controller:
+
+\begin{minted}{php}
+    public function create()
+    {
+        return view("form");
+    }
+\end{minted}
+
+Now visit \texttt{/articles/create} and you should see the form we just created.
+
+\section{Form \texttt{method}}
+
+If you add some data and then try to submit the form you'll notice that the page refreshes and the URL now includes a lot of extra gumpf after a \texttt{?} character.
+
+\begin{minted}[fontsize=\footnotesize]{text}
+    /articles/create?title=Tea&content=These+teas+are+the+bees+knees
+\end{minted}
+
+This is known as a \texttt{query string} and you'll see that it contains the data that you've just submitted.
+\\
+
+When data is submitted in this way we call it a \texttt{GET} request: the data is submitted as part of the URL. This is very useful for things like search forms, where each search query creates a different URL. However, it's no good for submitting lots of data as URLs have a limited length. It's also no good for submitting sensitive data, as all of the data in the URL gets added to your browser history, which has various security implications.
+\\
+
+That's where \texttt{POST} comes in. If we tell a browser to submit a form using \texttt{POST} it will submit the data as the \textbf{body} of the request. We'll look at exactly what this means later in the course, but for now all you need to know is that that data gets sent to the server, but it doesn't get added to the URL.
+\\
+
+\begin{tabu}{l l X}
+    \textbf{Method} & \textbf{How it submits data}       & \textbf{Example usage} \\
+    \texttt{GET}    & Data is added to the URL           & A search form \\
+    \texttt{POST}   & Data in the body of the request    & Submitting complex/sensitive data \\
+\end{tabu}
+
+\par\bigskip
+
+By default a \texttt{<form>} will submit data as a \texttt{GET} request. To get it to use \texttt{POST} we'll need to add the \texttt{method} attribute to our template:
+
+\begin{minted}{html}
+    <form class="form" method="post">
+\end{minted}
+
+
+\begin{infobox}{Form \texttt{action}}
+    When we submit data to a form the browser needs to submit the data \textit{somewhere}. In a Laravel app it is standard to submit data to the same URL as the page, we can do this because rendering the page is a \texttt{GET} request, whereas submitting the form is usually a \texttt{POST} request. We do not need to specify an \texttt{action} attribute in this case.
+\end{infobox}
+
 
 \section{\texttt{POST} Requests}
 
-\texttt{POST} routes should \textbf{always} return a call to \texttt{redirect()}. This avoids resubmitting the form if the page is refreshed.
+Now that we're \texttt{POST}ing our data, we need to do something with it. This is where everything we've learnt so far finally comes together!
+\\
 
-\section{Cross-Site Request Forgery}
-
-Make sure you include a CSRF token on any forms:
+First, we need to create a \texttt{POST} route in the \texttt{articles} block:
 
 \begin{minted}{php}
-    @csrf
+    Route::group(["prefix" => "articles"], function () {
+        Route::get('create', "Articles@create");
+
+        // a *post* request
+        // needs to go to a different controller method
+        Route::post('create', "Articles@createPost");
+
+        Route::get('{article}', "Articles@show");
+    });
 \end{minted}
 
-\section{Sanitising Data}
+Next, we need to create the \texttt{createPost} method in our \texttt{Articles} controller:
 
-We need to be careful with the data that the user submits.
+\begin{minted}{php}
+    public function createPost()
+    {
+    }
+\end{minted}
 
-\subsection{MySQL Injection}
-
-
-\section{Validation}
-You should always validate any data that gets submitted to your site on the server-side. For a good user-experience you should probably also have validation on the client-side using JavaScript, but it's perfectly possible that a user might have JavaScript disabled or that a malicious party might be making a direct request.
+Now, if you try submitting your form you'll get a rather cryptic\footnote{Yet beautiful} ``419 | Page Expired'' page.
 \\
 
-The idea of validation is to turn a certain class of \texttt{500} errors into \texttt{4xx} errors. Remember, client-side code can't do anything useful with \texttt{500} errors, but \texttt{4xx} errors have specific meanings.
+This is our first (of many) security blocks that Laravel puts in place for us.
+
+\subsection{Cross-Site Request Forgery}
+
+By default Laravel won't let you do things that might cause security problems.
 \\
 
-To avoid any MySQL errors we need to at minimum validate the following:
+Imagine that you go to the Blackwells website to buy a book. You log in, add some items to your basket, buy some books and then go to another website having not logged out of Blackwells. A wee while later you visit some super-dodgy website. Because you've got a cookie for Blackwells, the dodgy site could now make a \texttt{POST} request to Blackwells and it's going to think that it's you making the request. This is a \textbf{Cross-Site Request Forgery}.
+\\
 
-\begin{itemize}
-    \item \texttt{required}: any database fields that cannot be \texttt{null} should have the \texttt{required} validation
-    \item \texttt{max:255}: if you're storing data in a \texttt{VARCHAR} then make sure you have max length validation that matches the \texttt{VARCHAR} length
-    \item \texttt{date}/\texttt{integer}/\texttt{string}: check formats before inserting into MySQL. These are not the database migration types, but validation specific rules - so \texttt{VARCHAR} and \texttt{TEXT} both count as \texttt{string} for validation. You will also need the \texttt{nullable} validation if the field is not required.
+Laravel doesn't want you to accidentally open your site up to this sort of attack. As such it won't let you make a form request unless the form has a hidden CSRF \textbf{token}. This is a randomly generated string of nonsense that Laravel knows about, but which another site trying to make a request to your site couldn't possibly guess. Laravel can then check this value whenever a request is made: if it's correct then everything works as it should, if it's not then you get the \texttt{419} error we got earlier.
+\\
+
+To add a CSRF token we simple use the \texttt{@csrf} Blade shortcut somewhere in our form:
+
+\begin{minted}{html}
+    <form method="post" class="form card">
+        @csrf
+\end{minted}
+
+Now if we submit the form you'll refresh the current page. We need to update our \texttt{createPost} method to do something.
+
+
+\subsection{Handling Data}
+
+Update the \texttt{createPost} method to the following:
+
+\begin{minted}{php}
+    // accept the Request object
+    // this gives us access to the submitted data
+    public function createPost(Request $request)
+    {
+        // get all of the submitted data
+        $data = $request->all();
+
+        // create a new article, passing in the submitted data
+        $article = Article::create($data);
+
+        // redirect the browser to the new article
+        return redirect("/articles/{$article->id}");
+    }
+\end{minted}
+
+As you can see, first we need to accept the \texttt{Request} object: this represents the request that the user made, including the data they submitted. If we ask Laravel for this it will give it to us using similar witchcraft to Route Model Binding.
+\\
+
+Then we get all the submitted data from the \texttt{Request} object. Next, we create an \texttt{Article} using that data, which will add an article to the database with the data that the user submitted. Finally we \textbf{redirect} the browser to URL of the newly created article.
+
+\begin{infobox}{View or Redirect?}
+    As a general rule of thumb, for a Blade based site:
+    \\
+
+    \begin{tabu}{l X}
+        \textbf{Request Method}  & \textbf{Return Type} \\
+        \texttt{GET}             & \texttt{view()} \\
+        \texttt{POST}            & \texttt{redirect()} \\
+    \end{tabu}
+
+    \par\bigskip
+
+    If a \texttt{POST} request returns a \texttt{view()} the user can refresh the page, which will resubmit any data, possibly leading to data duplication (or worse). If instead it returns a \texttt{redirect()}, when the user refreshes the page it will reload the page you've redirected to.
+\end{infobox}
+
+But, if you try to submit the form, you'll get an error.
+
+
+\subsection{Mass Assignment Vulnerability}
+
+We now come to our second common security issue. Accepting whatever the user gives you and sending it straight to the database is one of those cases: known as a \textbf{Mass Assignment Vulnerability}.
+\\
+
+Imagine you have a \texttt{users} table that has an \texttt{admin} column for keeping track of whether a user is an admin or not. This is pretty common, so a hacker might try to exploit it. Your user sign-up form probably doesn't have an \texttt{admin} option, but a hacker can easily make a sign-up request directly (either by editing the from in Developer Tools or with a tool like Postman or \texttt{curl}). They add an \texttt{admin = true} property to the data that they send. Now, if your controller just takes \textit{everything} that they sent and tries to update the database, the hacker has just been given admin rights. This is a bad thing.
+\\
+
+To stop this from happening, if you pass an Eloquent model an array of properties, it will only use the properties that you've listed in the model's \texttt{\$fillable} property. If you've not set this property and try to pass in an array of values you'll get a 500 error.
+\\
+
+We need to update the \texttt{Article} model to tell it which fields to expect:
+
+\begin{minted}{php}
+    class Article extends Model
+    {
+        protected $fillable = ["title", "content"];
+
+        // ... other Article code
+    }
+\end{minted}
+
+Now try submitting the form. Hopefully it should submit and you get redirected to the new article.
+
+
+
+
+\section{Additional Resources}
+
+\begin{itemize}[leftmargin=*]
+    \item \href{https://owasp.org/www-community/attacks/csrf}{Cross Site Request Forgery (CSRF)}
+    \item \href{https://cheatsheetseries.owasp.org/cheatsheets/Mass_Assignment_Cheat_Sheet.html}{Mass Assignment Vulnerability}
 \end{itemize}
-
-As well as the cases above there are plenty of \href{http://laravel.com/docs/master/validation#available-validation-rules}{other bits of validation} that you can do easily with Laravel.
-\\
-
-As with everything in Laravel, we'll need to create a new type of class. In this case it's a \texttt{FormRequest} class. The \texttt{FormRequest} class actually inherits everything from the \texttt{Request} class that we're already using in our controller when we want to work with the request the user made.
-\\
-
-Use \texttt{artisan} to create a \texttt{FormRequest} class:
-
-\begin{minted}{bash}
-    artisan make:request ArticleRequest
-\end{minted}
-
-This will create a file in \texttt{app/Http/Requests}. The \texttt{ArticleRequest} class has two methods. We first need to return \texttt{true} from the \texttt{authorize} method: this method can be very useful when you support user logins in your API, but for now we'll just assume everyone can make requests. The \texttt{rules} method needs to return an associative array, where the property name is the JSON property that needs validating and its value is an array of validation rules:
-
-\phpinputminted{09-forms/figures/01-validation}
-
-
-Finally we need to  update the \texttt{Articles} controller to use our validated request instead of the standard \texttt{Request} object. First let it know where the \texttt{ArticleRequest} class lives:
-
-\begin{minted}{php}
-    use App\Http\Requests\ArticleRequest;
-\end{minted}
-
-And then update the type-hinting on the \texttt{store} and \texttt{update} methods to use the \texttt{ArticleRequest} class instead of \texttt{Request}:
-
-\phpinputminted{09-forms/figures/02-type-hint}
-
-This works because \texttt{ArticleRequest} is a descendant of \texttt{Request}, so it has all of the same methods and properties.
-
-
-% - use old() to get previously submitted values

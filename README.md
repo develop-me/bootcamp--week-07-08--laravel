@@ -7,7 +7,7 @@
 
 ### Server-Side Programming
 - What is a server?
-- LAMP
+- LAMP/LEMP
 - Vagrant & Scotch Box
 
 ### MySQL
@@ -24,42 +24,39 @@
 - Blade templating
 - Routing
 
+### Models
+- Database Migrations & Rollbacks
+- Eloquent
+- Seeding
+
 ### Blade
 - `@extends`
 - `@section`
 - Partials/`@include`
 
-### Controllers
-
-### Models
-- Eloquent
-- Database Migrations & Rollbacks
-- Seeding
+### Routing & Controllers
+- Routes
+- Controllers
 - Route Model Binding
 
 ## Day 3: Forms & Relational Data
 
 ### HTTP methods & Forms
-
 - `GET` & `POST`
 - Forms
 - Validation
-- SQL Injection/Mass Assignment
 
 ### Relational Data
 - One-to-Many Relationships
 
-## Day 4: Security
-- Sessions & Cookies
-- Storing Passwords
-    - Hashing
-    - Collisions
-    - Rainbow tables
-    - Salts
-- Mail
-- Unit testing
+## Day 4: Unit Testing & Auth
+
+### Unit testing
+- Testing classes
+- Testing with the DB
+- Testing controllers
 
 ### Auth Package
-- Config
+- Setup
 - Password Hashing/Security
 - Sessions/Cookies
