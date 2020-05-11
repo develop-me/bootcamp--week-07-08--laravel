@@ -17,7 +17,7 @@
     ```sql
     CREATE TABLE graduates (
         id int(11) NOT NULL PRIMARY KEY AUTO_INCREMENT,
-        full name varchar(255),
+        `full name` varchar(255),
         location varchar(255),
         age int(11) NOT NULL
     );
@@ -151,7 +151,7 @@
     Or to alter an existing table:
 
     ```sql
-    ALTER TABLE child_table FOREIGN KEY (parent_id)
+    ALTER TABLE child_table ADD FOREIGN KEY (parent_id)
         REFERENCES parent_table(id)
         ON DELETE CASCADE;
     ```
