@@ -24,8 +24,9 @@ Create a new controller `API\\Animals`. Add RESTful API routes for:
 - Listing all your animals
 - Showing a specific animal based on its ID
 - Deleting an animal based on its ID
-- Creating a new animal
 - Updating an existing animal based on its ID
+
+You may need to use `artisan tinker` to create some animals (with an appropriate `owner_id`) if you don't have any in your database.
 
 
 ## Tricksy
