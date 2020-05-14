@@ -150,12 +150,14 @@
     - Need to add `C` to dictionary
 - Add `test400` for `400` - run tests, fix, run tests
     - Need to add `CD` to dictionary
+- Add `test500` for `500` - run tests, fix, run tests
+    - Need to add `D` to dictionary
 - Add `test900` for `900` - run tests, fix, run tests
     - Need to add `CM` to dictionary
 - Add `test1000` for `1000` - run tests, fix, run tests
     - Need to add `M` to dictionary
 - Add `test3994` for `3994` - run tests
-    - Should work!
+    - Should work and give the corect answer of MMMCMXCIV
 - Ask students to pick a number to test between 5000 and 10000
     - Add a test
     - Show it works!
