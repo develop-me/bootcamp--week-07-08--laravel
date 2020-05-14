@@ -3,7 +3,6 @@
 - Laravel's templating language
 - Templating language: combine data and markup to create a document
 - Lets us:
-    -
     - Reuse repeated markup
     - Display data
     - Conditionally show content

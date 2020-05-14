@@ -15,7 +15,7 @@
 
 ### Demo
 
-- Add `laravel/homestead` package
+- `composer require laravel/homestead` to add package
 - Run `vendor/bin/homestead make`
 - Update `.env`:
 
@@ -27,11 +27,12 @@
 
 - Get vagrant box up and running: set memory to `512`
 - `vagrant up`
+- GET CLASS TO DO THIS FAR AS CAN TAKE A WHILE
 - http://homestead.test
 - What is Laravel?
     - OOP PHP framework
     - Uses all the OOP stuff from last week: classes, interfaces, inheritance
-- MVC
+- MVC: https://selftaughtcoders.com/from-idea-to-launch/lesson-17/laravel-5-mvc-application-in-10-minutes/
 - compare to other stack: e.g. WordPress, backend, frontend, database, templates, data structures, logic, WP has REST API, can use headless with /wp-json/
 - Why not Node?
 - Introduce https://laravel.com/docs/master/

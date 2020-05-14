@@ -10,19 +10,23 @@
 - Check out the Article model
 - Creates Article model class, thus the uppercase "A"
 - Explain why singular name used
-- Talk about how methods are built in by extending Laravel's Model class with `class Article extends Model`
-- we already have `save()`, `where()`, `all()` etc.
 
-- Class represents a table
-- Object instance represents a row of the table
-
-- Use `artisan tinker` to create a new model:
+### Tinker
+- Introduce Tinker
+- Demo `artisan tinker` to create a new model:
     ```bash
     $article = new Article();
     $article->title = "My amazing blog post";
     $article->article = "Today I went shopping. I bought some spoons.";
     $article->save();
     ```
+
+- Talk about how methods are built in by extending Laravel's Model class with `class Article extends Model`
+- we already have `save()`, `where()`, `all()` etc.
+
+- Class represents a table
+- Object instance represents a row of the table
+
 - Look at `id` after save
 - Show
     - `Article::all()`

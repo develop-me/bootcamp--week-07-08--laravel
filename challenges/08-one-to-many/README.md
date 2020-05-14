@@ -13,7 +13,7 @@ Now we can add animals to our owners.
     - Type (e.g. "cat", "dog", "shark")
     - Date of Birth
     - Weight (in kg)
-    - Height (in kg)
+    - Height (in metres)
     - Biteyness (a value between 1 and 5)
 
     **Note: you should use snake_case, or this will cause you trouble later on!**

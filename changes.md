@@ -1,5 +1,7 @@
 ## To Do
 
+- add MySQL `DESCRIBE` as a utility function (students find this useful)
+
 - Add search form to Forms
 - Add database seeding to Eloquent ORM
 - Update routes to use array instead of "@" for controller/method

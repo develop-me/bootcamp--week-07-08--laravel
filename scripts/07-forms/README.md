@@ -3,9 +3,9 @@
 ## Forms
 
 - going to create a form to create articles
-- new route:
+- new route:    
     ```php
-    Route::get('/animals/create', "Articles@create");
+    Route::get('/articles/create', "Articles@create");
     ```
 - new Controller method:
     ```php
@@ -56,7 +56,7 @@
 
 - new route:
     ```php
-    Route::post('/animals/create', "Articles@createPost");
+    Route::post('/articles/create', "Articles@createPost");
     ```
 - note `post` part
 - new Controller method structure:
