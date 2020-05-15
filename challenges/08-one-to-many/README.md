@@ -28,4 +28,6 @@ Now we can add animals to our owners.
 
 ## Tricksy
 
+- On your single owner template output the list of that owner's animals
 - Add a form to the owner page so that you can add animals that they own
+- Add `/animals` and `/animals/{id}` routes, Controller methods and templates, as per owners, so you can see a list of animals and a single animal.
