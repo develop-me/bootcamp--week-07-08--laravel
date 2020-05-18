@@ -13,18 +13,20 @@
 
 ### API Resources (Section 4.2)
 
-- Add resources to your `/api/animals` routes so that they return:
-    - `id`
-    - `name`
-    - `dob`
-    - `biteyness`
-    - `owner`: the *name* of the owner
-
 - Add resources to your `/api/owners` routes so that they return:
     - `id`
     - `name`
     - `address`
-    - `animals`: an *array* of animal names
+    - `animals`: an *array* of animal names (remember [`pluck()`](https://laravel.com/docs/master/collections#method-pluck))
+
+- Add resources to your `/api/animals` routes so that they return:
+    - `id`
+    - `name`
+    - `dob`
+    - `weight`
+    - `height`
+    - `biteyness`
+    - `owner`: the *name* of the owner
 
 ### CORS (Section 4.3)
 
@@ -37,6 +39,8 @@
     - `id`
     - `name`
     - `dob`
+    - `weight`
+    - `height`
     - `biteyness`
     - `owner`: the *name* of the owner
 
