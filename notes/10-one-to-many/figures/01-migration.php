@@ -21,15 +21,3 @@ public function up()
           ->on("articles")->onDelete("cascade");
   });
 }
-
-// if you are adding the article_id field and foreign key
-// constraint separately to creating the table then your down()
-// method should look like this:
-public function down()
-{
-  Schema::table('comments', function (Blueprint $table) {
-    // removes foreign key constraint then drops the foreign id column
-    $table->dropForeign('comments_article_id_foreign');
-    $table->dropColumn("article_id");
-  });
-}

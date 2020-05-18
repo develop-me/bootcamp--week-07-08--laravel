@@ -72,6 +72,24 @@ Update the \texttt{up} method of the newly created database migration:
 
 Don't forget to run \texttt{artisan migrate} once you've saved the migration file.
 
+\begin{infobox}{Downing Foreign Keys}
+    If you add a foreign key to an existing table – in a \texttt{Schema::table()} as opposed to a \texttt{Schema::create()} – you'll need to update your \texttt{down} method to drop the foreign key:
+
+    \begin{minted}{php}
+        public function down()
+        {
+          Schema::table('comments', function (Blueprint $table) {
+            // removes foreign key constraint
+            // make sure it's in an array - for... reasons
+            $table->dropForeign(['article_id']);
+
+            // then drops the foreign id column
+            $table->dropColumn("article_id");
+          });
+        }
+    \end{minted}
+\end{infobox}
+
 
 \subsection{Eloquent Models}
 
