@@ -17,7 +17,7 @@
     ```sql
     CREATE TABLE graduates (
         id int(11) NOT NULL PRIMARY KEY AUTO_INCREMENT,
-        `full name` varchar(255),
+        full_name varchar(255),
         location varchar(255),
         age int(11) NOT NULL
     );
@@ -30,7 +30,7 @@
 1. Populate your table with data:
 
     ```sql
-    INSERT INTO `graduates` (`id`, `full name`, `location`, `age`) VALUES
+    INSERT INTO `graduates` (`id`, `full_name`, `location`, `age`) VALUES
         (1, 'Oli Ward', 'Bedminster', 36),
         (2, 'Simon Capet', 'College Green', 49),
         (3, 'Simon New', 'Montpelier', 33),
@@ -46,7 +46,7 @@
 1. Use `SELECT * FROM graduates;` to see all the data in your table.
 1. Use a `SELECT` query to find the just the full names of people who are under 35.
 1. Find the ages of people who live in "Bedminster".
-1. Find a way of returning just the rows that have `full name` starting with "Simon".
+1. Find a way of returning just the rows that have `full_name` starting with "Simon".
 
 ### Tricksy
 
@@ -60,7 +60,7 @@
 
     ```sql
     +----+--------------+---------------+-----+--------------------+
-    | id | full name    | location      | age | favourite beverage |
+    | id | full_name    | location      | age | favourite beverage |
     +----+--------------+---------------+-----+--------------------+
     |  1 | Oli Ward     | Bedminster    |  36 | coffee             |
     |  2 | Simon Capet  | College Green |  49 | coffee             |
