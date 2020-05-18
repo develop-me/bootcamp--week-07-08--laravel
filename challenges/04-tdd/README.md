@@ -210,7 +210,7 @@ a b c d e f g h i j k l m n o p q r s t u v w x y z
 Decryption Key:
 
 ```
-! ) # ( £ * % & > < @ a b c d e f g h i j k l m n o
+! ) # ( . * % & > < @ a b c d e f g h i j k l m n o
 ```
 
 Your *final* test should look like this:
@@ -218,8 +218,8 @@ Your *final* test should look like this:
 ```php
 public function testFull()
 {
-    $cracker = new Cracker("! ) # ( £ * % & > < @ a b c d e f g h i j k l m n o");
-    $this->assertSame("hello mum", $cracker->decrypt("&£aad bjb"));
+    $cracker = new Cracker("! ) # ( . * % & > < @ a b c d e f g h i j k l m n o");
+    $this->assertSame("hello mum", $cracker->decrypt("&.aad bjb"));
 }
 ```
 
