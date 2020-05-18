@@ -1,5 +1,9 @@
 # Challenges
 
+You should make sure you have the [`laravel-blade` VS Code extension](https://marketplace.visualstudio.com/items?itemName=cjhowe7.laravel-blade) installed before starting these challenges.
+
+---
+
 Remember, you're building an app for a veterinary clinic.
 
 - Update the `welcome.blade.php` file to display a basic page based on [HTML5 Boilerplate](https://html5boilerplate.com/) and using [Bootstrap 4](https://getbootstrap.com/). It should have at least:
