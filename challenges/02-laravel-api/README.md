@@ -6,17 +6,6 @@
 
 **Check your results in Postman as you're going along**
 
-### `/api/animals`
-
-Create a new controller `API\\Animals`. Add RESTful API routes for:
-
-- Listing all your animals
-- Showing a specific animal based on its ID
-- Deleting an animal based on its ID
-- Creating a new animal
-- Updating an existing animal based on its ID
-
-
 ### `/api/owners`
 
 Create a new controller `API\\Owners`. Add RESTful API routes for:
@@ -26,6 +15,17 @@ Create a new controller `API\\Owners`. Add RESTful API routes for:
 - Deleting an owner
 - Creating a new owner
 - Updating an existing owner based on their ID
+
+
+### `/api/animals`
+
+Create a new controller `API\\Animals`. Add RESTful API routes for:
+
+- Listing all your animals
+- Showing a specific animal based on its ID
+- Deleting an animal based on its ID
+- Creating a new animal
+- Updating an existing animal based on its ID
 
 
 ## Tricksy
