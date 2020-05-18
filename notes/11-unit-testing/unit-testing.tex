@@ -75,7 +75,13 @@ PHPUnit provides a \href{https://phpunit.readthedocs.io/en/9.0/assertions.html}{
 Technically speaking you only really need \texttt{assertTrue}, but the other methods provide useful shorthands.
 \\
 
-Let's write some assertions about an \texttt{Article}:
+First, let's make sure PHP knows which \texttt{Article} class to use. At the top of \texttt{ArticleTest}:
+
+\begin{minted}{php}
+    use App\Article;
+\end{minted}
+
+Now we can write some assertions about an \texttt{Article}:
 
 \begin{minted}{php}
     public function testFillable()
