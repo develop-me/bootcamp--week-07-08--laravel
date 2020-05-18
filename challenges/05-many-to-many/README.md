@@ -37,7 +37,7 @@ The "Section 6.x" bits refer to the relevant section in the notes
 
     {
         "name": "Miss Kitty Fantastico",
-        "dob": "1996.03-10",
+        "dob": "1996-03-10",
         "biteyness": 4,
         "treatments": ["Veda-Sorb Bolus", "Keto-Gel", "QuickDerm Wound Ointment"]
     }
