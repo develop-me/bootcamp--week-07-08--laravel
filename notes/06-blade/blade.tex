@@ -90,6 +90,18 @@ Now, in \texttt{app.blade.php} we can use this file:
 You'll notice that we're not extending or using sections in the partial. That's because a partial is always \texttt{@include}d from another file.
 
 
+\begin{infobox}{Dotty}
+    If you read the Laravel docs you'll often see something like:
+
+    \begin{minted}{html}
+        @include("partials.nav")
+    \end{minted}
+
+    On a Linux server, using a \texttt{.} instead of a \texttt{/} does exactly the same thing.
+\end{infobox}
+
+
+
 \section{Loops \& Moustaches}
 
 It's often useful to repeat a certain bit of markup multiple times. Let's use a loop to update our articles list to show multiple articles.
