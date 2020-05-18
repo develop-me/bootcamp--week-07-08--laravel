@@ -129,9 +129,20 @@ However, if you visit \texttt{/articles/384938439}, you'll get an error (unless 
 Luckily, Laravel offers an elegant solution to this issue: \textbf{Route Model Binding}.
 
 
-\subsection{Route Model Binding}
+\section{Route Model Binding}
 
-If, instead of just having the \texttt{\$id} parameter, we replace it with \texttt{Article \$article} Laravel is going to do some super-sneaky witchcraft:
+We can get Laravel to do quite a lot of work for us when it comes to fetching models based on URL parameters.
+\\
+
+First, update the route to use \texttt{\{article\}} instead of \texttt{\{id\}} (it needs to match the model name):
+
+\begin{minted}{php}
+    Route::get('/articles/{article}', function () {
+        return view('article');
+    });
+\end{minted}
+
+Then in the \texttt{Articles} controller, instead of just having the \texttt{\$id} parameter, we replace it with \texttt{Article \$article}:
 
 \begin{minted}{php}
     public function show(Article $article)
@@ -142,13 +153,13 @@ If, instead of just having the \texttt{\$id} parameter, we replace it with \text
     }
 \end{minted}
 
-In standard PHP code, this wouldn't have any right to work, but in Laravel it does. That's because Laravel uses \textbf{reflection}: that's where rather than just running your code, it actually \textit{reads} your code and alters its behaviour accordingly. This is the sort of trick that should not be used too often: it takes more processing power and it's almost magical – and magical code is almost impossible to understand.
+Now, Laravel is going to do some super-sneaky witchcraft.
 \\
 
-So what's it actually doing? It reads your code, sees that you've asked for an \texttt{Article} and notices that it's in the place where you'd normally accept the value from the URL parameter. It then joins this up and, instead of just passing in the parameter value as a string, looks for an \texttt{Article} with a matching ID. If it finds one then it passes it in (so that your type declaration is still valid). If it doesn't then it doesn't even bother trying to run your controller method and just displays a 404 page instead.
+So what's going on? Laravel reads your code, sees that you've asked for an \texttt{Article} and notices that it's in the place where you'd normally accept the value from the URL parameter. It then joins this up and, instead of just passing in the parameter value as a string, looks for an \texttt{Article} with a matching ID. If it finds one then it passes it in (so that your type declaration is still valid). If it doesn't then it doesn't even bother trying to run your controller method and just displays a 404 page instead.
 \\
 
-One thing to note, it's really important that the \texttt{\{article\}} bit in the route's URL parameter matches the model name, otherwise Route Model Binding won't be enabled.
+In standard PHP code, this wouldn't have any right to work, but in Laravel it does. That's because Laravel uses \textbf{reflection}: that's where rather than just running your code, it actually \textit{reads} your code and alters its behaviour accordingly. This is the sort of trick that should not be used too often: it takes more processing power and it's almost magical – and magical code is almost impossible to understand. But it's \textit{really} useful, so we'll forgive it this one time.
 
 
 \begin{infobox}{View All Routes}

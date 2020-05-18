@@ -47,12 +47,12 @@ First create the file \texttt{resources/views/article.blade.php}:
 And then add another route to \texttt{routes/web.php}:
 
 \begin{minted}{php}
-    Route::get('/articles/{article}', function () {
+    Route::get('/articles/{id}', function () {
         return view('article');
     });
 \end{minted}
 
-Now if you visit the URL \texttt{/articles/1} in your browser, you should see the article view that you just created. It will also work if you go to \texttt{articles/2}. In fact it will work for \texttt{articles/anything}. That's because the \texttt{\{article\}} bit is a \textbf{URL parameter}: a placeholder for \textit{any} value. We'll look at how we can work with this value later.
+Now if you visit the URL \texttt{/articles/1} in your browser, you should see the article view that you just created. It will also work if you go to \texttt{articles/2}. In fact it will work for \texttt{articles/anything}. That's because the \texttt{\{id\}} bit is a \textbf{URL parameter}: a placeholder for \textit{any} value. We'll look at how we can work with this value later.
 
 \section{Additional Resources}
 
