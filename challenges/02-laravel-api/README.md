@@ -26,7 +26,7 @@ Create a new controller `API\\Animals`. Add RESTful API routes for:
 - Deleting an animal based on its ID
 - Updating an existing animal based on its ID
 
-You may need to use `artisan tinker` to create some animals (with an appropriate `owner_id`) if you don't have any in your database.
+You may need to use `artisan tinker` to create some `Animal`s (with an appropriate `owner_id`) if you don't have any in your database.
 
 
 ## Tricksy
@@ -35,5 +35,5 @@ You may need to use `artisan tinker` to create some animals (with an appropriate
 
 Create a new controller `API\\Owners\\Animals`. Add RESTful API routes for:
 
-- Listing all of the animals that belong to a specific owner
-- Adding an existing animal to an owner
+- Listing all of the animals that belong to the specified owner
+- Create a new animal that belongs to the specified owner
