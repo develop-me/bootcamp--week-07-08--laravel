@@ -68,6 +68,7 @@
     - **Make sure it's got a default value or nullable**
     - Otherwise if you have data already in the table you'll be adding a column that doesn't have a value
     - MySQL will let you (probably shouldn't), SQLite will shout at you
+    - Sometimes easier to change original migration (assuming no one else could have run them)
 - test migration
 - rollback
 
