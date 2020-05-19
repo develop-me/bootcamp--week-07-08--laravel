@@ -39,6 +39,8 @@ Next, we'll add some address fields to the `owners` table. We'll do it as a sepa
     - `town`: the town/city of the owner's address
     - `postcode`: the postcode of the owner's address
 
+    Make sure they're all `nullable()`
+
 1) Make sure you write an appropriate `down()` method
 1) Run your migration with `artisan migrate`
 1) use `mysql` and `USE homestead;` `SHOW TABLES;` to prove its worked

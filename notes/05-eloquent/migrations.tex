@@ -140,14 +140,14 @@ You can write the migration much the same as before, except anything you do will
 
 \pagebreak
 
-For example, to add a \texttt{user\_id} column to \texttt{articles}:
+For example, to add a \texttt{reading\_time} column to \texttt{articles}:
 
 \begin{minted}{php}
     public function up()
     {
         Schema::table("articles", function (Blueprint $table) {
             // add a new column
-            $table->foreignId("user_id");
+            $table->integer("reading_time")->default(0);
         });
     }
 \end{minted}
@@ -159,10 +159,12 @@ Be careful to update the \texttt{down()} method to undo \textit{everything} that
     {
         Schema::table("articles", function (Blueprint $table) {
             // drop the column added in up()
-            $table->dropColumn("user_id");
+            $table->dropColumn("reading_time");
         });
     }
 \end{minted}
+
+When adding columns to existing tables we need to make sure that we either give them a default value (as above) or make them \textbf{nullable} (\texttt{->nullable()}). Otherwise, if you run the migrations and data \textit{already exists} on the table, you'll be trying to add new columns that can't yet have a value. MySQL will let you get away with this (which it really shouldn't), but SQLite – which we'll be using for testing – will never forgive you. If it really shouldn't have a default value and can't be nullable then you might want to think about changing the original migration where the table was first created.
 
 
 \begin{infobox}{Changing Existing Migration Files}
