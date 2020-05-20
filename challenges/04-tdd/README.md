@@ -108,7 +108,7 @@ public function test1()
 2)
 
 ```php
-public function test1()
+public function test2()
 {
     $this->assertSame("2", $this->fizzbuzz->forNumber(2));
 }
