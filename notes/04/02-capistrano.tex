@@ -173,6 +173,13 @@ Firstly, it ensures that the site goes down for the shortest amount of time poss
 
 Secondly, it allows us to keep track of the previous build of the site, which means if deployment is successful but then you notice something's not quite right (e.g. a bug on the site), you can ``rollback'' the deployment, just like with a database migration.
 
+\begin{infobox}{Caching Routes}
+    The deployment script includes \texttt{artisan route:cache}. This generates a version of the routing information that Laravel can run much quicker than working its way through the actual PHP. We need to run it every time we deploy otherwise new routes won't be registered.
+    \\
+
+    However, we can only cache routes that point to controller methods. So you need to make sure that \textit{all} of your routes point at a controller and do not use closures (an inline function). You shouldn't have any of these left over, but it's worth just double checking before running a deployment.
+\end{infobox}
+
 
 \section{Rolling Back}
 
