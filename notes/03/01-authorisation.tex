@@ -65,16 +65,7 @@ We'll also need to update \texttt{AuthServiceProvider.php} to use the Passport r
 \phpinputminted{03/figures/02-AuthServiceProvider}
 
 
-Finally, in \texttt{config/auth.php} config file, set the default ``guard'' to \texttt{api}:
-
-\begin{minted}{php}
-    'defaults' => [
-        'guard' => 'api',
-        // ...etc.
-    ],
-\end{minted}
-
-And set the driver of the \texttt{api} authorisation guard to \texttt{passport}:
+Finally, set the driver of the \texttt{api} authorisation guard to \texttt{passport}:
 
 \begin{minted}{php}
     'guards' => [

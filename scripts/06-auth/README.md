@@ -29,7 +29,6 @@
 - Add to `boot` of `AuthServiceProvider`
     - `Passport::routes();`
 - In `config/auth.php`
-    - Add `'guard' => 'api'` to `defaults`
     - Update `api.driver` to `passport`
 
 #### Create a User
