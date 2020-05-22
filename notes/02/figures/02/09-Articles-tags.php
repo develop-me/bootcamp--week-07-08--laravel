@@ -6,8 +6,8 @@ class Articles extends Controller
 
   public function store(ArticleRequest $request)
   {
-    // only get the title and article fields
-    $data = $request->only(["title", "article"]);
+    // only get the title and content fields
+    $data = $request->only(["title", "content"]);
     $article = Article::create($data);
 
     // get back a collection of tag objects
@@ -23,8 +23,8 @@ class Articles extends Controller
 
   public function update(ArticleRequest $request, Article $article)
   {
-    // only get the title and article fields
-    $data = $request->only(["title", "article"]);
+    // only get the title and content fields
+    $data = $request->only(["title", "content"]);
     $article->fill($data)->save();
 
     // get back a collection of tag objects
