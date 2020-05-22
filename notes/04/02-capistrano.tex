@@ -101,6 +101,21 @@ Now, we need to copy across the existing \texttt{.env} file. This is a linked fi
     cp <rep-name>-bkp/.env <repo-name>/shared/
 \end{minted}
 
+We also need to create the \texttt{storage} directories that Laravel uses:
+
+\begin{minted}{bash}
+    # make sure you're in the right place
+    cd /var/www/<repo-name>/shared
+
+    # create the storage directory
+    mkdir -p storage/framework/
+
+    # create the sub-directories
+    cd storage/framework
+    mkdir sessions view cache
+\end{minted}
+
+
 Finally, we need to update Nginx to point to the \texttt{current} directory:
 
 \begin{minted}{bash}
