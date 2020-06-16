@@ -213,6 +213,8 @@ Decryption Key:
 ! ) # ( . * % & > < @ a b c d e f g h i j k l m n o
 ```
 
+Remember, the key to TDD is to get it to work one bit at a time. Don't try and solve the whole problem in one go, just get it working for a single part and then build towards the solution.
+
 Your *final* test should look like this:
 
 ```php
