@@ -97,7 +97,7 @@ Once a secure connection is created you can use SSH to run commands on a remote 
 
 \subsection{Accessing the Server}
 
-You should copy the \texttt{pem} file into the \texttt{~/.ssh} directory. Run this inside your \texttt{Downloads} folder:
+You should copy the \texttt{pem} file into the \texttt{\textasciitilde/.ssh} directory. Run this inside your \texttt{Downloads} folder:
 
 \begin{minted}{bash}
     cp my-server-key.pem ~/.ssh
@@ -115,7 +115,7 @@ For an Ubuntu instance the username is \texttt{ubuntu} and the domain can be fou
     ec2-3-8-39-24.eu-west-2.compute.amazonaws.com
 \end{minted}
 
-Next, we need to tell SSH to use the key we just created whenever it tries to connect to that server. In \texttt{~/.ssh/config}:
+Next, we need to tell SSH to use the key we just created whenever it tries to connect to that server. In \texttt{\textasciitilde/.ssh/config}:
 
 \begin{minted}{text}
     Host ec2-3-8-199-58.eu-west-2.compute.amazonaws.com
@@ -133,7 +133,7 @@ Now, to login to your server run:
     ssh ubuntu@ec2-3-8-199-58.eu-west-2.compute.amazonaws.com
 \end{minted}
 
-That's quite a lot to remember, to let's update our \texttt{~/.ssh/config} with an alias:
+That's quite a lot to remember, to let's update our \texttt{\textasciitilde/.ssh/config} with an alias:
 
 \begin{minted}{text}
     Host aws ec2-3-8-199-58.eu-west-2.compute.amazonaws.com
