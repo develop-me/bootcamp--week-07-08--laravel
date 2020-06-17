@@ -19,7 +19,7 @@ If you have a look at \texttt{resources/views/welcome.blade.php} you'll see the 
 
 First, let's strip it back to basics:
 
-\inputminted{html}{06-blade/resources/01-basic.blade.php}
+\inputminted{html}{06-blade/figures/01-basic.blade.php}
 
 Now reload the site.
 \\
@@ -37,7 +37,7 @@ We've got a title and a some filler text for a blog post. And it looks like a ba
 
 And your \texttt{<body>}:
 
-\inputminted{html}{06-blade/resources/02-styled.blade.php}
+\inputminted{html}{06-blade/figures/02-styled.blade.php}
 
 What a lot of \texttt{class}es! But it looks much nicer if you load it in the browser.
 
@@ -50,14 +50,7 @@ You'll probably notice that some of the material in our template is fairly gener
 
 Blade lets us separate these two different aspects. We'll create a file called \texttt{app.blade.php} for the markup that's the same on every page:
 
-\inputminted{html}{06-blade/resources/03-app.blade.php}
-
-You'll notice that we \texttt{@yield("content")}\footnote{These \texttt{@} commands are known as ``Blade Directives''} where the page specific content is going to go.
-\\
-
-Next we need to \textbf{extend} this template in \texttt{welcome.blade.php}:
-
-\inputminted{html}{06-blade/resources/04-welcome.blade.php}
+\inputminted{html}{06-blade/figures/04-welcome.blade.php}
 
 There are two key things:
 
@@ -76,7 +69,7 @@ Sometimes it can be useful to split up your templates further. For example, as o
 
 Let's create a file \texttt{resources/views/partials/nav.blade.php} and move our navigation markup into it:
 
-\inputminted{html}{06-blade/resources/05-nav.blade.php}
+\inputminted{html}{06-blade/figures/05-nav.blade.php}
 
 Now, in \texttt{app.blade.php} we can use this file:
 
@@ -112,7 +105,7 @@ First, make sure you've got multiple articles added to your database. Use \textt
 
 Now update \texttt{welcome.blade.php} with the following:
 
-\inputminted{html}{06-blade/resources/06-loop.blade.php}
+\inputminted{html}{06-blade/figures/06-loop.blade.php}
 
 We use the \texttt{@foreach} directive to loop over all of our articles. Each one gets passed in as \texttt{\$article}. We can then use \textbf{moustaches} (double curly-braces) to interpolate PHP values into our template.
 
@@ -123,7 +116,7 @@ Let's put the code for a single list item into its own partial.
 
 In \texttt{resources/views/partials/articles/list-item.blade.php}:
 
-\inputminted{html}{06-blade/resources/07-list-item.blade.php}
+\inputminted{html}{06-blade/figures/07-list-item.blade.php}
 
 Now we can include this from \texttt{welcome.blade.php} and pass in the \texttt{\$article}:
 

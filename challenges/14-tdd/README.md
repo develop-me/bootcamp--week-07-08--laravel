@@ -2,7 +2,7 @@
 
 ---
 
-## Test Driven Development (Chapter 5)
+## Test Driven Development (Chapter 21)
 
 When practising TDD we often use "katas": well known exercises that you can repeat over time and see how your code changes.
 

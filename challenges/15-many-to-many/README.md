@@ -2,7 +2,7 @@
 
 ---
 
-## Many-to-Many Relationships (Chapter 6)
+## Many-to-Many Relationships (Chapter 22)
 
 The "Section 6.x" bits refer to the relevant section in the notes
 

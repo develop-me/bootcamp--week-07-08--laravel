@@ -57,12 +57,12 @@ This will setup all of the cryptographic jiggerypokery that's required. Make a n
 
 Next, we need to tell Laravel that our users can use API tokens. In the \texttt{User} model (\texttt{App/User.php}) add the \texttt{HasApiTokens} trait:
 
-\phpinputminted{03/figures/01-HasApiTokens}
+\phpinputminted{18-auth/figures/01-HasApiTokens}
 
 
 We'll also need to update \texttt{AuthServiceProvider.php} to use the Passport routes. This saves you having to write them yourself:
 
-\phpinputminted{03/figures/02-AuthServiceProvider}
+\phpinputminted{18-auth/figures/02-AuthServiceProvider}
 
 
 Finally, set the driver of the \texttt{api} authorisation guard to \texttt{passport}:
@@ -129,7 +129,7 @@ We can use the provided Passport middleware to add authorisation to our routes.
 
 Add the \texttt{auth:api} middleware to any routes that require a valid access token:
 
-\phpinputminted{03/figures/03-auth-route}
+\phpinputminted{18-auth/figures/03-auth-route}
 
 Try doing a \texttt{GET} request to \texttt{http://homestead.test/api/articles} in Postman (remember to add the header \texttt{Accept: application/json}). You should get a 401 response.
 \\
@@ -140,7 +140,7 @@ Now choose \texttt{Bearer Token} in the Authorization tab and paste in the acces
 
 To add authorisation to an entire group:
 
-\phpinputminted{03/figures/04-auth-route-group}
+\phpinputminted{18-auth/figures/04-auth-route-group}
 
 
 
@@ -162,7 +162,7 @@ We'll need to modify the Users table to be able to store the user role.
 
 In the generated migration file, add a \texttt{role} column in the \texttt{up()} method, and drop it in the \texttt{down()} method:
 
-\phpinputminted{03/figures/05-ModifyUsersTable}
+\phpinputminted{18-auth/figures/05-ModifyUsersTable}
 
 Make sure you migrate the database changes:
 
@@ -172,7 +172,7 @@ Make sure you migrate the database changes:
 
 Next, we'll need to update our \texttt{User} model to make this new column fillable.
 
-\phpinputminted{03/figures/06-User}
+\phpinputminted{18-auth/figures/06-User}
 
 Now let's update our existing user to have the role of \texttt{"author"} and generate a new user with the role \texttt{"subscriber"}.
 
@@ -218,11 +218,11 @@ The \texttt{rules()} method should return the same validation as \texttt{Article
 
 But let's write a conditional outcome in the \texttt{authorize()} method:
 
-\phpinputminted{03/figures/07-authorize}
+\phpinputminted{18-auth/figures/07-authorize}
 
 We'll need to tell the \texttt{store()} method in the \texttt{Articles} controller to use this new \texttt{Request}:
 
-\phpinputminted{03/figures/08-Articles}
+\phpinputminted{18-auth/figures/08-Articles}
 
 
 In Postman, make a \texttt{POST} request to \texttt{/oauth/token}, supplying the body as before, replacing the user details with the subscriber we generated above.
