@@ -55,6 +55,14 @@ Next, we need to tell Capistrano what to do when it runs a deployment. We do thi
 
 \inputminted{ruby}{04/resources/02/03-deploy.rb}
 
+\begin{infobox}{Seeding Automatically}
+    If you're seeding your database you'll want to update line 62 to be:
+
+    \begin{minted}{ruby}
+        execute "php #{current_path}/artisan migrate:fresh --seed"
+    \end{minted}
+\end{infobox}
+
 
 Finally, we need a file for each type of deployment. Normally we might have one for ``staging'' (the work-in-progress/test server) and one for ``production'' (the finished site). We'll just have a production one for now.
 \\
