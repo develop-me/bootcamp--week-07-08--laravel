@@ -1,62 +1,92 @@
-# Week 7: Server-Side Programming with Laravel
+# Week 7 & 8: Laravel
 
-- [Presentation](https://docs.google.com/presentation/d/1skAHzDLyDYkMJeRLq4Ha-DcgLnE4Yr8qpD5DLgIynIk)
-- [Challenges](https://github.com/develop-me/bootcamp--week-07--laravel/tree/master/challenges)
+## Week 7
 
-## Day 1: Servers & MySQL
+[Presentation](https://docs.google.com/presentation/d/1skAHzDLyDYkMJeRLq4Ha-DcgLnE4Yr8qpD5DLgIynIk)
 
-### Server-Side Programming
+### Day 1: Servers & MySQL
+
+#### Server-Side Programming
 - What is a server?
 - LAMP/LEMP
 - Vagrant & Scotch Box
 
-### MySQL
+#### MySQL
 - Why?
 - Relational Data/Structure
 - Data Types
 - CLI
 - SQL
 
-## Day 2: Basic Laravel
-
-### Basic Laravel
+#### Basic Laravel
 - Homestead
 - Blade templating
 - Routing
 
-### Models
+
+### Day 2: Basic Laravel
+
+#### Models
+
 - Database Migrations & Rollbacks
 - Eloquent
 - Seeding
 
-### Blade
+#### Unit Testing
+
+- Testing Models
+- Testing Databases
+
+### Day 3: Blade & Routing
+
+#### Blade
+
 - `@extends`
 - `@section`
 - Partials/`@include`
 
-### Routing & Controllers
+#### Routing & Controllers
+
 - Routes
 - Controllers
 - Route Model Binding
+- Testing Controllers
 
-## Day 3: Forms & Relational Data
+### Day 4: Forms
 
-### HTTP methods & Forms
 - `GET` & `POST`
 - Forms
 - Validation
 
-### Relational Data
+### Day 5: Relational Data
+
 - One-to-Many Relationships
 
-## Day 4: Unit Testing & Auth
 
-### Unit testing
-- Testing classes
-- Testing with the DB
-- Testing controllers
+## Week 8
 
-### Auth Package
-- Setup
-- Password Hashing/Security
-- Sessions/Cookies
+### Day 1: Basic API
+
+- HTTP & RESTful APIs
+- `api` routes
+- API Controllers
+- Resources
+- CORS
+
+### Day 2: Test Driven Development
+
+- Test Driven Development
+
+### Day 3: Advanced Relational Data
+
+- Many-to-Many Relationships
+
+### Day 4: Authentication
+
+- OAuth2
+- Passport
+
+### Day 5: Deployment
+
+- Deploying to AWS
+- Capistrano

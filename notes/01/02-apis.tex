@@ -1,0 +1,198 @@
+\textbf{Application Programming Interface}s allow programs to talk to one another\footnote{"API" is sometimes also used to refer to the methods on objects, e.g. the \texttt{map} method of an array or the \texttt{.getElementById()} method of DOM nodes}.
+\\
+
+But, programs are stupid: they can only deal with things that they're expecting.
+\\
+
+So an API has to be \textbf{well-defined}: how we make requests to it and what it gives us back should be \textit{predictable} (and preferably documented).
+
+
+\section{RESTful}
+
+We can design our API however we like, but if we stick to certain conventions it will be much easier to use the API from other programs.
+\\
+
+The most popular way to design an API nowadays\footnote{It's looking like GraphQL might become the new standard in a few years} is using \textbf{RESTful}\footnote{\textbf{RE}presentational \textbf{S}tate \textbf{T}ransfer - don't worry if you can't remember that, I just looked it up}
+\\
+
+The idea of RESTful is that we send our data as JSON using HTTP and use the already established HTTP methods/status codes.
+\\
+
+Because most programming languages have built in functionality for working with HTTP and JSON, using RESTful APIs means that a program written in one language can talk to a program written in another language without any problems.
+
+
+\pagebreak
+
+
+\textbf{Key Ideas}
+
+\begin{itemize}
+    \item Sent using HTTP
+        \begin{itemize}
+            \item HTTP headers
+            \item HTTP methods
+            \item HTTP status codes
+        \end{itemize}
+    \item Use URLs for different resources
+    \item Use JSON to send/receive data
+\end{itemize}
+
+
+\section{JSON}
+
+JSON is a way of storing and transferring data structures. It is used by most APIs on the internet. And it's based on JavaScript (it stands for \textbf{JavaScript Object Notation}) - so if you understand JS objects/arrays, you can understand JSON.
+
+\begin{minted}{json}
+    {
+        "people": [{
+            "name": "Alice",
+            "age": 52,
+            "address": {
+                "address1": "221b Baker Street",
+                "city": "London"
+            }
+        }, {
+            "name": "Bob",
+            "age": 34,
+            "address": {
+                "address1": "13 Morse Street",
+                "city": "Exeter"
+            }
+        }]
+    }
+\end{minted}
+
+JSON \textbf{is not} JavaScript: JavaScript is a programming language that gets interpreted into machine code and runs, JSON is a data format for representing data so that it can be stored/transferred.
+\\
+
+JSON has to be understood by programming languages other than JavaScript which means it is stricter: you can't have stray commas and property keys \textit{have} to be wrapped with \textbf{double quotes}.
+
+
+
+
+\section{Methods}
+
+With RESTful the HTTP methods are given specific meanings:
+\\
+
+\begin{tabu}{| l | X |}
+    \hline
+    \textbf{Method} & \textbf{Meaning} \\
+    \hline
+    \texttt{GET} & displaying data, shouldn't change anything (e.g. the database)\\
+    \texttt{POST} & creating new things\\
+    \texttt{PUT} & updating things\\
+    \texttt{PATCH}\footnote{Added to the spec in 2010} & updating parts of things\\
+    \texttt{DELETE} & deleting things\\
+    \hline
+\end{tabu}
+
+
+\section{Status Codes}
+
+Some status codes are also given specific meanings:
+\\
+
+\begin{tabu}{| c | l | X |}
+    \hline
+    \textbf{Status Code} & \textbf{Name} & \textbf{Meaning} \\
+    \hline
+    \texttt{201} & Created & A new item has been created \\
+    \texttt{422} & Unprocessable Entity & Validation error \\
+    \hline
+\end{tabu}
+
+
+
+\section{Naming Routes}
+
+By convention we use something like the following for naming our routes:
+\\
+
+\begin{tabu}{| l | l | X |}
+    \hline
+    \textbf{Method} & \textbf{Example URL} & \textbf{Meaning} \\
+    \hline
+    \texttt{GET} & \texttt{/articles} & Show all articles\\
+    \texttt{POST} & \texttt{/articles} & Create new article\\
+    \texttt{GET} & \texttt{/articles/1} & Show article with ID 1\\
+    \texttt{PUT} / \texttt{PATCH} & \texttt{/articles/1} & Update article with ID 1\\
+    \texttt{DELETE} & \texttt{/articles/1} & Delete article with ID 1\\
+    \texttt{GET} & \texttt{/articles/1/comments} & Show comments for article with ID 1\\
+    \hline
+\end{tabu}
+
+\par\bigskip
+
+Notice that we use the pluralised version of names in the URL.
+
+
+\pagebreak
+
+
+\section{RESTful Architecture}
+
+With a traditional website everything comes from the same server: the database, back-end code, and front-end code.
+\\
+
+An \textbf{API driven} web app splits the database and back-end from the front-end. The back-end code can be on a server in one bit of the world and the front-end code can be running on another server or an app.
+\\
+
+This means that you only have to write the main bit of your app once in the back-end: the various front-ends are just UIs using API requests to do everything.
+\\
+
+\img{10cm}{01/img/api-01}{1em}{A web app talks to the API using HTTP requests}
+\img{10cm}{01/img/api-02}{1em}{A completely separate iOS app can use the same API}
+\img{10cm}{01/img/api-03}{1em}{And an Android app can use the same API too}
+
+
+\pagebreak
+
+\section{Postman}
+
+\href{https://www.getpostman.com}{Postman} is a free app designed for testing out RESTful APIs.\footnote{For Mac there is an alternative app called \href{https://paw.cloud}{Paw}, which is much better, but not free.}
+
+\img{14cm}{01/img/postman}{0em}{Postman}
+
+APIs are not designed for people, so when you're testing them with Postman you need to get used to writing/reading JSON. Remember, it's just a slightly stricter JS object/array syntax.
+
+\subsection{Postman Tips}
+
+\begin{itemize}[leftmargin=*]
+    \item Make sure you set the \texttt{Accept: application/json} header
+
+        \img{12cm}{01/img/headers}{1em}{\textbf{Always} set this header}
+
+    \pagebreak
+
+    \item Make sure you use ``raw'' and then ``JSON (application/json)'' for the Body
+
+        \img{12cm}{01/img/raw}{1em}{Make sure you use JSON for the Body}
+
+    \item Duplicate tabs rather than creating new ones or editing the one you already have
+
+        \img{9cm}{01/img/duplicate}{1em}{It's easier to duplicate tabs}
+
+    \item Use ``Two Pane View'' (\texttt{Cmd + Alt + V} or icon in the bottom right)
+
+        \img{5cm}{01/img/split}{1em}{In two pane view you don't have to scroll to see the response}
+
+    \item Make sure you don't have any errors in your JSON before submitting data
+
+        \img{12cm}{01/img/error}{1em}{If there's an error in your JSON you'll get confusing validation errors}
+
+    \item Use Collections to save routes you're likely to use more than once
+\end{itemize}
+
+
+
+\section{Additional Resources}
+
+\begin{itemize}[leftmargin=*]
+    \item \href{https://www.howtogeek.com/343877/what-is-an-api/}{What is an API?}
+    \item \href{https://restfulapi.net}{REST API Tutorial}
+    \item \href{https://www.smashingmagazine.com/2018/01/understanding-using-rest-api/}{Understanding and Using REST APIs}
+    \item \href{https://any-api.com}{Any API}: documentation and interactive consoles for tonnes of public APIs
+    \item \href{https://webapplog.com/graphql/}{Why GraphQL is taking over APIs}
+    \item \href{https://ponyfoo.com/articles/graphql-in-depth-what-why-and-how}{GraphQL in Depth: What, Why, and How}
+\end{itemize}

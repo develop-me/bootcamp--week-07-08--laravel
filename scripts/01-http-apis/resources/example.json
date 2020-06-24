@@ -1,0 +1,21 @@
+{
+    "people": [{
+        "name": "Alice",
+        "age": 52,
+        "address": {
+            "address1": "221b Baker Street",
+            "city": "London"
+        },
+        "favouriteColours": ["blue", "pink"]
+    }, {
+        "name": "Bob",
+        "age": 34,
+        "address": {
+            "address1": "13 Morse Street",
+            "city": "Exeter"
+        },
+        "favouriteColours": ["purple", "green"]
+    }]
+}
+
+    

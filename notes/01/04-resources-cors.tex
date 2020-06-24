@@ -1,0 +1,135 @@
+\section{Validation}
+
+We should always validate any data sent to the server, otherwise we open ourselves up to security issues and 500 errors.
+\\
+
+We can basically use the same validation as before, but as we don't have authorization setup for the API yet we can't use exactly the same file.
+\\
+
+First create a new class:
+
+\begin{minted}{php}
+    artisan make:request API\\ArticleRequest
+\end{minted}
+
+Then update the \texttt{authorize()} method to return \texttt{true} and the \texttt{rules()} method to return the same as the original \texttt{ArticleRequest} class:
+
+\begin{minted}{php}
+    public function rules()
+    {
+        return [
+            "title" => ["required", "string"],
+            "content" => ["required", "string"],
+        ];
+    }
+\end{minted}
+
+We could have tried to be clever and used inheritance here, but it's generally best to put such clever thoughts to the back of your mind. It turns out the validation rules will need to be subtly different once we add tags.
+\\
+
+Now update your API controller. First add a \texttt{use} statement:
+
+\begin{minted}{php}
+    use App\Http\Requests\API\ArticleRequest;
+\end{minted}
+
+Then update the controller methods to use this instead of \texttt{Request}:
+
+\begin{minted}{php}
+    public function store(ArticleRequest $request) {...}
+    public function update(ArticleRequest $request, Article $article) {...}
+\end{minted}
+
+
+\section{API Resources}
+
+It would also be good if we had some control over how our data comes back. For example when we're listing all the articles we probably don't want to send the full article text: it would be a massive JSON output if there were lots of really long articles. And we might not want to send everything from the database back to the user: for example, the \texttt{created\_at} and \texttt{updated\_at} properties probably aren't that useful.
+\\
+
+This is where \textbf{Resources} come in. They let us control the format of the JSON output. We create a \texttt{Resource} class which tells Laravel how to format a specific model. Then, before returning a response in the controller, we pass it through the resource.
+\\
+
+First, let's create one to simplify the output of an article so it only shows the \texttt{id}, \texttt{title}, and \texttt{article} fields. As usual, we'll use \texttt{artisan} to do most the work for us:
+
+\begin{minted}{bash}
+    artisan make:resource API\\ArticleResource
+\end{minted}
+
+This will create a file in \texttt{app/Http/Resources/API} with the boilerplate code in place. We need to update the \texttt{toArray()} method to return the format that we'd like. In the \texttt{Resource} class we can access the properties of a model using \texttt{\$this}:
+
+\phpinputminted{01/figures/04/02-resource}
+
+Next, we need to update the \texttt{Articles} controller to use the resource for output.
+
+First, tell the controller where to find the \texttt{ArticleResource} class:
+
+\begin{minted}{php}
+    use App\Http\Resources\API\ArticleResource;
+\end{minted}
+
+Then we need to update all of the methods that return an article to use the resource:
+
+\phpinputminted{01/figures/04/03-resource-controller}
+
+If you do an API call to any of these routes now you'll notice that the response is also wrapped in an outer \texttt{data} property by default. It is possible to change this, but it's actually quite useful once you start to deal with more complex APIs (e.g. so you can have a separate property to track pagination).
+\\
+
+We also want to make the \texttt{list} method only show the \texttt{id} and \texttt{title} properties. We'll need to create a separate resource for this as we're outputting a different format.
+\\
+
+Again, we'll use \texttt{artisan} to make a resource:
+
+\begin{minted}{bash}
+    artisan make:resource API\\ArticleListResource
+\end{minted}
+
+Then update the \texttt{toArray()} method to output just the \texttt{id} and \texttt{title} properties:
+
+\phpinputminted{01/figures/04/04-index-resource}
+
+Finally we'll need to update the controller.
+\\
+
+First let the controller know about \texttt{ArticleListResource}:
+
+\begin{minted}{php}
+    use App\Http\Resources\API\ArticleListResource;
+\end{minted}
+
+Then update the \texttt{index} method. We're returning a collection of articles, so we'll need to use the \texttt{Resource}'s \texttt{collection} method:
+
+\phpinputminted{01/figures/04/05-index-resource-controller}
+
+
+
+\section{CORS}
+
+Although we can make requests to our API using Postman and the like, we won't be able to do it from a modern web browser - which is generally where we'd like to be making the requests from. By default browsers won't allow JS from domain \textit{x} to get data from domain \textit{y} as they have different \textbf{origins}, a potential security issue. So, if our API is on a separate domain, which it more than likely will be, we need to be able to make cross-origin requests.
+\\
+
+Modern browsers use something called \textbf{Cross-Origin Resource Sharing} to handle this. They expect certain HTTP headers to be set on API responses to say who can and can't use the API.
+\\
+
+As of Laravel 7.0, CORS support is built-in,\footnote{Using the  \href{https://github.com/fruitcake/laravel-cors}{fruitcake/laravel-cors} package} so we don't need do do anything to get it working.
+\\
+
+We can tweak the CORS settings in \texttt{config/cors.php}, but the default values are fine for our purposes.
+\\
+
+CORS only kicks in if you have an \texttt{Origin} header, which Postman doesn't send by default. But, if you want to check it's working, you can add one:
+
+\begin{minted}{diff}
+    Origin: wombats.co.uk
+\end{minted}
+
+You should get back an \texttt{Access-Control-Allow-Origin} header in the response.
+
+
+
+\section{Additional Resources}
+
+\begin{itemize}[leftmargin=*]
+    \item \href{https://laravel.com/docs/master/eloquent-resources}{API Resources}
+    \item \href{https://github.com/barryvdh/laravel-cors}{Laravel CORS Library}
+    \item \href{http://laravel.com/docs/master/middleware}{Middleware}
+\end{itemize}

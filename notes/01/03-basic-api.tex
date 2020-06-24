@@ -1,0 +1,151 @@
+We've already got a nice Blog app up and running. Let's give it an API!
+\\
+
+Remember, a typical RESTful API uses URLs to decide what ``resource'' we are working with and the HTTP method to decide what to do with it. So we need a way to say if the user goes to the URL \texttt{/articles} and they do a \texttt{POST} request, we should look at the JSON data they've sent and create a new article in the database.
+\\
+
+We can, of course, use routing and controllers to do just that.
+
+\section{API Controller}
+
+We'll need a different controller to deal with API requests. Standard requests generate HTML, but we want to return JSON so that another computer can easily parse the response.
+\\
+
+We can use \texttt{artisan} to generate an empty controller with the necessary scaffolding:
+
+\begin{minted}{bash}
+    artisan make:controller API\\Articles --api
+\end{minted}
+
+We've put it in the \texttt{App\textbackslash{}Http\textbackslash{}Controllers\textbackslash{}API} namespace to keep it separate. We also included the \texttt{--api} option, which will generate all of the standard RESTful API methods for us.
+
+
+\section{API Routing}
+
+First, let's add a route to handle \texttt{GET} requests sent to \texttt{/articles}. This will point to code that handles showing our articles.
+\\
+
+Add a \texttt{GET} route for \texttt{/articles} to \texttt{routes/\textbf{api.php}}:
+
+\begin{minted}{php}
+    # use the appropriate controller
+    use App\Http\Controllers\API\Articles;
+
+    # use array syntax to point to controller
+    # tidier and harder to make typos
+    Route::get("/articles", [Articles::class, "index"]);
+\end{minted}
+
+Rather than using the \texttt{"Controller@method"} syntax, we've passed an array with the class name first and the method second. This allows us to take advantage of the \texttt{use} keyword, to avoid needing to type the \texttt{API\textbackslash\textbackslash} (we have to escape back-slashes) bit every time.
+\\
+
+Now if you use Postman to make a \texttt{GET} request to \texttt{http://homestead.test/\textbf{api/}articles} you should get back an empty \texttt{200} response (the controller method exists, but it's not doing anything just yet).
+\\
+
+We're going to be using \texttt{App\textbackslash{}Article} in our API controller, so let's include a \texttt{use} statement at the top of the file:
+
+\begin{minted}{php}
+    use App\Article;
+\end{minted}
+
+Now, update \texttt{index} method:
+
+\begin{minted}{php}
+    public function index()
+    {
+      // get all the articles
+      return Article::all();
+    }
+\end{minted}
+
+Make the same request as before with Postman and you should get back a list of all your articles. Laravel is smart enough to output it in the format the user asks for. So, as long as an \texttt{Accept: application/json} header has been set, the user will get back the article list in JSON format.
+
+
+\section{The API}
+
+We can quickly get the other parts of the API working now.
+
+\subsection{The Routes}
+
+Here are the routes we'll need using the standard RESTful end-points and methods:
+
+\begin{minted}{php}
+    // use the API controller
+    use App\Http\Controllers\API\Articles;
+
+    // all of the routes are in the /articles end-point
+    Route::group(["prefix" => "articles"], function () {
+        // GET /articles: show all articles
+        Route::get("", [Articles::class, "index"]);
+
+        // POST /articles: create a new article
+        Route::post("", [Articles::class, "store"]);
+
+        // all these routes also have an article ID in the
+        // end-point, e.g. /articles/8
+        Route::group(["prefix" => "{article}"], function () {
+            // GET /articles/8: show the article
+            Route::get("", [Articles::class, "show"]);
+
+            // PUT /articles/8: update the article
+            Route::put("", [Articles::class, "update"]);
+
+            // DELETE /articles/8: delete the article
+            Route::delete("", [Articles::class, "destroy"]);
+        });
+    });
+\end{minted}
+
+\subsection{The Controller}
+
+We've already got the \texttt{index} method working, let's get the rest working now.
+\\
+
+Let's do the \texttt{show} method first:
+
+\phpinputminted{01/figures/03/09-show}
+
+We accept the article using Route Model Binding and just return it. Laravel deals with converting it into JSON for us.
+\\
+
+Next, let's do \texttt{destroy}:
+
+\phpinputminted{01/figures/03/13-destroy}
+
+Again, we accept the article using Route Model Binding, but this time we call its \texttt{delete} method. We still need to return something though, so we return a \texttt{null} response with a \texttt{204} (``No Content'') status code.
+\\
+
+Now we'll get the \texttt{store} method working:
+
+\phpinputminted{01/figures/03/03-controller-store-code}
+
+We use the \texttt{\$request->all()} method to get back an associative array of all the data the user submitted. If we were to log this with \texttt{dd(\$request->all())} we'd get something like:
+
+\begin{minted}{php}
+    array:2 [
+      "title" => "My Thoughts on Wombats"
+      "content" => "Do they use sonar for navigation?"
+    ]
+\end{minted}
+
+We then use the \texttt{create} method from the \texttt{Article} class (inherited from Eloquent's \texttt{Model} class). This takes an associative array of values, creates a new instance of the model (in this case an article), sets the properties that were provided, and then stores it in the database. In other words, it does everything we need to do to create a new article! It also returns the newly created article instance, which we immediately \texttt{return}.
+\\
+
+Finally, we can get the \texttt{update} method working. This combines aspects of \texttt{show} and \texttt{create}:
+
+\phpinputminted{01/figures/03/11-update}
+
+We get the submitted data from the \texttt{\$request} object, then use the \texttt{fill()} method to update the article that we got from Route Model Binding. We then save the model and return it.
+
+\hr
+
+And that's it. We've created a fully functional API in about fifteen lines of code.
+
+
+\section{Additional Resources}
+
+\begin{itemize}[leftmargin=*]
+    \item \href{https://laravel.com/docs/master/routing}{Routing}
+    \item \href{http://laravel.com/docs/master/controllers}{Controllers}
+    \item \href{https://laraveldaily.com/how-to-structure-routes-in-large-laravel-projects/}{How to Structure Routes in Large Laravel Apps}
+\end{itemize}
