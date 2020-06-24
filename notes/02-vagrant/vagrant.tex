@@ -83,31 +83,6 @@ A stopped Vagrant VM still uses hard-drive space.
 This command will delete the VM and its virtual hard drive. Any data that is on the VM will be lost. Usually this is just the databases as most files will be on the host machine and these are not removed.
 
 
-\section{Scotch Box}
-
-\href{https://box.scotch.io}{Scotch Box} is a Vagrant box that includes PHP and MySQL running on an Ubuntu Linux operating system, perfect for LAMP/LEMP development.
-\\
-
-It also includes other useful tools for server-side developers, like MailHog that helps us test email sending from our websites and apps.
-
-\subsection{Getting Started}
-
-Scotch Box includes a ready made \texttt{Vagrantfile}, so all we need to do is clone it and then run \texttt{vagrant up}:
-
-\begin{minted}{bash}
-    # clone scotch box into `my-project`
-    git clone https://github.com/scotch-io/scotch-box my-project
-
-    # go into `my-project` directory
-    cd my-project
-
-    # run vagrant up
-    vagrant up
-\end{minted}
-
-Once that's finished, we're ready to start using our shiny new virtual machine.
-
-
 \section{Getting In}
 
 It's often necessary to get onto the VM to run a few commands. First, make sure your machine is running, then run:
@@ -138,6 +113,5 @@ This should take you back to the command-line you're familiar with on your own m
 
 \begin{itemize}[leftmargin=*]
     \item \href{https://www.vagrantup.com}{Vagrant}
-    \item \href{https://box.scotch.io}{Scotch Box}
     \item \href{https://app.vagrantup.com/boxes/search}{Vagrant Boxes}
 \end{itemize}
