@@ -19,23 +19,21 @@
 - SQL
 
 #### Basic Laravel
-- Homestead
-- Blade templating
-- Routing
 
+- Homestead
+- Database Migrations & Rollbacks
 
 ### Day 2: Basic Laravel
 
 #### Models
 
-- Database Migrations & Rollbacks
 - Eloquent
 - Seeding
 
 #### Unit Testing
 
 - Testing Models
-- Testing Databases
+- Testing with Databases
 
 ### Day 3: Blade & Routing
 
@@ -50,7 +48,6 @@
 - Routes
 - Controllers
 - Route Model Binding
-- Testing Controllers
 
 ### Day 4: Forms
 

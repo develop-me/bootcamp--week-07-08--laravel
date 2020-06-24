@@ -24,7 +24,7 @@ Use \texttt{artisan} to create a \texttt{FormRequest} class:
 
 This will create a file in \texttt{app/Http/Requests}. The \texttt{ArticleRequest} class has two methods. We first need to return \texttt{true} from the \texttt{authorize} method: this method can be very useful when you add support for user logins, but for now we'll just assume everyone can make requests. The \texttt{rules} method needs to return an associative array, where the property name is the \texttt{name} of the submitted datum that needs validating and its value is an array of validation rules:
 
-\phpinputminted{09-forms/figures/01-validation}
+\phpinputminted{10-forms/figures/01-validation}
 
 Next we need to  update the \texttt{Articles} controller to use our validated request instead of the standard \texttt{Request} object. First let it know where the \texttt{ArticleRequest} class lives:
 
@@ -34,7 +34,7 @@ Next we need to  update the \texttt{Articles} controller to use our validated re
 
 And then update the type-hinting on the \texttt{createPost} method to use the \texttt{ArticleRequest} class instead of \texttt{Request}:
 
-\phpinputminted{09-forms/figures/02-type-hint}
+\phpinputminted{10-forms/figures/02-type-hint}
 
 This works because \texttt{ArticleRequest} is a descendant of \texttt{Request}, so it has all of the same methods and properties.
 \\
