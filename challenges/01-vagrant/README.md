@@ -1,12 +1,20 @@
 # Challenges
 
-## Creating a Scotch Box
+## Creating a VM
 
-1. Get setup with a Vagrant box built from the Scotch Box template
-1. In your browser load the `index.php` page:
+1. Create a new directory called `mysql`
+1. Get setup with a Vagrant box with the following `Vagrantfile`:
 
-### Tricksy
+```ruby
+Vagrant.configure("2") do |config|
+    config.vm.box = "laravel/homestead"
+    config.vm.synced_folder ".", "/home/vagrant/code"
+end
+```
 
-1. Edit the `index.php` PHP script and verify that the page loaded in the browser changes.
+## Using the VM
 
-1. Change the `config.vm.hostname` entry in `Vagrantfile` and run `vagrant reload`. Check if the box loads under the new domain name.
+1. Create a file (use your imagination) in your `mysql` directory
+1. Use `vagrant ssh` to access the VM
+1. Navigate to `/home/vagrant/code`
+1. Check that the directory contains the right files

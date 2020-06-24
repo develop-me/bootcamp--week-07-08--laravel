@@ -24,6 +24,13 @@
 
 ## Demo
 
+```ruby
+Vagrant.configure("2") do |config|
+    config.vm.box = "laravel/homestead"
+    config.vm.synced_folder ".", "/home/vagrant/code"
+end
+```
+
 - Can't access index.php directly (demo)
 - Hosts and IP addresses
 - Vagrantfile tour
