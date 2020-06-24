@@ -1,0 +1,93 @@
+% setup the document
+\documentclass[b5paper,openany]{book}
+
+% setup variables ------------------------------
+
+% your name
+\newcommand\instructor{Mark Wales \& Oli Ward}
+
+% the week number
+\newcommand\weekno{7}
+
+% week main title
+\newcommand\maintitle{Server-Side Programming}
+
+% week subtitle
+\newcommand\subtitle{with Laravel}
+
+% link to notes - relative to github.com/develop-me/
+\newcommand\github{bootcamp--week-07--laravel-blade/blob/master/notes/}
+
+% setup functions, styling, etc.
+\input{../../latex-templates/template.tex}
+
+% the structure of the document
+\begin{document}
+
+% render the title page (uses variables above)
+\tp
+
+\quotepage{There is no such thing as perfect security, only varying levels of insecurity.}{Salman Rushdie}
+
+\tableofcontents
+
+\input{../../latex-templates/preface.tex}
+
+
+\chapter{Server-Side Programming}
+\input{01-server-side/server-side.tex}
+
+\chapter{Vagrant}
+\input{02-vagrant/vagrant.tex}
+
+\chapter{MySQL}
+\input{03-mysql/mysql.tex}
+
+\chapter{Laravel}
+\input{04-laravel/laravel.tex}
+
+\chapter{Homestead}
+\input{04-laravel/homestead.tex}
+
+\chapter{Artisan}
+\input{04-laravel/artisan.tex}
+
+\chapter{Database Migrations}
+\input{05-eloquent/migrations.tex}
+
+\chapter{Eloquent ORM}
+\input{05-eloquent/eloquent.tex}
+
+\chapter{Blade}
+\input{06-blade/blade.tex}
+
+\chapter{Routing}
+\input{07-routing/routing.tex}
+
+\chapter{Controllers}
+\input{08-controllers/controllers.tex}
+
+\chapter{Forms}
+\input{09-forms/forms.tex}
+
+\chapter{Validation}
+\input{09-forms/validation.tex}
+
+\chapter{One-to-Many Relationships}
+\input{10-one-to-many/one-to-many.tex}
+
+\chapter{Unit Testing}
+\input{11-unit-testing/unit-testing.tex}
+
+\chapter{Auth}
+\input{12-auth/auth.tex}
+
+
+
+\nchapter{Glossary}
+\input{glossary.tex}
+
+
+\input{../../latex-templates/colophon.tex}
+
+\end{document}

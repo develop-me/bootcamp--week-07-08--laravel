@@ -1,0 +1,136 @@
+Now we've got a database structure in place, we want to be able to access the database from Laravel. Back in the day we'd have done this by writing MySQL queries as strings in PHP and then using \texttt{mysqli} to run them.
+\\
+
+Having to write queries out as strings is pretty horrible at the best of times and opens up a plethora of security concerns. But it would also limit our app to only being able to use MySQL, which would mean we couldn't easily switch it over to SQLite or PostgreSQL if we needed to. SQLite can be orders of magnitude faster than MySQL for data that doesn't need to persist – which, as we'll see later, is very useful for testing code.
+\\
+
+That's where \textbf{Object Relational Mapper}s (ORM) come in. An ORM lets you work with plain old PHP objects,\footnote{Like the one's you spent all of last week writing and using} but under the hood it's actually writing and running database queries for you. Laravel's ORM library is called \textbf{Eloquent}.\footnote{Good name.}
+
+\section{Models}
+
+\textbf{Models} are PHP classes that extend Eloquent's \texttt{Model} class. By default they live in the \texttt{App} namespace. Each model represents a different type of thing that your app works with. It usually maps to a table in the database.
+\\
+
+For example, when we ran \texttt{artisan make:model} earlier, we created an \texttt{Article} model class. Have a look in \texttt{app/Article.php}:
+
+\phpinputminted{05-eloquent/figures/04-Article}
+
+All the work is being done by that \texttt{extends Model} bit. It's Eloquent that is going to do almost all the work for us.
+
+
+
+\section{Writing Data}
+
+We can use the \texttt{artisan tinker} command to run arbitrary bits of PHP code in our app environment.
+\\
+
+Let's create a new article:
+
+\phpinputminted{05-eloquent/figures/03-tinker-model}
+
+We create a new instance of the \texttt{Article} class and then set properties that match the column names on our \texttt{articles} database table. Then we just need to call the inherited \texttt{save()} method.
+\\
+
+Have a look in the database now and you'll see that a new row has been added with the data that we added to the \texttt{\$article} properties.
+\\
+
+The \texttt{Article} class does all of the databasey stuff for us. We don't need to worry about writing MySQL queries, setting up IDs, or updating the timestamps – Eloquent does it all for us.
+\\
+
+Once you've called the \texttt{save()} method, you can take a look at the \texttt{id} property:
+
+\phpinputminted{05-eloquent/figures/05-Article-id}
+
+The \texttt{id} property now has a value because the article has been stored in the database. The \texttt{created\_at} and \texttt{updated\_at} properties also have values.
+\\
+
+If you make another change to the article and then save it again you'll see that the \texttt{updated\_at} property has been updated:
+
+\phpinputminted{05-eloquent/figures/06-Article-update}
+
+
+\section{Reading Data}
+
+We can also find articles using the \texttt{Article} class. It inherits various \texttt{static} methods from \texttt{Model}.
+\\
+
+For example, you can run \texttt{Article::all()} to get a \texttt{Collection}\footnote{Remember these from last week?} back with all the articles in it:
+
+\begin{minted}{php}
+    // all the articles
+    Article::all();
+\end{minted}
+
+Each row in the database is returned as an instance of the \texttt{Article} class.
+\\
+
+You can also run \texttt{Article::find()} to find an article with a specific \texttt{id}:
+
+\begin{minted}{php}
+    // the article with id 1
+    Article::find(1);
+\end{minted}
+
+This will return an instance of the \texttt{Article} class with the properties set to the corresponding values from the database row (or \texttt{null} if it doesn't find anything).
+\\
+
+You can also build up more complex \texttt{WHERE}-style queries, all just with Eloquent methods. See the \href{http://laravel.com/docs/master/eloquent}{Eloquent docs} for more information.
+
+
+\section{Model Methods}
+
+We can add our own methods to models in order to make them more useful. For example, we might want a way to get a truncated version of each article's \texttt{content} to display on a summary page.
+\\
+
+We could add this to the \texttt{Article} model as follows:
+
+\begin{minted}{php}
+    use Illuminate\Support\Str;
+
+    class Article extends Model
+    {
+        public function truncate()
+        {
+            // use the Laravel Str::limit method
+            // to limit to 20 characters
+            return Str::limit($this->content, 20);
+        }
+    }
+\end{minted}
+
+We've added a method called \texttt{truncate} to the \texttt{Article} class.  The \texttt{\$this->content} property will be set to the \texttt{content} value for whichever article the object instance represents. Now all instances of that class will have a \texttt{truncate} method.
+
+\begin{minted}{php}
+    // get the article with ID 1
+    $article = Article::find(1);
+
+    // call the truncate method we've added to the class
+    $article->truncate(); // truncated version of the content
+\end{minted}
+
+Another useful method that we might add to our \texttt{Article} model is one that tells us, in human-readable form, how long ago a blog-post was posted:
+
+\begin{minted}{php}
+    public function relativeDate()
+    {
+        return $this->created_at->diffForHumans();
+    }
+\end{minted}
+
+We get the \texttt{created\_at} property, which is automatically created for us by Laravel. This property is also automatically turned into a \texttt{Carbon} date object, so we can just call the \href{https://carbon.nesbot.com/docs/#api-humandiff}{Carbon methods} on it directly, such as \texttt{diffForHumans()}.
+
+\begin{minted}{php}
+    // get the article with ID 1
+    $article = Article::find(1);
+
+    // call the relativeDate method we've added to the class
+    $article->relativeDate(); // something like "1 day ago"
+\end{minted}
+
+
+
+\section{Additional Resources}
+
+\begin{itemize}[leftmargin=*]
+    \item \href{http://laravel.com/docs/master/eloquent}{Eloquent}
+\end{itemize}

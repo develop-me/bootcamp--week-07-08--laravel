@@ -1,0 +1,99 @@
+There are various ways to get Laravel up and running. If you're on a Mac you can use \href{https://laravel.com/docs/master/valet}{Laravel Valet}. But we'll be using \textbf{Homestead}, Laravel's pre-configured Vagrant box.
+\\
+
+There are two ways to setup Homestead: globally and locally. The global way is more efficient in terms of hard drive usage, but it's also a bit of a pain to get setup properly. For this reason I recommend going with the local setup.
+\\
+
+First, we need to add the Homestead files to our project. \textbf{In the newly created project directory} run:
+
+\begin{minted}{bash}
+    # inside your project folder (cd project-name first!) run
+    composer require laravel/homestead
+\end{minted}
+
+This should add a couple of new Composer packages. If it looks like it's installed lots of packages then make sure you're definitely in the project directory.
+\\
+
+Composer only adds files to the \texttt{vendor} directory, which Vagrant doesn't know anything about. So next, we need to copy the relevant Homestead files into the project directory:
+
+\begin{minted}{bash}
+    vendor/bin/homestead make
+\end{minted}
+
+This should have added a \texttt{Homestead.yaml} and \texttt{Vagrantfile} to your project.
+\\
+
+\begin{infobox}{\texttt{Homestead.yaml}}
+    The \texttt{Homestead.yaml} file that is generate is specific to the directory that you run it in. If you move the project to a different directory you'll want to run the \texttt{homestead make} command again or update the folders mapping in the \texttt{Homestead.yaml} file.
+\end{infobox}
+
+By default Homestead is setup to use 2GB of RAM. For our purposes this is overkill (and will make computer with less than 8GB of RAM feel really sluggish). So, change the second line of \texttt{Homestead.yaml} so it just uses 512MB:
+
+\begin{minted}{yaml}
+    memory: 512
+\end{minted}
+
+You'll also need to edit the \texttt{.env} file to use the default Homestead database setup:
+
+\begin{minted}{ini}
+    DB_DATABASE=homestead
+    DB_USERNAME=root
+    DB_PASSWORD=secret
+\end{minted}
+
+Now you can get Vagrant up and running:
+
+\begin{minted}{bash}
+    vagrant up
+\end{minted}
+
+This can take a while the first time as it will need to download the appropriate Homestead box\footnote{This can be \textit{really} slow. Unfortunately the Homestead box is hosted on a really under-powered server. If you get a download time of several hours it can sometimes be worth cancelling and retrying a few minutes later.}, then get the VM up and running, and then \textbf{provision} (in this case, run the Laravel setup scripts) the VM.
+
+\pagebreak
+
+\begin{infobox}{The \texttt{.env} File}
+    There are certain configuration options that rather than being application specific are \textbf{environment} (i.e. the machine that the app is running on) specific.
+    \\
+
+    For example, when you're developing your application you can probably get away with using \texttt{root} as the root MySQL password, as it's only on your Vagrant VM. You might also want to show full error messages when something goes wrong.
+    \\
+
+    However, on a production server you might need to use a better MySQL password and maybe a different database name. You probably \textit{don't'} want to output full errors, as this can be a big security risk: giving away how your application is built exposes it to known vulnerabilities.
+    \\
+
+    These sort of configuration options go in the \texttt{.env} file. This file is specific to each computer that it runs on, so should not be copied or added to version control. Instead, when running on a new machine, you should copy the \texttt{.env.example} file and edit that. This will make sure that you don't accidentally copy across settings that are specific to another machine.
+\end{infobox}
+
+
+\section{Getting Started}
+
+Once Vagrant has finished loading:
+
+\begin{itemize}
+    \item On Mac: \href{http://homestead.test}{http://homestead.test}
+    \item On Windows: \href{http://localhost:8000}{http://localhost:8000}
+\end{itemize}
+
+\img{8cm}{04-laravel/img/laravel.png}{0em}{Laravel up and running}
+
+
+\begin{infobox}{Server Errors on First Run}
+    Occasionally provisioning doesn't quite work as planned. This often happens if you moved the project directory and forgot to update \texttt{Homestead.yaml}. You can re-run the provisioning scripts with \texttt{vagrant provision}. However, when you run them the second time it can skip a few stages. So, if you get a 500 error on first run, run the following in the project directory:
+
+    \begin{minted}{bash}
+        # reload vagrant and provision it
+        vagrant reload --provision # re-run provisioning scripts
+
+        # generate a new app key
+        php artisan key:generate
+    \end{minted}
+\end{infobox}
+
+
+\section{Additional Resources}
+
+\begin{itemize}[leftmargin=*]
+    \item \href{http://laravel.com/docs/master/homestead#per-project-installation}{Per-project Homestead Setup}
+    \item \href{https://github.com/vlucas/phpdotenv#why-env}{Why .env?}
+    \item \href{https://en.wikipedia.org/wiki/Environment\_variable}{Environmental Variables}
+\end{itemize}

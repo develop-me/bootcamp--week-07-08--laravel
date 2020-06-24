@@ -1,0 +1,143 @@
+Laravel has its own \textbf{templating language} called ``Blade''.
+\\
+
+A templating language lets you easily combine the data in your app with some other format to create a final document. In the case of Blade, it lets us easily generate the final HTML output of our app, making it easy to:
+\\
+
+\begin{itemize}
+    \item Reuse repeated markup
+    \item Display data
+    \item Conditionally show content
+    \item Loop over Collections
+\end{itemize}
+
+Blade templates have a \texttt{.blade.php} extension and they live inside the\texttt{resources/views} directory.
+\\
+
+If you have a look at \texttt{resources/views/welcome.blade.php} you'll see the initial ``Larvel'' page that you get whenever you first create a Laravel project.\footnote{In the next section we'll look at \textbf{routing} which allows us to change which view we get} We're going to be gradually changing this file show a list of articles from our database.
+\\
+
+First, let's strip it back to basics:
+
+\inputminted{html}{06-blade/resources/01-basic.blade.php}
+
+Now reload the site.
+\\
+
+We've got a title and a some filler text for a blog post. And it looks like a bag of arse. Bootstrap to the rescue. In your \texttt{<head>}:
+
+\begin{minted}[fontsize=\scriptsize]{html}
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+      integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
+      crossorigin="anonymous"
+    />
+\end{minted}
+
+And your \texttt{<body>}:
+
+\inputminted{html}{06-blade/resources/02-styled.blade.php}
+
+What a lot of \texttt{class}es! But it looks much nicer if you load it in the browser.
+
+
+
+\section{Extending}
+
+You'll probably notice that some of the material in our template is fairly generic markup that we'd want to use on every page of our site (e.g. the \texttt{<head>} and \texttt{<nav>}), whereas some of it would only be relevant for the homepage (e.g. the blog post list).
+\\
+
+Blade lets us separate these two different aspects. We'll create a file called \texttt{app.blade.php} for the markup that's the same on every page:
+
+\inputminted{html}{06-blade/resources/03-app.blade.php}
+
+You'll notice that we \texttt{@yield("content")}\footnote{These \texttt{@} commands are known as ``Blade Directives''} where the page specific content is going to go.
+\\
+
+Next we need to \textbf{extend} this template in \texttt{welcome.blade.php}:
+
+\inputminted{html}{06-blade/resources/04-welcome.blade.php}
+
+There are two key things:
+
+\begin{itemize}
+    \item \texttt{@extends}: we are extending the \texttt{app.blade.php} file (we don't need to include the file extension)
+    \item \texttt{@section("content")}: we have created a named section called ``content'', which the \texttt{app} template \texttt{yield}s
+\end{itemize}
+
+Now, reload the site and everything should be as before. But we've modularised our code to make it much more reusable.
+
+
+\section{Partials}
+
+Sometimes it can be useful to split up your templates further. For example, as our app gets more complicated the \texttt{app.blade.php} file might get quite large. We could break it up into \textbf{partials}: small bits of template that we can include from another file.
+\\
+
+Let's create a file \texttt{resources/views/partials/nav.blade.php} and move our navigation markup into it:
+
+\inputminted{html}{06-blade/resources/05-nav.blade.php}
+
+Now, in \texttt{app.blade.php} we can use this file:
+
+\begin{minted}{html}
+    <div class="container">
+        @include("partials/nav")
+
+      <main class="mt-4">
+\end{minted}
+
+You'll notice that we're not extending or using sections in the partial. That's because a partial is always \texttt{@include}d from another file.
+
+
+\begin{infobox}{Dotty}
+    If you read the Laravel docs you'll often see something like:
+
+    \begin{minted}{html}
+        @include("partials.nav")
+    \end{minted}
+
+    On a Linux server, using a \texttt{.} instead of a \texttt{/} does exactly the same thing.
+\end{infobox}
+
+
+
+\section{Loops \& Moustaches}
+
+It's often useful to repeat a certain bit of markup multiple times. Let's use a loop to update our articles list to show multiple articles.
+\\
+
+First, make sure you've got multiple articles added to your database. Use \texttt{artisan tinker} to add some more if you've not got many.
+\\
+
+Now update \texttt{welcome.blade.php} with the following:
+
+\inputminted{html}{06-blade/resources/06-loop.blade.php}
+
+We use the \texttt{@foreach} directive to loop over all of our articles. Each one gets passed in as \texttt{\$article}. We can then use \textbf{moustaches} (double curly-braces) to interpolate PHP values into our template.
+
+\section{Passing Data}
+
+Let's put the code for a single list item into its own partial.
+\\
+
+In \texttt{resources/views/partials/articles/list-item.blade.php}:
+
+\inputminted{html}{06-blade/resources/07-list-item.blade.php}
+
+Now we can include this from \texttt{welcome.blade.php} and pass in the \texttt{\$article}:
+
+\begin{minted}{html}
+    @foreach (App\Article::all() as $article)
+      {{ /* pass-through $article as "article" */ }}
+      @include("partials/articles/list-item", ["article" => $article])
+    @endforeach
+\end{minted}
+
+We can pass an associative-array as the second argument to \texttt{@include} and that will then be available inside the partial with the variable name that we gave it (\texttt{"article"} in this case).
+
+\section{Additional Resources}
+
+\begin{itemize}[leftmargin=*]
+    \item \href{http://laravel.com/docs/master/blade}{Laravel: Blade Templates}
+\end{itemize}
