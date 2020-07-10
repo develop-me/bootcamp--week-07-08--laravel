@@ -6,7 +6,7 @@ Let's create a simple form for creating a new blog post.
 
 In \texttt{resources/views/form.blade.php}:
 
-\inputminted{php}{10-forms/figures/01-form.blade.php}
+\code{}{php}{10-forms/figures/01-form.blade.php}
 
 And add a route so that we can view it:
 
@@ -47,11 +47,11 @@ When data is submitted in this way we call it a \texttt{GET} request: the data i
 That's where \texttt{POST} comes in. If we tell a browser to submit a form using \texttt{POST} it will submit the data as the \textbf{body} of the request. We'll look at exactly what this means later in the course, but for now all you need to know is that that data gets sent to the server, but it doesn't get added to the URL.
 \\
 
-\begin{tabu}{l l X}
+\begin{tabularx}{\textwidth}{l l X}
     \textbf{Method} & \textbf{How it submits data}       & \textbf{Example usage} \\
     \texttt{GET}    & Data is added to the URL           & A search form \\
     \texttt{POST}   & Data in the body of the request    & Submitting complex/sensitive data \\
-\end{tabu}
+\end{tabularx}
 
 \par\bigskip
 
@@ -149,11 +149,11 @@ Then we get all the submitted data from the \texttt{Request} object. Next, we cr
     As a general rule of thumb, for a Blade based site:
     \\
 
-    \begin{tabu}{l X}
+    \begin{tabularx}{\textwidth}{l X}
         \textbf{Request Method}  & \textbf{Return Type} \\
         \texttt{GET}             & \texttt{view()} \\
         \texttt{POST}            & \texttt{redirect()} \\
-    \end{tabu}
+    \end{tabularx}
 
     \par\bigskip
 

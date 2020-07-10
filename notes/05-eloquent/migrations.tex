@@ -41,7 +41,7 @@ This creates an Article model class\footnote{We'll look at models shortly.} (\te
 
 Look inside the database migration and you'll see the following:
 
-\inputminted{php}{05-eloquent/figures/01-migration.php}
+\code{}{php}{05-eloquent/figures/01-migration.php}
 
 As you can see, a migration consists of an \texttt{up} method and a \texttt{down} method. The \texttt{up} method's job is to make the changes that we want to the database. The \texttt{down} method's job is to reverse the changes that \texttt{up} made: this allows us to \textbf{rollback} a migration if we made a mistake.
 \\
@@ -59,7 +59,7 @@ You can see that both methods are already partly written for us. The \texttt{up}
 
 However, we do need to update the \texttt{up} method to include the other columns:
 
-\phpinputminted{05-eloquent/figures/02-migration-up}
+\php{}{05-eloquent/figures/02-migration-up}
 
 We've added the \texttt{title} column as a ``string'' with maximum length of 100: in MySQL this is the same as \texttt{VARCHAR(100)}.\footnote{It doesn't use \texttt{varchar} because Laravel supports lots of different SQL engines, not all of which use the same types as MySQL.} We've also added a \texttt{content} column with the ``text'' type – this is for storing arbitrarily long bits of text.
 

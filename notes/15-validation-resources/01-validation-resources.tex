@@ -57,7 +57,7 @@ First, let's create one to simplify the output of an article so it only shows th
 
 This will create a file in \texttt{app/Http/Resources/API} with the boilerplate code in place. We need to update the \texttt{toArray()} method to return the format that we'd like. In the \texttt{Resource} class we can access the properties of a model using \texttt{\$this}:
 
-\phpinputminted{15-validation-resources/figures/02-resource}
+\php{}{15-validation-resources/figures/02-resource}
 
 Next, we need to update the \texttt{Articles} controller to use the resource for output.
 
@@ -69,7 +69,7 @@ First, tell the controller where to find the \texttt{ArticleResource} class:
 
 Then we need to update all of the methods that return an article to use the resource:
 
-\phpinputminted{15-validation-resources/figures/03-resource-controller}
+\php{}{15-validation-resources/figures/03-resource-controller}
 
 If you do an API call to any of these routes now you'll notice that the response is also wrapped in an outer \texttt{data} property by default. It is possible to change this, but it's actually quite useful once you start to deal with more complex APIs (e.g. so you can have a separate property to track pagination).
 \\
@@ -85,7 +85,7 @@ Again, we'll use \texttt{artisan} to make a resource:
 
 Then update the \texttt{toArray()} method to output just the \texttt{id} and \texttt{title} properties:
 
-\phpinputminted{15-validation-resources/figures/04-index-resource}
+\php{}{15-validation-resources/figures/04-index-resource}
 
 Finally we'll need to update the controller.
 \\
@@ -98,7 +98,7 @@ First let the controller know about \texttt{ArticleListResource}:
 
 Then update the \texttt{index} method. We're returning a collection of articles, so we'll need to use the \texttt{Resource}'s \texttt{collection} method:
 
-\phpinputminted{15-validation-resources/figures/05-index-resource-controller}
+\php{}{15-validation-resources/figures/05-index-resource-controller}
 
 
 

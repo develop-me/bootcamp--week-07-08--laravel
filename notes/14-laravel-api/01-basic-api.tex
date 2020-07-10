@@ -103,21 +103,21 @@ We've already got the \texttt{index} method working, let's get the rest working 
 
 Let's do the \texttt{show} method first:
 
-\phpinputminted{14-laravel-api/figures/09-show}
+\php{}{14-laravel-api/figures/09-show}
 
 We accept the article using Route Model Binding and just return it. Laravel deals with converting it into JSON for us.
 \\
 
 Next, let's do \texttt{destroy}:
 
-\phpinputminted{14-laravel-api/figures/13-destroy}
+\php{}{14-laravel-api/figures/13-destroy}
 
 Again, we accept the article using Route Model Binding, but this time we call its \texttt{delete} method. We still need to return something though, so we return a \texttt{null} response with a \texttt{204} (``No Content'') status code.
 \\
 
 Now we'll get the \texttt{store} method working:
 
-\phpinputminted{14-laravel-api/figures/03-controller-store-code}
+\php{}{14-laravel-api/figures/03-controller-store-code}
 
 We use the \texttt{\$request->all()} method to get back an associative array of all the data the user submitted. If we were to log this with \texttt{dd(\$request->all())} we'd get something like:
 
@@ -133,7 +133,7 @@ We then use the \texttt{create} method from the \texttt{Article} class (inherite
 
 Finally, we can get the \texttt{update} method working. This combines aspects of \texttt{show} and \texttt{create}:
 
-\phpinputminted{14-laravel-api/figures/11-update}
+\php{}{14-laravel-api/figures/11-update}
 
 We get the submitted data from the \texttt{\$request} object, then use the \texttt{fill()} method to update the article that we got from Route Model Binding. We then save the model and return it.
 
