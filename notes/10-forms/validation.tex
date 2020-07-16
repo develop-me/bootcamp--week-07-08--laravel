@@ -24,17 +24,15 @@ Use \texttt{artisan} to create a \texttt{FormRequest} class:
 
 This will create a file in \texttt{app/Http/Requests}. The \texttt{ArticleRequest} class has two methods. We first need to return \texttt{true} from the \texttt{authorize} method: this method can be very useful when you add support for user logins, but for now we'll just assume everyone can make requests. The \texttt{rules} method needs to return an associative array, where the property name is the \texttt{name} of the submitted datum that needs validating and its value is an array of validation rules:
 
-\php{}{10-forms/figures/01-validation}
+\php{app/Http/Requests/ArticleRequest.php}{10-forms/figures/10-validation}
 
 Next we need to  update the \texttt{Articles} controller to use our validated request instead of the standard \texttt{Request} object. First let it know where the \texttt{ArticleRequest} class lives:
 
-\begin{minted}{php}
-    use App\Http\Requests\ArticleRequest;
-\end{minted}
+\php{app/Http/Controllers/Articles.php}{10-forms/figures/11-use}
 
 And then update the type-hinting on the \texttt{createPost} method to use the \texttt{ArticleRequest} class instead of \texttt{Request}:
 
-\php{}{10-forms/figures/02-type-hint}
+\php{app/Http/Controllers/Articles.php}{10-forms/figures/12-type-hint}
 
 This works because \texttt{ArticleRequest} is a descendant of \texttt{Request}, so it has all of the same methods and properties.
 \\
@@ -51,26 +49,11 @@ First, let's update our template so that the data the user submitted doesn't get
 
 To the \texttt{title} \texttt{<input>}:
 
-\begin{minted}{html}
-    <input
-        id="title"
-        name="title"
-        class="form-control"
-        value="{{ old('title') }}"
-    />
-\end{minted}
+\html{resources/views/form.blade.php}{10-forms/figures/13-old-title}
 
 To the \texttt{content} \texttt{<textarea>}:
 
-\begin{minted}{html}
-    <textarea
-        id="content"
-        name="content"
-        class="form-control"
-    >{{
-        old('content')
-    }}</textarea>
-\end{minted}
+\html{resources/views/form.blade.php}{10-forms/figures/14-old-content}
 
 With a \texttt{textarea}, make sure you only put spaces/line-breaks \textit{inside} the template curly braces, otherwise they'll get added to the content of the \texttt{<textarea>}.
 
@@ -82,22 +65,14 @@ Next, let's get error messages and styling working.
 
 At the bottom of the \texttt{title} \texttt{<fieldset>}:
 
-\begin{minted}{html}
-    @error('title')
-        <p class="invalid-feedback">
-            {{ $message }}
-        </p>
-    @enderror
-\end{minted}
+\html{resources/views/form.blade.php}{10-forms/figures/15-error}
 
 If there are any, this will output an error message for \texttt{title} with appropriate Bootstrap classes. Don't forget to add one for \texttt{content} too.
 \\
 
 We can also add relevant styling to our form fields:
 
-\begin{minted}{html}
-    class="form-control @error('title') is-invalid @enderror"
-\end{minted}
+\html{resources/views/form.blade.php}{10-forms/figures/16-invalid}
 
 This will add the Bootstrap \texttt{is-invalid} class \textit{if} the \texttt{title} field has an error.
 
