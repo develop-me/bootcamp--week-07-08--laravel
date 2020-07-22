@@ -14,31 +14,18 @@ First create a new class:
 
 Then update the \texttt{authorize()} method to return \texttt{true} and the \texttt{rules()} method to return the same as the original \texttt{ArticleRequest} class:
 
-\begin{minted}{php}
-    public function rules()
-    {
-        return [
-            "title" => ["required", "string"],
-            "content" => ["required", "string"],
-        ];
-    }
-\end{minted}
+\php{app/Http/Requests/API/ArticleRequest.php}{15-validation-resources/figures/01-ArticleRequest}
 
 We could have tried to be clever and used inheritance here, but it's generally best to put such clever thoughts to the back of your mind. It turns out the validation rules will need to be subtly different once we add tags.
 \\
 
 Now update your API controller. First add a \texttt{use} statement:
 
-\begin{minted}{php}
-    use App\Http\Requests\API\ArticleRequest;
-\end{minted}
+\php{app/Http/Controllers/API/Articles.php}{15-validation-resources/figures/02-use}
 
 Then update the controller methods to use this instead of \texttt{Request}:
 
-\begin{minted}{php}
-    public function store(ArticleRequest $request) {...}
-    public function update(ArticleRequest $request, Article $article) {...}
-\end{minted}
+\php{app/Http/Controllers/API/Articles.php}{15-validation-resources/figures/03-type-hint}
 
 
 \section{API Resources}
@@ -57,19 +44,17 @@ First, let's create one to simplify the output of an article so it only shows th
 
 This will create a file in \texttt{app/Http/Resources/API} with the boilerplate code in place. We need to update the \texttt{toArray()} method to return the format that we'd like. In the \texttt{Resource} class we can access the properties of a model using \texttt{\$this}:
 
-\php{}{15-validation-resources/figures/02-resource}
+\php{app/Http/Resources/API/ArticleResource.php}{15-validation-resources/figures/04-resource}
 
 Next, we need to update the \texttt{Articles} controller to use the resource for output.
 
 First, tell the controller where to find the \texttt{ArticleResource} class:
 
-\begin{minted}{php}
-    use App\Http\Resources\API\ArticleResource;
-\end{minted}
+\php{app/Http/Resources/API/ArticleResource.php}{15-validation-resources/figures/05-use}
 
 Then we need to update all of the methods that return an article to use the resource:
 
-\php{}{15-validation-resources/figures/03-resource-controller}
+\php{app/Http/Controllers/API/Articles.php}{15-validation-resources/figures/06-resource-controller}
 
 If you do an API call to any of these routes now you'll notice that the response is also wrapped in an outer \texttt{data} property by default. It is possible to change this, but it's actually quite useful once you start to deal with more complex APIs (e.g. so you can have a separate property to track pagination).
 \\
@@ -85,20 +70,19 @@ Again, we'll use \texttt{artisan} to make a resource:
 
 Then update the \texttt{toArray()} method to output just the \texttt{id} and \texttt{title} properties:
 
-\php{}{15-validation-resources/figures/04-index-resource}
+\php{app/Http/Resources/API/ArticleListResource.php}{15-validation-resources/figures/07-index-resource}
 
 Finally we'll need to update the controller.
-\\
+
+\pagebreak
 
 First let the controller know about \texttt{ArticleListResource}:
 
-\begin{minted}{php}
-    use App\Http\Resources\API\ArticleListResource;
-\end{minted}
+\php{app/Http/Controllers/API/Articles.php}{15-validation-resources/figures/08-use}
 
 Then update the \texttt{index} method. We're returning a collection of articles, so we'll need to use the \texttt{Resource}'s \texttt{collection} method:
 
-\php{}{15-validation-resources/figures/05-index-resource-controller}
+\php{app/Http/Controllers/API/Articles.php}{15-validation-resources/figures/09-index-resource-controller}
 
 
 
