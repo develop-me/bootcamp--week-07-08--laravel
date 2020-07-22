@@ -17,7 +17,7 @@
 ## Demo: Starting to run SQL queries
 
 - ```sql
-    USE `scotchbox`;
+    USE `homestead`;
     ```
 - ```sql
     SHOW TABLES;
@@ -72,7 +72,7 @@ SELECT * FROM `graduates` WHERE `location` = 'Bedminster';
 ```bash
 mysql> exit
 vagrant@oli:~$ exit
-~/Sites/scotchbox
+~/Sites/homestead
 ```
 
 ## "Relational" databases

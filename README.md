@@ -9,7 +9,7 @@
 #### Server-Side Programming
 - What is a server?
 - LAMP/LEMP
-- Vagrant & Scotch Box
+- Vagrant
 
 #### MySQL
 - Why?
