@@ -81,14 +81,14 @@ We'll need a \texttt{Tag} model shortly, so let's create that at the same time a
 
 The database migration for the tags is going to be more complicated than for comments as we'll need to create \textit{two} tables: a termlist table for tags and the pivot table. We can create more than one table in a single migration, just by calling \texttt{Schema::create()} twice:
 
-\php{}{17-many-to-many/figures/01-migration-up}
+\php{database/migrations/<timestamp>\_create\_tags\_table.php}{17-many-to-many/figures/01-migration-up}
 
 Notice that we've called the pivot table \texttt{article\_tag}. That's because Eloquent can automatically find pivot tables if they're named using the singular version of the two tables being joined together, in alphabetical order, with an underscore between them. You can call it whatever you like, but you'd need to let Laravel know if you chose something else.
 \\
 
 We're not done yet. If we create two tables we need to make sure we update the \texttt{down()} method so that both tables are removed if we rollback the migration. It's important that we remove the tables in the opposite order from how they were created: if we try and drop the \texttt{tags} table before the pivot table, the foreign key constraints in the pivot table would all fail (as there would be no valid \texttt{tag\_id}s to point to):
 
-\php{}{17-many-to-many/figures/02-migration-down}
+\php{database/migrations/<timestamp>\_create\_tags\_table.php}{17-many-to-many/figures/02-migration-down}
 
 As a general rule, if you're creating multiple tables, you should always drop them in reverse order.
 
@@ -97,15 +97,15 @@ As a general rule, if you're creating multiple tables, you should always drop th
 
 First, we need to tell the \texttt{Tag} model not to worry about setting the timestamp columns, otherwise we'll get a MySQL error when we try to add a tag. We do this by setting the \texttt{public} property \texttt{timestamps} to \texttt{false}:
 
-\php{}{17-many-to-many/figures/03-timestamps}
+\php{app/Tag.php}{17-many-to-many/figures/03-timestamps}
 
 Next we should let Eloquent know about the relationship between articles and tags. In the \texttt{Tag} model add an \texttt{articles} method and use the \texttt{belongsToMany()} relationship method:
 
-\php{}{17-many-to-many/figures/04-tag-relationship}
+\php{app/Tag.php}{17-many-to-many/figures/04-tag-relationship}
 
 We'll also need to tell the \texttt{Article} model about tags. Again we'll use a plural name for the method. And many-to-many relationships are symmetrical, so we use the \textit{same} relationship method:
 
-\php{}{17-many-to-many/figures/05-article-relationship}
+\php{app/Article.php}{17-many-to-many/figures/05-article-relationship}
 
 
 \section{TDD}
@@ -127,149 +127,63 @@ First, create a new test:
 
 We're storing tags in the database, so we'll need to setup our test to use our test database:
 
-\begin{minted}{php}
-    namespace Tests\Unit;
+\php{tests/Unit/TagTest.php}{17-many-to-many/figures/06-TagTest}
 
-    use Tests\TestCase;
-    use Illuminate\Foundation\Testing\RefreshDatabase;
-
-    class TagTest extends TestCase
-    {
-        use RefreshDatabase;
-
-        // ...etc.
-    }
-\end{minted}
 
 To keep stuff really simple, let's first write a method that takes a \textit{single} string and give us back a \texttt{Tag}. Let's write our first test:
 
-\begin{minted}{php}
-    public function testFromString()
-    {
-        // call the Tag::fromString static method
-        $result = Tag::fromString("Test");
-
-        // check we get back a Tag
-        // using assertInstanceOf to check the class
-        $this->assertInstanceOf(Tag::class, $result);
-
-        // check the tag has the right name
-        $this->assertSame("Test", $result->name);
-    }
-\end{minted}
+\php{tests/Unit/TagTest.php}{17-many-to-many/figures/07-testFromString}
 
 And get it \textbf{red}:
 
-\begin{minted}{php}
-    // create the method
-    static public function fromString()
-    {
-    }
-\end{minted}
+\php{app/Tag.php}{17-many-to-many/figures/08-fromString}
+
 
 \textbf{Run your tests}. \textbf{Red}. Let's get it \textbf{green}, but in the most minimal way possible:
 
-\begin{minted}{php}
-    protected $fillable = ["name"];
-
-    static public function fromString() : Tag
-    {
-        return new Tag(["name" => "Test"]);
-    }
-\end{minted}
+\php{app/Tag.php}{17-many-to-many/figures/09-fromString}
 
 \textbf{Run your tests}. \textbf{Green}. Obviously it needs to work for \textit{any} string, so let's add another test:
 
-\begin{minted}{php}
-    // test a different tag
-    $result = Tag::fromString("Hammock");
-    $this->assertInstanceOf(Tag::class, $result);
-    $this->assertSame("Hammock", $result->name);
-\end{minted}
+\php{tests/Unit/TagTest.php}{17-many-to-many/figures/10-TagTest}
 
 \textbf{Run your tests}. Unsurprisingly it's \textbf{red}. Let's get it \textbf{green} again:
 
-\begin{minted}{php}
-    static public function fromString(string $string) : Tag
-    {
-        return new Tag(["name" => $string]);
-    }
-\end{minted}
+\php{app/Tag.php}{17-many-to-many/figures/11-fromString}
+
 
 \textbf{Run your tests}. Back to \textbf{green}. But our method isn't done. It should store the tag \textit{in the database}. Let's add another assertion:
 
-\begin{minted}{php}
-    // get the first tag from the database
-    $tagFromDB = Tag::all()->first();
-
-    // check we get a tag
-    $this->assertInstanceOf(Tag::class, $tagFromDB);
-
-    // check it's got the right name
-    $this->assertSame("Test", $tagFromDB->name);
-\end{minted}
+\php{tests/Unit/TagTest.php}{17-many-to-many/figures/12-TagTest}
 
 \textbf{Run your tests}. \textbf{Red}. Let's update the method to store the tag in the database:
 
-\begin{minted}{php}
-    static public function fromString(string $string) : Tag
-    {
-        return Tag::create(["name" => $string]);
-    }
-\end{minted}
+\php{app/Tag.php}{17-many-to-many/figures/13-fromString}
 
 \textbf{Run your tests}. \textbf{Green} again. But, we're still not done. We need to only add a tag to the database if it \textit{doesn't} already exist. Let's add a test for this:
 
-\begin{minted}{php}
-    // test no duplicates
-    $result = Tag::fromString("Test");
-    $allTags = Tag::where("name", "Test");
-    $this->assertSame(1, $allTags->count());
-\end{minted}
+\php{tests/Unit/TagTest.php}{17-many-to-many/figures/14-TagTest}
 
 \textbf{Run your tests}. Back to \textbf{red}. We're running the \texttt{fromString()} method again, which \textit{should} give us back the same tag as before and not add an additional one to the database. So if we get all the tags back we should only get one. Currently this is going to fail, because we \textit{always} create a new tag.
 \\
 
 Let's update our \texttt{fromString()} method to get this green again:
 
-\begin{minted}{php}
-    static public function fromString(string $string) : Tag
-    {
-        $tag = Tag::where("name", $string)->first();
-        return $tag ? $tag : Tag::create(["name" => $string]);
-    }
-\end{minted}
+\php{app/Tag.php}{17-many-to-many/figures/15-fromString}
+
 
 \textbf{Run your tests}. \textbf{Green} again. We're now checking if the tag already exists in the database. If it does then we return the version from the database, otherwise we create a new tag.
 \\
 
 That's our \texttt{fromString()} method finished. Let's get \texttt{fromStrings()} working next. Again, let's write a failing test to start with:
 
-\begin{minted}{php}
-    public function testFromStrings()
-    {
-        // call the fromStrings method
-        $result = Tag::fromStrings(["Test", "Hammock"]);
+\php{tests/Unit/TagTest.php}{17-many-to-many/figures/16-TagTest}
 
-        // check it's a Collection
-        $this->assertInstanceOf(Collection::class, $result);
-
-        // check the first item is "Test"
-        $this->assertSame("Test", $result[0]->name);
-
-        // check the second item is "Hammock"
-        $this->assertSame("Hammock", $result[1]->name);
-    }
-\end{minted}
 
 \textbf{Run your tests}. Should be \textbf{red}. Let's fix that:
 
-\begin{minted}{php}
-    static public function fromStrings(array $strings) : Collection
-    {
-        return collect($strings)->map([Tag::class, "fromString"]);
-    }
-\end{minted}
+\php{app/Tag.php}{17-many-to-many/figures/17-fromStrings}
+
 
 \textbf{Run your tests}. Hurrah \textbf{green}! Looks like everything is working.
 \\
@@ -292,35 +206,33 @@ We won't need to add any new routes for tags because they get added as part of t
 
 First we'll need to let the \texttt{Articles} controller know where to find the \texttt{Tag} class:
 
-\begin{minted}{php}
-    use App\Tag;
-\end{minted}
+\php{app/Http/Controllers/API/Articles.php}{17-many-to-many/figures/18-use}
 
 Then we'll need to update the methods. First, we'll change the \texttt{\$request->all()} call into a \texttt{\$request->only()} call: this isn't strictly necessary (as the \texttt{\$fillable} property will ignore \texttt{tags} unless we add it), but it makes it clear that we don't want the tags added just yet. Then we'll use the \texttt{Tag::fromStrings()} method we created earlier to get back a collection of tags that we want to set on the article. We then use the \texttt{sync()} method, which takes an array of \texttt{id}s, to automatically sort out all of the pivot table entries for us:
 
-\php{}{17-many-to-many/figures/09-Articles-tags}
+\php{app/Http/Controllers/API/Articles.php}{17-many-to-many/figures/19-Articles-tags}
 
 You'll notice we use the same logic for tags in both methods. It would be good to get rid of the repetition. We can add a method to our \texttt{Article} model:
 
-\php{}{17-many-to-many/figures/10-Article-setTags}
+\php{app/Article.php}{17-many-to-many/figures/20-Article-setTags}
 
 And then update the \texttt{Articles} controller:
 
-\php{}{17-many-to-many/figures/11-Articles-tags-redux}
+\php{app/Http/Controllers/API/Articles.php}{17-many-to-many/figures/21-Articles-tags-redux}
 
 
 \section{Validation}
 
 We'll need to add validation rules for tags to \texttt{ArticleRequest}. We'll use the \texttt{array} validation type for the \texttt{tags} field. We can also use the \texttt{.*} notation to add validation for the items inside the \texttt{tags} array. In this case we want them to be strings with a maximum length of 30 (we used a \texttt{VARCHAR(30)} for tags):
 
-\php{}{17-many-to-many/figures/12-validation}
+\php{app/Http/Requests/API/ArticleRequest.php}{17-many-to-many/figures/22-validation}
 
 
 \section{Resource}
 
 Finally, let's update our article resources to include tags as an array. In \texttt{ArticleResource} and \texttt{ArticleListResource}:
 
-\php{}{17-many-to-many/figures/13-resource}
+\php{app/Http/Resources/API/ArticleResource}{17-many-to-many/figures/23-resource}
 
 
 
