@@ -33,7 +33,7 @@ Bundle is used a lot in the world of Ruby to avoid package versioning conflicts.
 
 In your project directory, create a file called \texttt{Gemfile}\footnote{No file extension} containing the following:
 
-\code{}{ruby}{20-capistrano/figures/01-Gemfile}
+\code{Gemfile}{ruby}{20-capistrano/figures/01-Gemfile}
 
 Now run \texttt{bundle} to install Capistrano:
 
@@ -49,11 +49,11 @@ Capistrano needs a few different configuration files. The first is the \texttt{C
 
 Create a file named \texttt{Capfile} in your project directory containing the following:
 
-\code{}{ruby}{20-capistrano/figures/02-Capfile}
+\code{Capfile}{ruby}{20-capistrano/figures/02-Capfile}
 
 Next, we need to tell Capistrano what to do when it runs a deployment. We do this by creating a file \texttt{deployment/deploy.rb} (referenced on the first line of the \texttt{Capfile}) and adding some instructions to it. There's quite a lot in this one, so read the comments for each section to get a sense of what it does:
 
-\code{}{ruby}{20-capistrano/figures/03-deploy.rb}
+\code{deployment/deploy.rb}{ruby}{20-capistrano/figures/03-deploy.rb}
 
 \begin{infobox}{Seeding Automatically}
     If you're seeding your database you'll want to update line 62 to be:
@@ -69,7 +69,7 @@ Finally, we need a file for each type of deployment. Normally we might have one 
 
 Create a file \texttt{deployment/deploy/production.rb} and put the following in it:
 
-\code{}{ruby}{20-capistrano/figures/04-production.rb}
+\code{deployment/deploy/production.rb}{ruby}{20-capistrano/figures/04-production.rb}
 
 
 \section{Sever Setup}
