@@ -68,12 +68,12 @@ A comment belongs to an article and has an email address and the comment text. A
 
 Update the \texttt{up} method of the newly created database migration:
 
-\php{}{11-one-to-many/figures/01-migration}
+\php{database/migrations/<timestamp>\_create\_comments\_table.php}{11-one-to-many/figures/01-migration}
 
 Don't forget to run \texttt{artisan migrate} once you've saved the migration file.
 
 \begin{infobox}{Downing Foreign Keys}
-    If you add a foreign key to an existing table – in a \texttt{Schema::table()} as opposed to a \texttt{Schema::create()} – you'll need to update your \texttt{down} method to drop the foreign key:
+    If you add a foreign key to an \textit{existing} table – in a \texttt{Schema::table()} as opposed to a \texttt{Schema::create()} – you'll need to update your \texttt{down} method to drop the foreign key:
 
     \begin{minted}{php}
         public function down()
@@ -98,14 +98,14 @@ Now we've updated the database structure we need to tell our Eloquent models abo
 
 Let's update our Article model to let it know that it can have comments:
 
-\php{}{11-one-to-many/figures/02-Article}
+\php{app/Article.php}{11-one-to-many/figures/02-Article}
 
 Now we can easily access a collection of \texttt{Comment} objects for an article object instance using its new \texttt{comments} property.\footnote{Even though we created a method - Eloquent creates the property for us}
 \\
 
 We need to setup the other side of the relationship in the \texttt{Comment} model (which we created earlier):
 
-\php{}{11-one-to-many/figures/03-Comment}
+\php{app/Comment.php}{11-one-to-many/figures/03-Comment}
 
 Now all of our \texttt{Comment} object instances will have an \texttt{article} property that gives back the related \texttt{Article} object.
 \\
@@ -119,52 +119,34 @@ We can use \texttt{artisan tinker} to get a bit of a better idea of how the ORM 
 
 First, we'll need a form. Create the following in \\ \texttt{resources/views/comments/form.blade.php}:
 
-\code{}{html}{11-one-to-many/figures/comments-form.blade.php}
+\code{resources/views/comments/form.blade.php}{php}{11-one-to-many/figures/05-comments-form.blade.php}
 
 You'll notice we've put all of the CSRF and validation logic in there already.
 \\
 
 Next, include this in the article template:
 
-\begin{minted}{html}
-    <article class="card">
-        {{ /* article code */ }}
-    </article>
-
-    <hr />
-
-    <h3>Comments</h3>
-
-    @include("comments/form")
-\end{minted}
+\code{resources/views/article.blade.php}{html}{11-one-to-many/figures/06-article.blade.php}
 
 When we submit this form it's going to \texttt{POST} to \texttt{/articles/{article}}, so next we'll need to setup a route:
 
-\begin{minted}{php}
-    // existing show route
-    Route::get('{article}', "Articles@show");
-
-    // add the *post* route below
-    Route::post('{article}', "Articles@commentPost");
-\end{minted}
+\php{routes/web.php}{11-one-to-many/figures/07-routes}
 
 
 Now we'll need to update the \texttt{Articles} controller. First, let the controller know about the \texttt{Comment} model:
 
-\begin{minted}{php}
-    use App\Comment;
-\end{minted}
+\php{app/Http/Controllers/Articles.php}{11-one-to-many/figures/08-Articles-use}
 
 Next, let's add the controller method:
 
-\php{}{11-one-to-many/figures/07-store}
+\php{app/Http/Controllers/Articles.php}{11-one-to-many/figures/09-store}
 
 We'll use route model binding to get the article from the URL. Then we need to get the request data and create a new comment using it. However, we can't use the \texttt{Comment::create()} method, as we need to make sure it has a valid \texttt{article\_id} property, otherwise MySQL won't let us store it. Instead we'll pass the data in as the first argument when we create a new \texttt{Comment} object: this assigns the properties, as with \texttt{create()}, but doesn't save it to the database. Then we store it in the database using the article model.
 \\
 
 Passing the data in when we create the comment counts as mass assignment, so we need to make sure we update the \texttt{Comment} model's \texttt{fillable} property so we don't get a mass assignment vulnerability error:
 
-\php{}{11-one-to-many/figures/08-fillable}
+\php{app/Comment.php}{11-one-to-many/figures/10-fillable}
 
 
 \subsection{Validation}
@@ -177,24 +159,24 @@ We \textit{always} need to add validation to any data sent to the server. First,
 
 Then update the \texttt{authorize()} and \texttt{rules()} methods:
 
-\php{}{11-one-to-many/figures/09-CommentRequest}
+\php{app/Http/Requests/CommentRequest.php}{11-one-to-many/figures/11-CommentRequest}
 
 You'll also need to update the \texttt{Articles} controller to use the validated request. First let the controller know where to find the \texttt{CommentRequest} class:
 
-\begin{minted}{php}
-    use App\Http\Requests\CommentRequest;
-\end{minted}
+\php{app/Http/Controllers/Articles.php}{11-one-to-many/figures/11-use}
 
 Then update the type-hinting to use \texttt{CommentRequest} instead of \texttt{Request}:
 
-\php{}{11-one-to-many/figures/10-request-type-hint}
+\php{app/Http/Controllers/Articles.php}{11-one-to-many/figures/12-request-type-hint}
+
+\pagebreak
 
 
 \subsection{Displaying the Comments}
 
 Finally, let's update our article page to display the comments:
 
-\code{}{html}{11-one-to-many/figures/comments-list.blade.php}
+\code{resources/views/article.blade.php}{php}{11-one-to-many/figures/13-comments-list.blade.php}
 
 \section{Additional Resources}
 
