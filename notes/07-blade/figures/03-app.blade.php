@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <title>My Amazing Blog</title>
 
-    <link rel="stylesheet" ...etc. />
+    <link rel="stylesheet" href="..." />
   </head>
   <body>
     <div class="container">

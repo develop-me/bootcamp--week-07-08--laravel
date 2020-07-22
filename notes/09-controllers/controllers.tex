@@ -28,36 +28,18 @@ This is telling Laravel to run the \texttt{index} method of the \texttt{Articles
 
 If you try loading the site now you'll get a server error. We'll need to add the method to \texttt{Articles}:
 
-\begin{minted}{php}
-    class Articles extends Controller
-    {
-        public function index()
-        {
-            return view("welcome");
-        }
-    }
-\end{minted}
+\php{app/Http/Controllers/Articles.php}{09-controllers/figures/01-Articles}
 
 This might just seem like we've made everything much more complicated for no obvious reason. But there are many advantages, one of which is that we can pass in data to the view much more easily.
 \\
 
 First, tell the \texttt{Articles} controller where to find your \texttt{Article} model class:
 
-\begin{minted}{php}
-    use App\Article;
-\end{minted}
+\php{app/Http/Controllers/Articles.php}{09-controllers/figures/02-use}
 
 Then update your \texttt{index} method:
 
-\begin{minted}{php}
-    public function index()
-    {
-        return view("welcome", [
-            // pass in all the articles
-            "articles" => Article::all(),
-        ]);
-    }
-\end{minted}
+\php{app/Http/Controllers/Articles.php}{09-controllers/figures/03-index}
 
 Now we can update our \texttt{welcome.blade.php} template so that we don't have to fetch the articles in the template itself:
 
@@ -67,15 +49,7 @@ Now we can update our \texttt{welcome.blade.php} template so that we don't have 
 
 Now we can potentially reuse the \texttt{welcome.blade.php} template for \textit{any} page that needs to show a list of articles, not just the homepage. So we should probably rename the file \texttt{articles.blade.php} and update the \texttt{Articles} controller:
 
-\begin{minted}{php}
-    public function index()
-    {
-        return view("articles", [
-            // pass in all the articles
-            "articles" => Article::all(),
-        ]);
-    }
-\end{minted}
+\php{app/Http/Controllers/Articles.php}{09-controllers/figures/04-articles}
 
 Next, let's get our page to show a specific article working properly (i.e. show the relevant article, rather than just some filler text).
 
@@ -85,22 +59,11 @@ The data (properties) from the Article model are passed into the view with the v
 
 First update the route to use a method instead of putting all the code in the routes file:
 
-\begin{minted}{php}
-    Route::get("/articles/{article}", "Articles@show");
-\end{minted}
+\php{routes/web.php}{09-controllers/figures/05-route}
 
 Next, add the \texttt{show} method to the \texttt{Articles} controller:
 
-\begin{minted}{php}
-    public function show($id)
-    {
-        $article = Article::find($id);
-
-        return view("articles/show", [
-            "article" => $article
-        ]);
-    }
-\end{minted}
+\php{routes/web.php}{09-controllers/figures/06-show}
 
 The value from the URL parameter (the \texttt{\{article\}} bit in the route), gets passed in as the first argument to the method. So we can use this to find the relevant article and then pass it in.
 \\
@@ -144,14 +107,7 @@ First, update the route to use \texttt{\{article\}} instead of \texttt{\{id\}} (
 
 Then in the \texttt{Articles} controller, instead of just having the \texttt{\$id} parameter, we replace it with \texttt{Article \$article}:
 
-\begin{minted}{php}
-    public function show(Article $article)
-    {
-        return view("articles/show", [
-            "article" => $article
-        ]);
-    }
-\end{minted}
+\php{app/Http/Controllers/Articles.php}{09-controllers/figures/07-rmb}
 
 Now, Laravel is going to do some super-sneaky witchcraft.
 \\
@@ -161,6 +117,7 @@ So what's going on? Laravel reads your code, sees that you've asked for an \text
 
 In standard PHP code, this wouldn't have any right to work, but in Laravel it does. That's because Laravel uses \textbf{reflection}: that's where rather than just running your code, it actually \textit{reads} your code and alters its behaviour accordingly. This is the sort of trick that should not be used too often: it takes more processing power and it's almost magical – and magical code is almost impossible to understand. But it's \textit{really} useful, so we'll forgive it this one time.
 
+\pagebreak
 
 \begin{infobox}{View All Routes}
     A useful command to see all routes setup, the HTTP methods for them, which controllers and which methods will be run:

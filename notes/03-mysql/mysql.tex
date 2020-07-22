@@ -43,11 +43,11 @@ A database is made up of \textbf{tables}, which are in turn made up of \textbf{r
 A table represents a collection of some sort of \textit{thing}, e.g. blog articles. A row is a single instance of that thing, e.g. an article. And a column represents a specific piece of information about that thing, e.g. an article title:
 \\
 
-\begin{tabu}{l l l X}
+\begin{tabularx}{\textwidth}{l l l X}
     \texttt{id} & \texttt{title}            & \texttt{content}     & \texttt{created\_at} \\
     1           & Where Do Eels Come From?  & Nobody knows exactly & 2020-04-16 \\
     2           & Do Moose Get Drunk?       & Maybe                & 2020-04-17 \\
-\end{tabu}
+\end{tabularx}
 
 \par\bigskip
 
@@ -58,7 +58,7 @@ Each column stores a specific type of data. Here are a few of the most common ty
 \\
 
 \begin{small}
-    \begin{tabu}{l l X}
+    \begin{tabularx}{\textwidth}{l l X}
         \texttt{Type}       & \texttt{Purpose}       & \texttt{Notes} \\
         \texttt{VARCHAR}    & Short pieces of text   & Fixed length  \\
         \texttt{TEXT}       & Long pieces of text    & Flexible length, with performance hit  \\
@@ -68,7 +68,7 @@ Each column stores a specific type of data. Here are a few of the most common ty
         \texttt{DATE}       & Dates                  & \texttt{YYYY-MM-DD} format  \\
         \texttt{DATETIME}   & Storing times          & If you don't need to support time-zones \\
         \texttt{TIMESTAMP}  & Storing accurate times & If you do need to support time-zones \\
-    \end{tabu}
+    \end{tabularx}
 \end{small}
 \par\bigskip
 

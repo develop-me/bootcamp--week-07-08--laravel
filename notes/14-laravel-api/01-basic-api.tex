@@ -27,14 +27,7 @@ First, let's add a route to handle \texttt{GET} requests sent to \texttt{/articl
 
 Add a \texttt{GET} route for \texttt{/articles} to \texttt{routes/\textbf{api.php}}:
 
-\begin{minted}{php}
-    # use the appropriate controller
-    use App\Http\Controllers\API\Articles;
-
-    # use array syntax to point to controller
-    # tidier and harder to make typos
-    Route::get("/articles", [Articles::class, "index"]);
-\end{minted}
+\php{routes/api.php}{14-laravel-api/figures/01-routes}
 
 Rather than using the \texttt{"Controller@method"} syntax, we've passed an array with the class name first and the method second. This allows us to take advantage of the \texttt{use} keyword, to avoid needing to type the \texttt{API\textbackslash\textbackslash} (we have to escape back-slashes) bit every time.
 \\
@@ -44,19 +37,12 @@ Now if you use Postman to make a \texttt{GET} request to \texttt{http://homestea
 
 We're going to be using \texttt{App\textbackslash{}Article} in our API controller, so let's include a \texttt{use} statement at the top of the file:
 
-\begin{minted}{php}
-    use App\Article;
-\end{minted}
+\php{app/Http/Controllers/API/Articles.php}{14-laravel-api/figures/02-use}
 
 Now, update \texttt{index} method:
 
-\begin{minted}{php}
-    public function index()
-    {
-      // get all the articles
-      return Article::all();
-    }
-\end{minted}
+\php{app/Http/Controllers/API/Articles.php}{14-laravel-api/figures/03-index}
+
 
 Make the same request as before with Postman and you should get back a list of all your articles. Laravel is smart enough to output it in the format the user asks for. So, as long as an \texttt{Accept: application/json} header has been set, the user will get back the article list in JSON format.
 
@@ -69,32 +55,7 @@ We can quickly get the other parts of the API working now.
 
 Here are the routes we'll need using the standard RESTful end-points and methods:
 
-\begin{minted}{php}
-    // use the API controller
-    use App\Http\Controllers\API\Articles;
-
-    // all of the routes are in the /articles end-point
-    Route::group(["prefix" => "articles"], function () {
-        // GET /articles: show all articles
-        Route::get("", [Articles::class, "index"]);
-
-        // POST /articles: create a new article
-        Route::post("", [Articles::class, "store"]);
-
-        // all these routes also have an article ID in the
-        // end-point, e.g. /articles/8
-        Route::group(["prefix" => "{article}"], function () {
-            // GET /articles/8: show the article
-            Route::get("", [Articles::class, "show"]);
-
-            // PUT /articles/8: update the article
-            Route::put("", [Articles::class, "update"]);
-
-            // DELETE /articles/8: delete the article
-            Route::delete("", [Articles::class, "destroy"]);
-        });
-    });
-\end{minted}
+\php{routes/api.php}{14-laravel-api/figures/04-routes}
 
 \subsection{The Controller}
 
@@ -103,21 +64,21 @@ We've already got the \texttt{index} method working, let's get the rest working 
 
 Let's do the \texttt{show} method first:
 
-\phpinputminted{14-laravel-api/figures/09-show}
+\php{app/Http/Controllers/API/Articles.php}{14-laravel-api/figures/05-show}
 
 We accept the article using Route Model Binding and just return it. Laravel deals with converting it into JSON for us.
 \\
 
 Next, let's do \texttt{destroy}:
 
-\phpinputminted{14-laravel-api/figures/13-destroy}
+\php{app/Http/Controllers/API/Articles.php}{14-laravel-api/figures/06-destroy}
 
 Again, we accept the article using Route Model Binding, but this time we call its \texttt{delete} method. We still need to return something though, so we return a \texttt{null} response with a \texttt{204} (``No Content'') status code.
 \\
 
 Now we'll get the \texttt{store} method working:
 
-\phpinputminted{14-laravel-api/figures/03-controller-store-code}
+\php{app/Http/Controllers/API/Articles.php}{14-laravel-api/figures/07-store}
 
 We use the \texttt{\$request->all()} method to get back an associative array of all the data the user submitted. If we were to log this with \texttt{dd(\$request->all())} we'd get something like:
 
@@ -133,7 +94,7 @@ We then use the \texttt{create} method from the \texttt{Article} class (inherite
 
 Finally, we can get the \texttt{update} method working. This combines aspects of \texttt{show} and \texttt{create}:
 
-\phpinputminted{14-laravel-api/figures/11-update}
+\php{app/Http/Controllers/API/Articles.php}{14-laravel-api/figures/08-update}
 
 We get the submitted data from the \texttt{\$request} object, then use the \texttt{fill()} method to update the article that we got from Route Model Binding. We then save the model and return it.
 

@@ -6,27 +6,15 @@ Let's create a simple form for creating a new blog post.
 
 In \texttt{resources/views/form.blade.php}:
 
-\inputminted{php}{10-forms/figures/01-form.blade.php}
+\php{resources/views/form.blade.php}{10-forms/figures/01-form.blade}
 
 And add a route so that we can view it:
 
-\begin{minted}{php}
-    Route::group(["prefix" => "articles"], function () {
-        // add *above* route with URL parameter
-        // otherwise 'create' will get included in that
-        Route::get('create', "Articles@create");
-        Route::get('{article}', "Articles@show");
-    });
-\end{minted}
+\php{routes/web.php}{10-forms/figures/02-routes}
 
 Then in your \texttt{Articles} controller:
 
-\begin{minted}{php}
-    public function create()
-    {
-        return view("form");
-    }
-\end{minted}
+\php{app/Http/Controllers/Articles.php}{10-forms/figures/03-Articles}
 
 Now visit \texttt{/articles/create} and you should see the form we just created.
 
@@ -47,19 +35,17 @@ When data is submitted in this way we call it a \texttt{GET} request: the data i
 That's where \texttt{POST} comes in. If we tell a browser to submit a form using \texttt{POST} it will submit the data as the \textbf{body} of the request. We'll look at exactly what this means later in the course, but for now all you need to know is that that data gets sent to the server, but it doesn't get added to the URL.
 \\
 
-\begin{tabu}{l l X}
+\begin{tabularx}{\textwidth}{l l X}
     \textbf{Method} & \textbf{How it submits data}       & \textbf{Example usage} \\
     \texttt{GET}    & Data is added to the URL           & A search form \\
     \texttt{POST}   & Data in the body of the request    & Submitting complex/sensitive data \\
-\end{tabu}
+\end{tabularx}
 
 \par\bigskip
 
 By default a \texttt{<form>} will submit data as a \texttt{GET} request. To get it to use \texttt{POST} we'll need to add the \texttt{method} attribute to our template:
 
-\begin{minted}{html}
-    <form class="form" method="post">
-\end{minted}
+\html{resources/views/form.blade.php}{10-forms/figures/04-form}
 
 
 \begin{infobox}{Form \texttt{action}}
@@ -74,25 +60,11 @@ Now that we're \texttt{POST}ing our data, we need to do something with it. This 
 
 First, we need to create a \texttt{POST} route in the \texttt{articles} block:
 
-\begin{minted}{php}
-    Route::group(["prefix" => "articles"], function () {
-        Route::get('create', "Articles@create");
-
-        // a *post* request
-        // needs to go to a different controller method
-        Route::post('create', "Articles@createPost");
-
-        Route::get('{article}', "Articles@show");
-    });
-\end{minted}
+\php{routes/web.php}{10-forms/figures/05-post-route}
 
 Next, we need to create the \texttt{createPost} method in our \texttt{Articles} controller:
 
-\begin{minted}{php}
-    public function createPost()
-    {
-    }
-\end{minted}
+\php{app/Http/Controllers/Articles.php}{10-forms/figures/06-createPost}
 
 Now, if you try submitting your form you'll get a rather cryptic\footnote{Yet beautiful} ``419 | Page Expired'' page.
 \\
@@ -112,10 +84,7 @@ Laravel doesn't want you to accidentally open your site up to this sort of attac
 
 To add a CSRF token we simple use the \texttt{@csrf} Blade shortcut somewhere in our form:
 
-\begin{minted}{html}
-    <form method="post" class="form card">
-        @csrf
-\end{minted}
+\html{resources/views/form.blade.php}{10-forms/figures/07-csrf}
 
 Now if we submit the form you'll refresh the current page. We need to update our \texttt{createPost} method to do something.
 
@@ -124,21 +93,8 @@ Now if we submit the form you'll refresh the current page. We need to update our
 
 Update the \texttt{createPost} method to the following:
 
-\begin{minted}{php}
-    // accept the Request object
-    // this gives us access to the submitted data
-    public function createPost(Request $request)
-    {
-        // get all of the submitted data
-        $data = $request->all();
+\php{app/Http/Controllers/Articles.php}{10-forms/figures/08-createPostUpdate}
 
-        // create a new article, passing in the submitted data
-        $article = Article::create($data);
-
-        // redirect the browser to the new article
-        return redirect("/articles/{$article->id}");
-    }
-\end{minted}
 
 As you can see, first we need to accept the \texttt{Request} object: this represents the request that the user made, including the data they submitted. If we ask Laravel for this it will give it to us using similar witchcraft to Route Model Binding.
 \\
@@ -149,11 +105,11 @@ Then we get all the submitted data from the \texttt{Request} object. Next, we cr
     As a general rule of thumb, for a Blade based site:
     \\
 
-    \begin{tabu}{l X}
+    \begin{tabularx}{\textwidth}{l X}
         \textbf{Request Method}  & \textbf{Return Type} \\
         \texttt{GET}             & \texttt{view()} \\
         \texttt{POST}            & \texttt{redirect()} \\
-    \end{tabu}
+    \end{tabularx}
 
     \par\bigskip
 
@@ -172,18 +128,12 @@ Imagine you have a \texttt{users} table that has an \texttt{admin} column for ke
 \\
 
 To stop this from happening, if you pass an Eloquent model an array of properties, it will only use the properties that you've listed in the model's \texttt{\$fillable} property. If you've not set this property and try to pass in an array of values you'll get a 500 error.
-\\
+
+\pagebreak
 
 We need to update the \texttt{Article} model to tell it which fields to expect:
 
-\begin{minted}{php}
-    class Article extends Model
-    {
-        protected $fillable = ["title", "content"];
-
-        // ... other Article code
-    }
-\end{minted}
+\php{app/Article.php}{10-forms/figures/09-Article}
 
 Now try submitting the form. Hopefully it should submit and you get redirected to the new article.
 

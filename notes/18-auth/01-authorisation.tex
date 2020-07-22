@@ -57,26 +57,18 @@ This will setup all of the cryptographic jiggerypokery that's required. Make a n
 
 Next, we need to tell Laravel that our users can use API tokens. In the \texttt{User} model (\texttt{App/User.php}) add the \texttt{HasApiTokens} trait:
 
-\phpinputminted{18-auth/figures/01-HasApiTokens}
+\php{app/User.php}{18-auth/figures/01-HasApiTokens}
 
 
 We'll also need to update \texttt{AuthServiceProvider.php} to use the Passport routes. This saves you having to write them yourself:
 
-\phpinputminted{18-auth/figures/02-AuthServiceProvider}
+\php{app/Providers/AuthServiceProvider.php}{18-auth/figures/02-AuthServiceProvider}
 
 
 Finally, set the driver of the \texttt{api} authorisation guard to \texttt{passport}:
 
-\begin{minted}{php}
-    'guards' => [
-        // ...etc.
+\php{config/auth.php}{18-auth/figures/03-auth-config}
 
-        'api' => [
-            'driver' => 'passport',
-            'provider' => 'users',
-        ],
-    ],
-\end{minted}
 
 \subsection{Creating a User}
 
@@ -129,7 +121,7 @@ We can use the provided Passport middleware to add authorisation to our routes.
 
 Add the \texttt{auth:api} middleware to any routes that require a valid access token:
 
-\phpinputminted{18-auth/figures/03-auth-route}
+\php{routes/api.php}{18-auth/figures/04-auth-route}
 
 Try doing a \texttt{GET} request to \texttt{http://homestead.test/api/articles} in Postman (remember to add the header \texttt{Accept: application/json}). You should get a 401 response.
 \\
@@ -140,7 +132,7 @@ Now choose \texttt{Bearer Token} in the Authorization tab and paste in the acces
 
 To add authorisation to an entire group:
 
-\phpinputminted{18-auth/figures/04-auth-route-group}
+\php{routes/api.php}{18-auth/figures/05-auth-route-group}
 
 
 
@@ -162,7 +154,7 @@ We'll need to modify the Users table to be able to store the user role.
 
 In the generated migration file, add a \texttt{role} column in the \texttt{up()} method, and drop it in the \texttt{down()} method:
 
-\phpinputminted{18-auth/figures/05-ModifyUsersTable}
+\php{database/migrations/<timestamp>\_modify\_users\_table.php}{18-auth/figures/06-ModifyUsersTable}
 
 Make sure you migrate the database changes:
 
@@ -170,9 +162,11 @@ Make sure you migrate the database changes:
     artisan migrate
 \end{minted}
 
+\pagebreak
+
 Next, we'll need to update our \texttt{User} model to make this new column fillable.
 
-\phpinputminted{18-auth/figures/06-User}
+\php{app/User.php}{18-auth/figures/07-User}
 
 Now let's update our existing user to have the role of \texttt{"author"} and generate a new user with the role \texttt{"subscriber"}.
 
@@ -201,28 +195,22 @@ Laravel provides a simple way for us to check who is making the request. In the 
 Let's create a new request for \textit{storing} articles:
 
 \begin{minted}{bash}
-    artisan make:request ArticleStoreRequest
+    artisan make:request API\\ArticleStoreRequest
 \end{minted}
+
+\pagebreak
 
 The \texttt{rules()} method should return the same validation as \texttt{ArticleRequest}:
 
-\begin{minted}{php}
-    public function rules()
-    {
-        return [
-            "title" => ["required", "string", "max:100"],
-            "article" => ["required", "string"]
-        ];
-    }
-\end{minted}
+\php{app/Http/Requests/API/ArticleStoreRequest.php}{18-auth/figures/08-rules}
 
 But let's write a conditional outcome in the \texttt{authorize()} method:
 
-\phpinputminted{18-auth/figures/07-authorize}
+\php{app/Http/Requests/API/ArticleStoreRequest.php}{18-auth/figures/09-authorize}
 
 We'll need to tell the \texttt{store()} method in the \texttt{Articles} controller to use this new \texttt{Request}:
 
-\phpinputminted{18-auth/figures/08-Articles}
+\php{app/Http/Controllers/API/Articles.php}{18-auth/figures/10-Articles}
 
 
 In Postman, make a \texttt{POST} request to \texttt{/oauth/token}, supplying the body as before, replacing the user details with the subscriber we generated above.

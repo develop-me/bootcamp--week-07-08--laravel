@@ -38,13 +38,8 @@ We'll need two classes, \texttt{RomanNumeral} and \texttt{RomanNumeralTest}.
 
 Put the following in \texttt{app/RomanNumeral.php}:
 
-\begin{minted}{php}
-    namespace App;
+\php{app/RomanNumeral.php}{16-tdd/figures/01-RomanNumeral}
 
-    class RomanNumeral
-    {
-    }
-\end{minted}
 
 Now, create a test:
 
@@ -54,35 +49,12 @@ Now, create a test:
 
 And update that file to look like this:
 
-\begin{minted}{php}
-    namespace Tests\Unit;
+\php{tests/Unit/RomanNumeralTest.php}{16-tdd/figures/02-RomanNumeralTest}
 
-    use PHPUnit\Framework\TestCase;
-    use App\RomanNumeral;
-
-    class RomanNumeralTest extends TestCase
-    {
-        // store the RomanNumeral object
-        private $rn;
-
-        // create a new instance of the object
-        // when the test starts
-        public function setUp() : void
-        {
-            parent::setUp();
-            $this->rn = new RomanNumeral();
-        }
-    }
-\end{minted}
 
 Right, let's get our first fail. In \texttt{RomanNumeralTest}:
 
-\begin{minted}{php}
-    public function test1()
-    {
-        $this->assertSame("I", $this->rn->forNumber(1));
-    }
-\end{minted}
+\php{tests/Unit/RomanNumeralTest.php}{16-tdd/figures/03-test1}
 
 Now run your tests:
 
@@ -95,29 +67,22 @@ We've limited testing just to \texttt{RomanNumeral} so we don't get any noise.
 
 You should see that we get an error saying \texttt{Call to undefined method \\ App\textbackslash{}RomanNumeral::forNumber()}. This is a \textbf{red}, but not the kind that we want.
 
+\pagebreak
+
 \begin{infobox}{Failures vs Errors}
     Both failures \textit{and} errors result in \textbf{red} - code that's not doing what we want it to. However, we shouldn't start aiming for green until we have a \textbf{red} \textit{failure}. So sort any errors first (syntax errors, missing files).
 \end{infobox}
 
 Now add an empty method to \texttt{RomanNumeral}:
 
-\begin{minted}{php}
-    public function forNumber()
-    {
-    }
-\end{minted}
+\php{app/RomanNumeral.php}{16-tdd/figures/04-forNumber}
 
 Now, \textbf{run your tests} again. This time you should see that you get a failure saying \texttt{Failed asserting that null is identical to \textquotesingle{}I\textquotesingle{}}. This is \textit{good}, according to TDD we can't start trying to solve the problem in \texttt{RomanNumeral} \textit{until} we have a failing test. Start with \textbf{red}.
 \\
 
 Let's get our test passing. In \texttt{RomanNumeral}:
 
-\begin{minted}{php}
-    public function forNumber() : string
-    {
-        return "I";
-    }
-\end{minted}
+\php{app/RomanNumeral.php}{16-tdd/figures/05-forNumber}
 
 \textbf{Run your tests}. Our first \textbf{green}!
 \\
@@ -130,69 +95,36 @@ But, remember the rules of TDD: write the \textit{smallest amount of code} that 
 
 We can't really refactor our code at the moment, it's about as simple as it can be. So let's get back to \textbf{red}. Add a new test:
 
-\begin{minted}{php}
-    public function test2()
-    {
-        $this->assertSame("II", $this->rn->forNumber(2));
-    }
-\end{minted}
+\php{tests/Unit/RomanNumeralTest.php}{16-tdd/figures/06-test2}
 
 \textbf{Run your tests}. Totes \textbf{red}.
 \\
 
 Let's fix that:
 
-\begin{minted}{php}
-    public function forNumber(int $number) : string
-    {
-        if ($number === 2) {
-            return "II";
-        }
-
-        return "I";
-    }
-\end{minted}
+\php{app/RomanNumeral.php}{16-tdd/figures/07-forNumber}
 
 \textbf{Run your tests}. \textbf{Green}! Perhaps not the most elegant code in the world, but it passes all our tests (and \textit{only} those tests), so it's good enough for TDD.
 \\
 
 Let's get back to \textbf{red}:
 
-\begin{minted}{php}
-    public function test3()
-    {
-        $this->assertSame("III", $this->rn->forNumber(3));
-    }
-\end{minted}
+
+\php{tests/Unit/RomanNumeralTest.php}{16-tdd/figures/08-test3}
+
+\pagebreak
 
 \textbf{Run your tests}. \textbf{Red}. And let's get it working:
 
-\begin{minted}{php}
-    public function forNumber(int $number) : string
-    {
-        if ($number === 3) {
-            return "III";
-        }
+\php{app/RomanNumeral.php}{16-tdd/figures/09-forNumber}
 
-        if ($number === 2) {
-            return "II";
-        }
-
-        return "I";
-    }
-\end{minted}
 
 \textbf{Run your tests}. \textbf{Green.}
 \\
 
 Now you've maybe noticed a pattern? We're just repeating \texttt{I} the number of times stored in \texttt{\$number}. And PHP has a way to repeat a string a specified number of times, so let's refactor:
 
-\begin{minted}{php}
-    public function forNumber(int $number) : string
-    {
-        return str_repeat("I", $number);
-    }
-\end{minted}
+\php{app/RomanNumeral.php}{16-tdd/figures/10-forNumber}
 
 \textbf{Run your tests}. Still \textbf{green}!
 \\
@@ -206,83 +138,34 @@ It's important that we didn't write it like this initially. We should only write
 
 Next test:
 
-\begin{minted}{php}
-    public function test4()
-    {
-        $this->assertSame("IV", $this->rn->forNumber(4));
-    }
-\end{minted}
+\php{tests/Unit/RomanNumeralTest.php}{16-tdd/figures/11-test4}
+
 
 \textbf{Run your tests}. \textbf{Red} again.
 \\
 
 \texttt{IV} doesn't fit the previous pattern, so let's give it its own \texttt{if} statement:
 
-\begin{minted}{php}
-    public function forNumber(int $number) : string
-    {
-        if ($number === 4) {
-            return "IV";
-        }
 
-        return str_repeat("I", $number);
-    }
-\end{minted}
+\php{app/RomanNumeral.php}{16-tdd/figures/12-forNumber}
 
 
 Next test:
 
-\begin{minted}{php}
-    public function test5()
-    {
-        $this->assertSame("V", $this->rn->forNumber(5));
-    }
-\end{minted}
+\php{tests/Unit/RomanNumeralTest.php}{16-tdd/figures/13-test5}
 
 \textbf{Run your tests}. \textbf{Red} again. Let's fix it:
 
-\begin{minted}{php}
-    public function forNumber(int $number) : string
-    {
-        if ($number === 5) {
-            return "V";
-        }
 
-        if ($number === 4) {
-            return "IV";
-        }
+\php{app/RomanNumeral.php}{16-tdd/figures/14-forNumber}
 
-        return str_repeat("I", $number);
-    }
-\end{minted}
 
 \textbf{Run your tests}. Back to \textbf{green}.
 \\
 
 Two \texttt{if} statements is starting to feel a bit much, but there isn't a clear pattern. In situations like this you could use a \texttt{switch} statement. \textit{Or} you could use a \textbf{dictionary}:
 
-\begin{minted}{php}
-    // values we want to check
-    private $dictionary = [
-        5 => "V",
-        4 => "IV",
-    ];
-
-    public function forNumber(int $number) : string
-    {
-        // go through each value
-        // if it's in the dictionary
-        // return the corresponding value
-        foreach ($this->dictionary as $value => $numeral) {
-            if ($number === $value) {
-                return $numeral;
-            }
-        }
-
-        // otherwise just do as before
-        return str_repeat("I", $number);
-    }
-\end{minted}
+\php{app/RomanNumeral.php}{16-tdd/figures/15-forNumber}
 
 \textbf{Run your tests}. \textbf{Green}!
 \\
@@ -295,91 +178,51 @@ Again, we've refactored our code and tested it. We can be sure that it does ever
 
 Let's keep going:
 
-\begin{minted}{php}
-    public function test6()
-    {
-        $this->assertSame("VI", $this->rn->forNumber(6));
-    }
-\end{minted}
+\php{tests/Unit/RomanNumeralTest.php}{16-tdd/figures/16-test6}
+
 
 \textbf{Test}. \textbf{Red}.
 \\
 
 Add it to the top of the dictionary (hopefully a pattern might begin to appear):
 
-\begin{minted}{php}
-    6 => "VI",
-\end{minted}
+\php{app/RomanNumeral.php}{16-tdd/figures/17-forNumber}
+
 
 \textbf{Test}. \textbf{Green}. Can't see a pattern, so move on.
 
-\begin{minted}{php}
-    public function test7()
-    {
-        $this->assertSame("VII", $this->rn->forNumber(7));
-    }
-\end{minted}
+\php{tests/Unit/RomanNumeralTest.php}{16-tdd/figures/18-test7}
+
 
 \textbf{Test}. \textbf{Red}.
-\\
+
+\pagebreak
 
 Add it to the top of the dictionary:
 
-\begin{minted}{php}
-    7 => "VII",
-\end{minted}
+\php{app/RomanNumeral.php}{16-tdd/figures/19-forNumber}
+
 
 \textbf{Test}. \textbf{Green}. An inkling of a pattern now, but let's make sure.
 
-\begin{minted}{php}
-    public function test8()
-    {
-        $this->assertSame("VIII", $this->rn->forNumber(8));
-    }
-\end{minted}
+\php{tests/Unit/RomanNumeralTest.php}{16-tdd/figures/20-test8}
+
 
 \textbf{Test}. \textbf{Red}.
 \\
 
 Add it to the top of the dictionary:
 
-\begin{minted}{php}
-    8 => "VIII",
-\end{minted}
+\php{app/RomanNumeral.php}{16-tdd/figures/21-forNumber}
+
 
 \textbf{Test}. \textbf{Green}.
 \\
 
 OK, there's definitely something going on here. The last three values are just \texttt{V} with \texttt{I} repeated. So \texttt{6} is just \texttt{V + I}, \texttt{7} is \texttt{V + II}, \&tc. And we've already got some code for adding the \texttt{I} bit. So let's refactor:
 
-\begin{minted}{php}
-    // back to just 5 and 4
-    private $dictionary = [
-        5 => "V",
-        4 => "IV",
-    ];
+\php{app/RomanNumeral.php}{16-tdd/figures/22-forNumber}
 
-    public function forNumber(int $number) : string
-    {
-        // keep track of result
-        $result = "";
-
-        foreach ($this->dictionary as $value => $numeral) {
-            // if $number is bigger than or equal to
-            // the current dictionary value
-            if ($number >= $value) {
-                // concatenate the numeral onto the result
-                $result .= $numeral;
-
-                // subtract the value from number
-                $number -= $value;
-            }
-        }
-
-        // add I on as many times as necessary
-        return $result . str_repeat("I", $number);
-    }
-\end{minted}
 
 \textbf{Run your tests}. \textbf{Green} times are here again.
 \\
@@ -389,54 +232,39 @@ We spotted a pattern, refactored, and then checked that everything still works b
 
 Let's move on:
 
-\begin{minted}{php}
-    public function test9()
-    {
-        $this->assertSame("IX", $this->rn->forNumber(9));
-    }
-\end{minted}
+\php{tests/Unit/RomanNumeralTest.php}{16-tdd/figures/23-test9}
+
 
 \textbf{Run your tests}. \textbf{Red} as a red thing.
-\\
+
+\pagebreak
 
 This one doesn't fit the pattern we've previously spotted, so add it to the dictionary:
 
-\begin{minted}{php}
-    9 => "IX",
-\end{minted}
+\php{app/RomanNumeral.php}{16-tdd/figures/24-forNumber}
+
 
 \textbf{Run your tests}. \textbf{Green}.
 \\
 
 Now for ten:
 
-\begin{minted}{php}
-    public function test10()
-    {
-        $this->assertSame("X", $this->rn->forNumber(10));
-    }
-\end{minted}
+\php{tests/Unit/RomanNumeralTest.php}{16-tdd/figures/25-test10}
+
 
 \textbf{Run your tests}. \textbf{Red} as\textellipsis{} a different, but equally red, thing.
 \\
 
 Again, this doesn't fit any pattern we've previously spotted, so add it to the dictionary:
 
-\begin{minted}{php}
-    10 => "X",
-\end{minted}
+\php{app/RomanNumeral.php}{16-tdd/figures/26-forNumber}
 
 \textbf{Run your tests}. Purest \textbf{green}.
 \\
 
 Guess what? It's eleven o'clock:\footnote{Actual time may vary}
 
-\begin{minted}{php}
-    public function test11()
-    {
-        $this->assertSame("XI", $this->rn->forNumber(11));
-    }
-\end{minted}
+\php{tests/Unit/RomanNumeralTest.php}{16-tdd/figures/27-test11}
 
 \textbf{Run your tests}. Our first \textit{free} \textbf{green}! These are always nice – it suggests you're on the right track.
 \\
@@ -446,97 +274,45 @@ And if you wrote tests for \texttt{12} (\texttt{"XII"}) through to \texttt{19} (
 
 But our luck runs out at 20:
 
-\begin{minted}{php}
-    public function test20()
-    {
-        $this->assertSame("XX", $this->rn->forNumber(20));
-    }
-\end{minted}
+\php{tests/Unit/RomanNumeralTest.php}{16-tdd/figures/28-test20}
+
 
 \textbf{Run your tests}. \textbf{Red} as a doornail.\footnote{A red doornail}
 \\
 
 For now, let's just add it to the dictionary:
 
-\begin{minted}{php}
-    20 => "XX",
-\end{minted}
+\php{app/RomanNumeral.php}{16-tdd/figures/29-forNumber}
 
 \textbf{Run your tests}. \textbf{Green}zo.
 \\
 
 And let's try 30:
 
-\begin{minted}{php}
-    public function test30()
-    {
-        $this->assertSame("XXX", $this->rn->forNumber(30));
-    }
-\end{minted}
+\php{tests/Unit/RomanNumeralTest.php}{16-tdd/figures/30-test30}
+
 
 \textbf{Run your tests}. \textbf{Red} as a radish.
 \\
 
 Again, let's just add it to the dictionary:
 
-\begin{minted}{php}
-    30 => "XXX",
-\end{minted}
+\php{app/RomanNumeral.php}{16-tdd/figures/31-forNumber}
+
 
 \textbf{Run your tests}. \textbf{Green}. But, again, we can see a pattern here: we've just got an extra \texttt{X} for every additional \texttt{10}. Let's refactor:
 
-\begin{minted}{php}
-    private $numerals = [
-        10 => "X",
-        9 => "IX",
-        5 => "V",
-        4 => "IV",
-    ];
+\php{app/RomanNumeral.php}{16-tdd/figures/32-forNumber}
 
-    public function forNumber(int $number) : string
-    {
-        $result = "";
-
-        foreach ($this->dictionary as $value => $numeral) {
-            // change the if to a while
-            // will repeat on a number until it
-            // gets lower than it
-            while ($number >= $value) {
-                $result .= $numeral;
-                $number -= $value;
-            }
-        }
-
-        return $result . str_repeat("I", $number);
-    }
-\end{minted}
 
 \textbf{Run your tests}. Still \textbf{green}! Nice.
-\\
+
+\pagebreak
 
 And we can refactor again. Our previous bit of code got us repeated \texttt{X}s, which suggests the repeated \texttt{I}s can be dealt with by adding it to our dictionary:
 
-\begin{minted}{php}
-    private $dictionary = [
-        // ... other values
-        1 => "I",
-    ];
+\php{app/RomanNumeral.php}{16-tdd/figures/33-forNumber}
 
-    public function forNumber(int $number) : string
-    {
-        $result = "";
-
-        foreach ($this->dictionary as $value => $numeral) {
-            while ($number >= $value) {
-                $result .= $numeral;
-                $number -= $value;
-            }
-        }
-
-        // just return result
-        return $result;
-    }
-\end{minted}
 
 \textbf{Run your tests}. Stiller \textbf{green}!\footnote{Green steel?} A double refactoring. No special cases for \texttt{I} anymore.
 \\
@@ -545,7 +321,7 @@ We're still not done, but the rest is pretty trivial as we've worked out the mai
 \\
 
 \begin{small}
-    \begin{tabu}{l X}
+    \begin{tabularx}{\textwidth}{l X}
         \texttt{40} & \texttt{"XL"} \\
         \texttt{50} & \texttt{"L"} \\
         \texttt{90} & \texttt{"XC"} \\
@@ -555,7 +331,7 @@ We're still not done, but the rest is pretty trivial as we've worked out the mai
         \texttt{900} & \texttt{"CM"} \\
         \texttt{1000} & \texttt{"M"} \\
         \texttt{3994} & \texttt{"MMMCMXCIV"} \\
-    \end{tabu}
+    \end{tabularx}
 \end{small}
 
 \par\bigskip
@@ -605,11 +381,7 @@ When all of your PHPUnit tests succeed you get back a \texttt{0} exit code, but 
 
 Hooks live in the \texttt{.git/hooks} directory inside your project. So we need to create a file called \texttt{.git/hooks/pre-commit} and then put the following inside:
 
-\begin{minted}{bash}
-    #!/bin/bash
-
-    vendor/bin/phpunit
-\end{minted}
+\code{.git/hooks/pre-commit}{bash}{16-tdd/figures/34-hook.sh}
 
 This is just the command that we've been running manually.
 \\
@@ -630,6 +402,6 @@ Now, whenever you try to commit anything to Git the tests will run and if any of
     \item \href{https://www.freecodecamp.org/news/test-driven-development-what-it-is-and-what-it-is-not-41fa6bca02a2/}{What is Test Driven Development?}
     \item \href{https://www.codecademy.com/articles/tdd-red-green-refactor}{Red, Green, Refactor}
     \item \href{https://www.sandimetz.com/99bottles}{99 Bottles of OOP}
-    \item \href{https://kentcdodds.com/blog/make-your-test-fail}{Make You Test Fail}: a good example (in JS) of why it's important to get \textbf{red} before going for \textbf{green}
+    \item \href{https://kentcdodds.com/blog/make-your-test-fail}{Make Your Test Fail}: a good example (in JS) of why it's important to get \textbf{red} before going for \textbf{green}
     \item \href{https://git-scm.com/book/en/v2/Customizing-Git-Git-Hooks}{Git Hooks}
 \end{itemize}
