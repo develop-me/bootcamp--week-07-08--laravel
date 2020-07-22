@@ -31,9 +31,7 @@ You'll need to update all the views in \texttt{resources/views/auth} to use \tex
 
 The above process will have added the necessary routes to our app. But we probably want to disable the user registration route. So update \texttt{routes/web.php}:
 
-\begin{minted}{php}
-    Auth::routes(['register' => false]);
-\end{minted}
+\php{routes/web.php}{12-auth/figures/01-routes}
 
 Now you can go to \texttt{/login} and see the login form. However, you won't be able to login just yet as you haven't created a \texttt{User}.
 
@@ -124,22 +122,7 @@ Then we can use various static methods:
 
 We can make sure that some of the parts of our app are only visible to logged-in users, by using the \texttt{auth} \textbf{middleware}:
 
-\begin{minted}{php}
-    Route::group(["prefix" => "articles"], function () {
-        // put behind the auth middleware
-        // need to be logged in to use
-        Route::group(["middleware" => "auth"], function () {
-            Route::get('create', "Articles@create");
-            Route::post('create', "Articles@createPost");
-            Route::get('{article}/edit', "Articles@edit");
-            Route::post('{article}/edit', "Articles@editPost");
-        });
-
-        // don't need to be logged in to view or comment
-        Route::get('{article}', "Articles@show");
-        Route::post('{article}', "Articles@commentPost");
-    });
-\end{minted}
+\php{routes/web.php}{12-auth/figures/02-middleware}
 
 We wrap the routes that we want to protect using the \texttt{middleware} group option. Now if we try to visit any of these routes without being logged in we'll be taken to the login form.
 \\
