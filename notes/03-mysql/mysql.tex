@@ -1,0 +1,294 @@
+Databases are pieces of software that store structured data for us.
+\\
+
+The most common form of database is the \textbf{relational database}. To get data in and out of a relational database we use a \textbf{Structured Query Language} (SQL).
+\\
+
+SQL comes in many flavours: MySQL, MariaDB, PostgreSQL, SQL Server, SQLite. We'll be using MySQL.
+
+
+\begin{infobox}{NoSQL}
+    \quoteinline{It’s a curious thing about our industry: not only do we not learn from our mistakes, we also don’t learn from our successes}{Keith Braithwaite}
+
+    It's become very trendy to use NoSQL databases to make API driven apps. The most popular being MongoDB.
+    \\
+
+    MongoDB is a ``document'' database: it's designed for storing arbitrary data, as opposed to specific data types. If that's all you use it for then it's really efficient - although such features are now common in SQL databases like PostgreSQL. But people got carried away and tried to use it to store \textit{relational} data and ended up getting themselves into lots of issues - do a search for ``MongoDB to PostgreSQL'' for many an article on the subject.
+    \\
+
+    It turns out that \textit{most} data you'll ever want to store and work with is relational, so you should probably stick to a relational database most the time.
+    \\
+
+    That's not to say that NoSQL has no place in the world: it's really good for specific uses cases and more often than not should be used \textit{alongside} SQL databases.
+    \\
+
+    For example it's very common to pair up ElasticSearch with an SQL database: searching an SQL database for key terms is either very inefficient or involves a lot of extra tables and code. ElasticSearch does it all for us with very little effort. However, you'd still want to store your main data in an SQL database.
+    \\
+
+    Another case is using a graph database (such as Neo4j) alongside SQL. Although SQL is good at storing specific relationships, it's very bad at exploring those relationships: for example, Facebook finding all of your friends' friends. In fact the relationships don't need to get very complicated before it would take SQL millennia to find every possible relationship. Graph databases are designed specifically to find relationships and can do this very quickly. Again, you'd probably want to store your main data in an SQL database
+\end{infobox}
+
+
+\section{Database Structure}
+
+It's easiest to think of the structure of databases with an example. Let's say that we're going to create a blog which consists of lots of articles. Each article has a title and content (the text of the article) as well as a creation date.
+\\
+
+We usually have a single SQL database per project: it stores all of the data for that specific project.
+\\
+
+A database is made up of \textbf{tables}, which are in turn made up of \textbf{rows}, which have one or more \textbf{columns}.
+\\
+
+A table represents a collection of some sort of \textit{thing}, e.g. blog articles. A row is a single instance of that thing, e.g. an article. And a column represents a specific piece of information about that thing, e.g. an article title:
+\\
+
+\begin{tabularx}{\textwidth}{l l l X}
+    \texttt{id} & \texttt{title}            & \texttt{content}     & \texttt{created\_at} \\
+    1           & Where Do Eels Come From?  & Nobody knows exactly & 2020-04-16 \\
+    2           & Do Moose Get Drunk?       & Maybe                & 2020-04-17 \\
+\end{tabularx}
+
+\par\bigskip
+
+
+\section{Column Types}
+
+Each column stores a specific type of data. Here are a few of the most common types (although there are many more):
+\\
+
+\begin{small}
+    \begin{tabularx}{\textwidth}{l l X}
+        \texttt{Type}       & \texttt{Purpose}       & \texttt{Notes} \\
+        \texttt{VARCHAR}    & Short pieces of text   & Fixed length  \\
+        \texttt{TEXT}       & Long pieces of text    & Flexible length, with performance hit  \\
+        \texttt{INT}        & Whole numbers          & Signed (\texttt{+}/\texttt{-}) and unsigned  \\
+        \texttt{TINYINT}    & Small whole numbers    & Often used to store boolean values (\texttt{0} and \texttt{1})  \\
+        \texttt{DECIMAL}    & Decimal point numbers  & Need to specify a precision \\
+        \texttt{DATE}       & Dates                  & \texttt{YYYY-MM-DD} format  \\
+        \texttt{DATETIME}   & Storing times          & If you don't need to support time-zones \\
+        \texttt{TIMESTAMP}  & Storing accurate times & If you do need to support time-zones \\
+    \end{tabularx}
+\end{small}
+\par\bigskip
+
+
+\section{IDs}
+
+A row in an SQL database always has to have one \textbf{unique} way of identifying it – otherwise there's no way to select/update a single row. For our purposes we'll just use a numeric ID. MySQL can automatically generate these for us.
+\\
+
+These unique IDs are called the \texttt{PRIMARY KEY} and are often set to \texttt{AUTO\_INCREMENT}, so the first record has ID \texttt{1}, the next is assigned \texttt{2} and so on.
+\\
+
+If you're adding data to a database that already exists or that is shared with other people your IDs may not start at \texttt{1} and they might have gaps – that's not anything to worry about it.
+
+\begin{infobox}{Beyond IDs}
+    More complex systems (particularly ones spread across multiple servers) might need to use a more complex system such as \textbf{UUID}s (\href{https://en.wikipedia.org/wiki/Universally\_unique\_identifier}{Universally Unique Identifiers}).
+    \\
+
+    The unique aspect of a row can also be a combination of multiple columns. This can be very useful with complex relationships.
+\end{infobox}
+
+\pagebreak
+
+\section{SQL}
+
+\subsection{\texttt{CREATE DATABASE}}
+
+We can use \texttt{CREATE DATABASE} to add a new database.
+
+\begin{minted}{mysql}
+    CREATE DATABASE database_name;
+\end{minted}
+
+\subsection{\texttt{SHOW}}
+
+We can use \texttt{SHOW} to see what databases and tables we have.
+
+\begin{minted}{mysql}
+    SHOW DATABASES;
+
+    SHOW TABLES (IN database_name);
+\end{minted}
+
+\subsection{\texttt{USE}}
+
+Once we've created a database we need to tell MySQL that we want to work with that database:
+
+\begin{minted}{mysql}
+    USE database_name;
+\end{minted}
+
+\begin{infobox}{To \texttt{USE} or not to \texttt{USE}}
+    If you don't run \texttt{USE} then you'll need to include the database name in all the SQL queries you run. As we often only work within one database at a time this adds typing.
+    \\
+
+    Without \texttt{USE}:
+
+    \begin{minted}{mysql}
+        SELECT * FROM database_name.articles;
+        SELECT * FROM database_name.comments;
+        SELECT * FROM database_name.tags;
+    \end{minted}
+
+
+    With \texttt{USE}:
+
+    \begin{minted}{mysql}
+        USE database_name;
+        SELECT * FROM articles;
+        SELECT * FROM comments;
+        SELECT * FROM tags;
+    \end{minted}
+\end{infobox}
+
+\subsection{\texttt{CREATE TABLE}}
+
+This is probably the most complex of the commands as we need to define our table structure. Line breaks can make this easier to follow. Until you have a semi-colon at the end of the line MySQL won't try to interpret what you've written.
+
+\begin{minted}{mysql}
+    CREATE TABLE articles (
+        # add an auto-incrementing ID
+        id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+        # add a title with max length of 100
+        title VARCHAR(100),
+        # add a body that can be as long as you like
+        body TEXT,
+        # add a created_at column that gets set automatically
+        created_at DEFAULT CURRENT_TIMESTAMP,
+        # add an updated_at column that gets updated automatically
+        updated_at DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    );
+\end{minted}
+
+\begin{infobox}{Table and Column Naming}
+    Although it's not necessary, you should \textbf{always use snake case for your table and column names}: all lower-case with underscores in place of spaces.
+    \\
+
+    e.g. \texttt{user\_roles}, \texttt{created\_at}, \texttt{date\_of\_birth}
+    \\
+
+    If you don't do this you will run into all sorts of issues when it comes to working with your database.
+\end{infobox}
+
+\subsection{\texttt{SELECT}}
+
+We can use \texttt{SELECT} to get information out of a specific table:
+
+\begin{minted}{mysql}
+    SELECT * FROM articles;
+\end{minted}
+
+If we're only interested in some of the columns we can specify this:
+
+\begin{minted}{mysql}
+    SELECT id, title, body FROM articles;
+\end{minted}
+
+\subsubsection{\texttt{WHERE}}
+
+If we're only interested in some of the records we can filter using \texttt{WHERE}.
+\\
+
+To get articles written before Jan 14th 2020:
+
+\begin{minted}{mysql}
+    SELECT * FROM articles WHERE created_at < "2020-01-14";
+\end{minted}
+
+\subsubsection{\texttt{LIKE}}
+
+To search the database for parts of a field we use \texttt{LIKE}:
+
+\begin{minted}{mysql}
+    SELECT * FROM articles WHERE title LIKE '%wombats%';
+\end{minted}
+
+\textbf{Note:} the \texttt{\%} is a \textbf{wildcard} and allows us to look for articles that have ``wombat'' in the title at the start, end, or middle.
+
+\subsection{\texttt{INSERT}}
+
+To insert a new row of data (record) into your table:
+
+\begin{minted}{mysql}
+    INSERT INTO articles (title, body) VALUES ('Welcome to my blog!', 'In this essay I will...');
+\end{minted}
+
+
+\subsection{\texttt{UPDATE}}
+
+To update fields in a record:
+
+\begin{minted}{mysql}
+    UPDATE `articles` SET `title` = 'Welcome to my blog!' WHERE id = 1;
+\end{minted}
+
+\textbf{Note:} the \texttt{WHERE} is very important, else all records in the table will have their title updated to the same thing!
+
+\subsection{\texttt{ALTER}}
+
+To change a table after its been created:
+
+\begin{minted}{mysql}
+    ALTER TABLE articles ADD COLUMN featured TINYINT(1) DEFAULT 0;
+\end{minted}
+
+\subsection{\texttt{DELETE}}
+
+To delete a row (record) from a table:
+
+\begin{minted}{mysql}
+    DELETE FROM articles WHERE id = 1;
+\end{minted}
+
+\textbf{Note:} the \texttt{WHERE} is very important, else all records in the table will be deleted!
+
+\subsection{\texttt{DROP}}
+
+We can use \texttt{DROP} to remove a table:\footnote{Use with caution!}
+
+\begin{minted}{mysql}
+    DROP TABLE table_name;
+\end{minted}
+
+We can also use \texttt{DROP} to remove an entire database:\footnote{Use with \textit{extreme} caution!}
+
+\begin{minted}{mysql}
+    DROP DATABASE database_name;
+\end{minted}
+
+\begin{infobox}{Joins}
+    We've not actually covered the ``relational'' part of relational databases. We can use the \texttt{JOIN} command to get related data from multiple tables in a very efficient manner.
+    \\
+
+    We'll be covering the \textit{structure} of these relationships later in the course, but we won't actually be using MySQL queries.
+\end{infobox}
+
+
+\section{Using MySQL with Vagrant}
+
+SSH into your Vagrant machine (with \texttt{vagrant ssh}), then run:
+
+\begin{minted}{bash}
+    # login to mysql
+    # for Homestead username is "homestead" and password is "secret"
+    mysql -u <username> -p
+\end{minted}
+
+And once you're done:
+
+\begin{minted}{mysql}
+    # in MySQL
+    # go from MySQL prompt back to command-line on the Vagrant machine
+    exit
+\end{minted}
+
+You may need to run \texttt{exit} a \textit{second} time to leave the Vagrant VM.
+
+\section{Additional Resources}
+
+\begin{itemize}[leftmargin=*]
+    \item \href{https://dev.mysql.com/doc/refman/5.7/en/data-types.html}{MySQL Data Types}
+    \item \href{https://blog.codinghorror.com/a-visual-explanation-of-sql-joins/}{A Visual Explanation of SQL Joins}
+\end{itemize}

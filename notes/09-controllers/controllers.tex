@@ -1,0 +1,139 @@
+As our app gets more complicated, we don't want to have to put all of the logic that works out what to show to the user in the routes file: it would quickly become unmanageable.
+\\
+
+A \textbf{controller}'s job is to bring together all the other bits of code that make up an app: to \textit{control} what happens. In Laravel, controllers are called by the router: they take the request, do whatever it is that needs doing, and then return a response.
+\\
+
+First, we'll need a class. Run the following inside your Vagrant box to create an Articles controller:
+
+\begin{minted}{bash}
+    artisan make:controller Articles
+\end{minted}
+
+This will create a file (\texttt{app/Http/Controllers/Articles.php}), which contains the boilerplate for a controller.
+
+\section{Controller Methods}
+
+You can define your own methods in your controller for handling different requests.
+\\
+
+First, let's update our routes to use the \texttt{Articles} controller:
+
+\begin{minted}{php}
+    Route::get('/', "Articles@index");
+\end{minted}
+
+This is telling Laravel to run the \texttt{index} method of the \texttt{Articles} controller when the user visits the root route (\texttt{/}).
+\\
+
+If you try loading the site now you'll get a server error. We'll need to add the method to \texttt{Articles}:
+
+\php{app/Http/Controllers/Articles.php}{09-controllers/figures/01-Articles}
+
+This might just seem like we've made everything much more complicated for no obvious reason. But there are many advantages, one of which is that we can pass in data to the view much more easily.
+\\
+
+First, tell the \texttt{Articles} controller where to find your \texttt{Article} model class:
+
+\php{app/Http/Controllers/Articles.php}{09-controllers/figures/02-use}
+
+Then update your \texttt{index} method:
+
+\php{app/Http/Controllers/Articles.php}{09-controllers/figures/03-index}
+
+Now we can update our \texttt{welcome.blade.php} template so that we don't have to fetch the articles in the template itself:
+
+\begin{minted}{html}
+    @foreach ($articles as $article)
+\end{minted}
+
+Now we can potentially reuse the \texttt{welcome.blade.php} template for \textit{any} page that needs to show a list of articles, not just the homepage. So we should probably rename the file \texttt{articles.blade.php} and update the \texttt{Articles} controller:
+
+\php{app/Http/Controllers/Articles.php}{09-controllers/figures/04-articles}
+
+Next, let's get our page to show a specific article working properly (i.e. show the relevant article, rather than just some filler text).
+
+
+The data (properties) from the Article model are passed into the view with the variable name \texttt{article}.
+\\
+
+First update the route to use a method instead of putting all the code in the routes file:
+
+\php{routes/web.php}{09-controllers/figures/05-route}
+
+Next, add the \texttt{show} method to the \texttt{Articles} controller:
+
+\php{routes/web.php}{09-controllers/figures/06-show}
+
+The value from the URL parameter (the \texttt{\{article\}} bit in the route), gets passed in as the first argument to the method. So we can use this to find the relevant article and then pass it in.
+\\
+
+Now we can update our \texttt{article.blade.php} template:
+
+\begin{minted}{html}
+    @extends("app")
+
+    @section("content")
+      <div class="card">
+        <h2 class="card-header">{{ $article->title }}</h2>
+        <article class="card-body">
+          {{ $article->content }}
+        </article>
+      </div>
+    @endsection
+\end{minted}
+
+Now, if we visit \texttt{/articles/1} (assuming you have an article with the ID \texttt{1}), you should see the actual article text.
+\\
+
+However, if you visit \texttt{/articles/384938439}, you'll get an error (unless you got really carried away adding articles). That's because currently we don't check to see if we actually get an \texttt{Article} back from our call to \texttt{Article::find()}. So, sometimes, we get back \texttt{null}, that gets passed into the template, and then things go very wrong.
+\\
+
+Luckily, Laravel offers an elegant solution to this issue: \textbf{Route Model Binding}.
+
+
+\section{Route Model Binding}
+
+We can get Laravel to do quite a lot of work for us when it comes to fetching models based on URL parameters.
+\\
+
+First, update the route to use \texttt{\{article\}} instead of \texttt{\{id\}} (it needs to match the model name):
+
+\begin{minted}{php}
+    Route::get('/articles/{article}', function () {
+        return view('article');
+    });
+\end{minted}
+
+Then in the \texttt{Articles} controller, instead of just having the \texttt{\$id} parameter, we replace it with \texttt{Article \$article}:
+
+\php{app/Http/Controllers/Articles.php}{09-controllers/figures/07-rmb}
+
+Now, Laravel is going to do some super-sneaky witchcraft.
+\\
+
+So what's going on? Laravel reads your code, sees that you've asked for an \texttt{Article} and notices that it's in the place where you'd normally accept the value from the URL parameter. It then joins this up and, instead of just passing in the parameter value as a string, looks for an \texttt{Article} with a matching ID. If it finds one then it passes it in (so that your type declaration is still valid). If it doesn't then it doesn't even bother trying to run your controller method and just displays a 404 page instead.
+\\
+
+In standard PHP code, this wouldn't have any right to work, but in Laravel it does. That's because Laravel uses \textbf{reflection}: that's where rather than just running your code, it actually \textit{reads} your code and alters its behaviour accordingly. This is the sort of trick that should not be used too often: it takes more processing power and it's almost magical – and magical code is almost impossible to understand. But it's \textit{really} useful, so we'll forgive it this one time.
+
+\pagebreak
+
+\begin{infobox}{View All Routes}
+    A useful command to see all routes setup, the HTTP methods for them, which controllers and which methods will be run:
+
+    \begin{minted}{bash}
+        artisan route:list
+    \end{minted}
+
+\end{infobox}
+
+
+
+
+\section{Additional Resources}
+
+\begin{itemize}[leftmargin=*]
+    \item \href{http://laravel.com/docs/master/controllers}{Laravel: Controllers}
+    \item \href{https://laraveldaily.com/how-to-structure-routes-in-large-laravel-projects/}{How to Structure Routes in Large Laravel Apps}
+\end{itemize}

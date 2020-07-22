@@ -1,0 +1,61 @@
+Routing is the process of determining what code should be run based on the given URL. This is a concept you'll come across a lot when developing websites. In fact, we'll come across it again when we look at React.
+\\
+
+When a user loads a page in a Laravel app, after setting everything up, Laravel has a look to see if the URL matches any of the defined \textbf{routes} (which live in the \texttt{routes} directory). A route represents a specific URL. If Laravel finds a match it then runs the code that the route points to.
+\\
+
+If you have a look in \texttt{routes/web.php}, you'll see that it already contains a route:
+
+\begin{minted}{php}
+    <?php
+
+    use Illuminate\Support\Facades\Route;
+
+    Route::get('/', function () {
+        return view('welcome');
+    });
+\end{minted}
+
+We use a static method of the \texttt{Route} class to say that if the user visits \texttt{/} (the \textbf{root}\footnote{Yes, it's the root route} URL – e.g. the homepage of our site) we should return a \textbf{view} called ``welcome''. This is why, if you visit your Laravel site, you'll see the \texttt{welcome.blade.php} template. But if you go to any other URL you'll get a 404.
+\\
+
+Let's add another route for an ``About'' page:
+
+\begin{minted}{php}
+    Route::get('/about', function () {
+        return view('about');
+    });
+\end{minted}
+
+Next, create a template \texttt{resources/views/about.blade.php}:
+
+\code{resources/views/about.blade.php}{html}{08-routing/figures/01-about.blade.php}
+
+Now, visit \texttt{/about} if your browser and you should see the new page.
+
+
+
+\section{URL Parameters}
+
+Next, let's add a route for an article.
+\\
+
+First create the file \texttt{resources/views/article.blade.php}:
+
+\code{resources/views/article.blade.php}{html}{08-routing/figures/02-article.blade.php}
+
+And then add another route to \texttt{routes/web.php}:
+
+\begin{minted}{php}
+    Route::get('/articles/{id}', function () {
+        return view('article');
+    });
+\end{minted}
+
+Now if you visit the URL \texttt{/articles/1} in your browser, you should see the article view that you just created. It will also work if you go to \texttt{articles/2}. In fact it will work for \texttt{articles/anything}. That's because the \texttt{\{id\}} bit is a \textbf{URL parameter}: a placeholder for \textit{any} value. We'll look at how we can work with this value later.
+
+\section{Additional Resources}
+
+\begin{itemize}[leftmargin=*]
+    \item \href{http://laravel.com/docs/master/routing}{Laravel: Routing}
+\end{itemize}

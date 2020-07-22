@@ -1,0 +1,86 @@
+You should always validate any data that gets submitted to your site on the server-side. For a good user-experience you should probably also have validation on the client-side using JavaScript, but it's perfectly possible that a user might have JavaScript disabled or that a malicious party might be making a direct request.
+\\
+
+To avoid any MySQL errors we need to at minimum validate the following:
+
+\begin{itemize}
+    \item \texttt{required}: any database fields that cannot be \texttt{null} should have the \texttt{required} validation
+    \item \texttt{max:255}: if you're storing data in a \texttt{VARCHAR} then make sure you have max length validation that matches the \texttt{VARCHAR} length
+    \item \texttt{date}/\texttt{integer}/\texttt{string}: check formats before inserting into MySQL. These are not the database migration types, but validation specific rules - so \texttt{VARCHAR} and \texttt{TEXT} both count as \texttt{string} for validation. You will also need the \texttt{nullable} validation if the field is not required.
+\end{itemize}
+
+As well as the cases above there are plenty of \href{http://laravel.com/docs/master/validation#available-validation-rules}{other bits of validation} that you can do easily with Laravel.
+
+\section{Form Requests}
+
+As with most things in Laravel, we'll need to create a new type of class. In this case it's a \texttt{FormRequest} class. The \texttt{FormRequest} class actually inherits everything from the \texttt{Request} class that we're already using in our controller when we want to work with the request the user made.
+\\
+
+Use \texttt{artisan} to create a \texttt{FormRequest} class:
+
+\begin{minted}{bash}
+    artisan make:request ArticleRequest
+\end{minted}
+
+This will create a file in \texttt{app/Http/Requests}. The \texttt{ArticleRequest} class has two methods. We first need to return \texttt{true} from the \texttt{authorize} method: this method can be very useful when you add support for user logins, but for now we'll just assume everyone can make requests. The \texttt{rules} method needs to return an associative array, where the property name is the \texttt{name} of the submitted datum that needs validating and its value is an array of validation rules:
+
+\php{app/Http/Requests/ArticleRequest.php}{10-forms/figures/10-validation}
+
+Next we need to  update the \texttt{Articles} controller to use our validated request instead of the standard \texttt{Request} object. First let it know where the \texttt{ArticleRequest} class lives:
+
+\php{app/Http/Controllers/Articles.php}{10-forms/figures/11-use}
+
+And then update the type-hinting on the \texttt{createPost} method to use the \texttt{ArticleRequest} class instead of \texttt{Request}:
+
+\php{app/Http/Controllers/Articles.php}{10-forms/figures/12-type-hint}
+
+This works because \texttt{ArticleRequest} is a descendant of \texttt{Request}, so it has all of the same methods and properties.
+\\
+
+Now, if the validation passes everything will work as before, but if it \textit{fails} the user will be sent back to the form. However, currently they won't know what they did wrong and all of their submitted data will get lost!
+
+
+\section{Updating Templates}
+
+\subsection{Old Input}
+
+First, let's update our template so that the data the user submitted doesn't get lost if there's a validation error. To do this we can use the \texttt{old()} helper function.
+\\
+
+To the \texttt{title} \texttt{<input>}:
+
+\html{resources/views/form.blade.php}{10-forms/figures/13-old-title}
+
+To the \texttt{content} \texttt{<textarea>}:
+
+\html{resources/views/form.blade.php}{10-forms/figures/14-old-content}
+
+With a \texttt{textarea}, make sure you only put spaces/line-breaks \textit{inside} the template curly braces, otherwise they'll get added to the content of the \texttt{<textarea>}.
+
+
+\subsection{Errors}
+
+Next, let's get error messages and styling working.
+\\
+
+At the bottom of the \texttt{title} \texttt{<fieldset>}:
+
+\html{resources/views/form.blade.php}{10-forms/figures/15-error}
+
+If there are any, this will output an error message for \texttt{title} with appropriate Bootstrap classes. Don't forget to add one for \texttt{content} too.
+\\
+
+We can also add relevant styling to our form fields:
+
+\html{resources/views/form.blade.php}{10-forms/figures/16-invalid}
+
+This will add the Bootstrap \texttt{is-invalid} class \textit{if} the \texttt{title} field has an error.
+
+
+\section{Additional Resources}
+
+\begin{itemize}[leftmargin=*]
+    \item \href{http://laravel.com/docs/master/validation}{Laravel: Validation}
+    \item \href{http://laravel.com/docs/master/validation#working-with-error-messages}{Laravel: Working with Error Messages}
+    \item \href{https://getbootstrap.com/docs/4.0/components/forms/#server-side}{Bootstrap Form Validation Classes}
+\end{itemize}

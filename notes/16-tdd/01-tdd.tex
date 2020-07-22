@@ -1,0 +1,407 @@
+We've already seen that it can be useful to write tests for our code.
+\\
+
+But what if we wrote the tests \textit{first}? This is the key idea behind \textbf{Test Driven Development}.
+\\
+
+Rather than writing a piece of functionality and then testing it when we think it works, TDD says we should first write a test that fails and then write the code that will make the test work. If you're doing TDD properly you should never write a piece of code without having written a test for it first.
+
+\section{Red, Green, Refactor}
+
+When writing test-driven code you enter the ``Red, Green, Refactor'' loop.
+
+\begin{itemize}
+    \item \textbf{Red}: write a \textit{failing} test - and check that it fails
+    \item \textbf{Green}: write the \textit{smallest amount of code} that you can to pass the test
+    \item \textbf{Refactor}: can you improve the code without breaking any of the tests
+\end{itemize}
+
+Remember, ``refactoring'' means: rewriting a piece of code without changing what it does.
+
+\subsection{Why?}
+
+This might seem like a crazy way to write code, but it forces you to think about what you're actually doing. The \textbf{red} stage make you think ``What does this code \textit{actually} need to do?''. The \textbf{green} phase lets you think about how to get it working in the simplest possible way. The \textbf{refactor} phase lets you improve your code without worrying about breaking anything.
+\\
+
+If you use TDD for \textit{every line of code in your application}, then you have the freedom to change whatever you like with the guarantee that \textit{if all the tests still pass, it definitely still does what it did before}. This can be incredibly liberating!
+\\
+
+Initially, you probably think that writing code this way will be much slower. And to start with it will be. But if you can get into the right mindset, you may find that it allows you to reason about you code in a much more straightforward manner. And when it comes to making changes later – which is what you'll spend most of your time doing – you'll find you save a huge amount of time and mental effort.
+
+\section{Roman Numerals}
+
+Let's write a class that converts an integer into a Roman Numeral using TDD.
+\\
+
+We'll need two classes, \texttt{RomanNumeral} and \texttt{RomanNumeralTest}.
+\\
+
+Put the following in \texttt{app/RomanNumeral.php}:
+
+\php{app/RomanNumeral.php}{16-tdd/figures/01-RomanNumeral}
+
+
+Now, create a test:
+
+\begin{minted}{bash}
+    artisan make:test RomanNumeralTest --unit
+\end{minted}
+
+And update that file to look like this:
+
+\php{tests/Unit/RomanNumeralTest.php}{16-tdd/figures/02-RomanNumeralTest}
+
+
+Right, let's get our first fail. In \texttt{RomanNumeralTest}:
+
+\php{tests/Unit/RomanNumeralTest.php}{16-tdd/figures/03-test1}
+
+Now run your tests:
+
+\begin{minted}{bash}
+    vendor/bin/phpunit --filter RomanNumeral
+\end{minted}
+
+We've limited testing just to \texttt{RomanNumeral} so we don't get any noise.
+\\
+
+You should see that we get an error saying \texttt{Call to undefined method \\ App\textbackslash{}RomanNumeral::forNumber()}. This is a \textbf{red}, but not the kind that we want.
+
+\pagebreak
+
+\begin{infobox}{Failures vs Errors}
+    Both failures \textit{and} errors result in \textbf{red} - code that's not doing what we want it to. However, we shouldn't start aiming for green until we have a \textbf{red} \textit{failure}. So sort any errors first (syntax errors, missing files).
+\end{infobox}
+
+Now add an empty method to \texttt{RomanNumeral}:
+
+\php{app/RomanNumeral.php}{16-tdd/figures/04-forNumber}
+
+Now, \textbf{run your tests} again. This time you should see that you get a failure saying \texttt{Failed asserting that null is identical to \textquotesingle{}I\textquotesingle{}}. This is \textit{good}, according to TDD we can't start trying to solve the problem in \texttt{RomanNumeral} \textit{until} we have a failing test. Start with \textbf{red}.
+\\
+
+Let's get our test passing. In \texttt{RomanNumeral}:
+
+\php{app/RomanNumeral.php}{16-tdd/figures/05-forNumber}
+
+\textbf{Run your tests}. Our first \textbf{green}!
+\\
+
+Now, you're probably thinking a mixture of confusion and expletives. Of course the test passed! But the method \textit{always} returns \texttt{"I"}.
+\\
+
+But, remember the rules of TDD: write the \textit{smallest amount of code} that you can to pass the test. And that's just what we did. Just remember, \textit{we're not finished yet}.
+\\
+
+We can't really refactor our code at the moment, it's about as simple as it can be. So let's get back to \textbf{red}. Add a new test:
+
+\php{tests/Unit/RomanNumeralTest.php}{16-tdd/figures/06-test2}
+
+\textbf{Run your tests}. Totes \textbf{red}.
+\\
+
+Let's fix that:
+
+\php{app/RomanNumeral.php}{16-tdd/figures/07-forNumber}
+
+\textbf{Run your tests}. \textbf{Green}! Perhaps not the most elegant code in the world, but it passes all our tests (and \textit{only} those tests), so it's good enough for TDD.
+\\
+
+Let's get back to \textbf{red}:
+
+
+\php{tests/Unit/RomanNumeralTest.php}{16-tdd/figures/08-test3}
+
+\pagebreak
+
+\textbf{Run your tests}. \textbf{Red}. And let's get it working:
+
+\php{app/RomanNumeral.php}{16-tdd/figures/09-forNumber}
+
+
+\textbf{Run your tests}. \textbf{Green.}
+\\
+
+Now you've maybe noticed a pattern? We're just repeating \texttt{I} the number of times stored in \texttt{\$number}. And PHP has a way to repeat a string a specified number of times, so let's refactor:
+
+\php{app/RomanNumeral.php}{16-tdd/figures/10-forNumber}
+
+\textbf{Run your tests}. Still \textbf{green}!
+\\
+
+We've simplified our code massively and all our tests are still passing, so we're guaranteed it still does everything it did before (and \textit{only} what it did before).
+\\
+
+It's important that we didn't write it like this initially. We should only write things that make a test pass and we shouldn't try to refactor too soon. It was only when a pattern became clear after the third test that it made sense to write it this way. If you skip stages you're also \textit{skipping tests} which means your code might not be as tested as you think.
+\\
+
+
+Next test:
+
+\php{tests/Unit/RomanNumeralTest.php}{16-tdd/figures/11-test4}
+
+
+\textbf{Run your tests}. \textbf{Red} again.
+\\
+
+\texttt{IV} doesn't fit the previous pattern, so let's give it its own \texttt{if} statement:
+
+
+\php{app/RomanNumeral.php}{16-tdd/figures/12-forNumber}
+
+
+Next test:
+
+\php{tests/Unit/RomanNumeralTest.php}{16-tdd/figures/13-test5}
+
+\textbf{Run your tests}. \textbf{Red} again. Let's fix it:
+
+
+\php{app/RomanNumeral.php}{16-tdd/figures/14-forNumber}
+
+
+\textbf{Run your tests}. Back to \textbf{green}.
+\\
+
+Two \texttt{if} statements is starting to feel a bit much, but there isn't a clear pattern. In situations like this you could use a \texttt{switch} statement. \textit{Or} you could use a \textbf{dictionary}:
+
+\php{app/RomanNumeral.php}{16-tdd/figures/15-forNumber}
+
+\textbf{Run your tests}. \textbf{Green}!
+\\
+
+A dictionary is just a key-value pair that maps one value to another, e.g. \texttt{IV} to \texttt{4}. If you ever find yourself writing a lot of \texttt{if} statements on the same value or needing to use a \texttt{switch} statement then you can often use a dictionary instead.
+\\
+
+Again, we've refactored our code and tested it. We can be sure that it does everything that it did before we made the changes.
+\\
+
+Let's keep going:
+
+\php{tests/Unit/RomanNumeralTest.php}{16-tdd/figures/16-test6}
+
+
+\textbf{Test}. \textbf{Red}.
+\\
+
+Add it to the top of the dictionary (hopefully a pattern might begin to appear):
+
+\php{app/RomanNumeral.php}{16-tdd/figures/17-forNumber}
+
+
+\textbf{Test}. \textbf{Green}. Can't see a pattern, so move on.
+
+\php{tests/Unit/RomanNumeralTest.php}{16-tdd/figures/18-test7}
+
+
+\textbf{Test}. \textbf{Red}.
+
+\pagebreak
+
+Add it to the top of the dictionary:
+
+\php{app/RomanNumeral.php}{16-tdd/figures/19-forNumber}
+
+
+\textbf{Test}. \textbf{Green}. An inkling of a pattern now, but let's make sure.
+
+\php{tests/Unit/RomanNumeralTest.php}{16-tdd/figures/20-test8}
+
+
+\textbf{Test}. \textbf{Red}.
+\\
+
+Add it to the top of the dictionary:
+
+\php{app/RomanNumeral.php}{16-tdd/figures/21-forNumber}
+
+
+\textbf{Test}. \textbf{Green}.
+\\
+
+OK, there's definitely something going on here. The last three values are just \texttt{V} with \texttt{I} repeated. So \texttt{6} is just \texttt{V + I}, \texttt{7} is \texttt{V + II}, \&tc. And we've already got some code for adding the \texttt{I} bit. So let's refactor:
+
+\php{app/RomanNumeral.php}{16-tdd/figures/22-forNumber}
+
+
+\textbf{Run your tests}. \textbf{Green} times are here again.
+\\
+
+We spotted a pattern, refactored, and then checked that everything still works by running our tests. If you got a red during this process then you know that you've not quite solved the problem, so you can either keep trying to refactor or just go back to what you had before.
+\\
+
+Let's move on:
+
+\php{tests/Unit/RomanNumeralTest.php}{16-tdd/figures/23-test9}
+
+
+\textbf{Run your tests}. \textbf{Red} as a red thing.
+
+\pagebreak
+
+This one doesn't fit the pattern we've previously spotted, so add it to the dictionary:
+
+\php{app/RomanNumeral.php}{16-tdd/figures/24-forNumber}
+
+
+\textbf{Run your tests}. \textbf{Green}.
+\\
+
+Now for ten:
+
+\php{tests/Unit/RomanNumeralTest.php}{16-tdd/figures/25-test10}
+
+
+\textbf{Run your tests}. \textbf{Red} as\textellipsis{} a different, but equally red, thing.
+\\
+
+Again, this doesn't fit any pattern we've previously spotted, so add it to the dictionary:
+
+\php{app/RomanNumeral.php}{16-tdd/figures/26-forNumber}
+
+\textbf{Run your tests}. Purest \textbf{green}.
+\\
+
+Guess what? It's eleven o'clock:\footnote{Actual time may vary}
+
+\php{tests/Unit/RomanNumeralTest.php}{16-tdd/figures/27-test11}
+
+\textbf{Run your tests}. Our first \textit{free} \textbf{green}! These are always nice – it suggests you're on the right track.
+\\
+
+And if you wrote tests for \texttt{12} (\texttt{"XII"}) through to \texttt{19} (\texttt{"XIX"}) you'd find they would all be green too. Go for it – I can wait.
+\\
+
+But our luck runs out at 20:
+
+\php{tests/Unit/RomanNumeralTest.php}{16-tdd/figures/28-test20}
+
+
+\textbf{Run your tests}. \textbf{Red} as a doornail.\footnote{A red doornail}
+\\
+
+For now, let's just add it to the dictionary:
+
+\php{app/RomanNumeral.php}{16-tdd/figures/29-forNumber}
+
+\textbf{Run your tests}. \textbf{Green}zo.
+\\
+
+And let's try 30:
+
+\php{tests/Unit/RomanNumeralTest.php}{16-tdd/figures/30-test30}
+
+
+\textbf{Run your tests}. \textbf{Red} as a radish.
+\\
+
+Again, let's just add it to the dictionary:
+
+\php{app/RomanNumeral.php}{16-tdd/figures/31-forNumber}
+
+
+\textbf{Run your tests}. \textbf{Green}. But, again, we can see a pattern here: we've just got an extra \texttt{X} for every additional \texttt{10}. Let's refactor:
+
+\php{app/RomanNumeral.php}{16-tdd/figures/32-forNumber}
+
+
+\textbf{Run your tests}. Still \textbf{green}! Nice.
+
+\pagebreak
+
+And we can refactor again. Our previous bit of code got us repeated \texttt{X}s, which suggests the repeated \texttt{I}s can be dealt with by adding it to our dictionary:
+
+\php{app/RomanNumeral.php}{16-tdd/figures/33-forNumber}
+
+
+\textbf{Run your tests}. Stiller \textbf{green}!\footnote{Green steel?} A double refactoring. No special cases for \texttt{I} anymore.
+\\
+
+We're still not done, but the rest is pretty trivial as we've worked out the main pattern. Try adding tests for the following and getting it to work:
+\\
+
+\begin{small}
+    \begin{tabularx}{\textwidth}{l X}
+        \texttt{40} & \texttt{"XL"} \\
+        \texttt{50} & \texttt{"L"} \\
+        \texttt{90} & \texttt{"XC"} \\
+        \texttt{100} & \texttt{"C"} \\
+        \texttt{400} & \texttt{"CD"} \\
+        \texttt{500} & \texttt{"D"} \\
+        \texttt{900} & \texttt{"CM"} \\
+        \texttt{1000} & \texttt{"M"} \\
+        \texttt{3994} & \texttt{"MMMCMXCIV"} \\
+    \end{tabularx}
+\end{small}
+
+\par\bigskip
+
+Now pick a number between 1,000 and 10,000 and check if it works for that too!
+\\
+
+You can see the final versions of \href{https://github.com/develop-me/bootcamp--laravel-project/blob/develop/app/RomanNumeral.php}{\texttt{RomanNumeral}} and \href{https://github.com/develop-me/bootcamp--laravel-project/blob/develop/tests/Unit/RomanNumeralTest.php}{\texttt{RomanNumeralTest}} on GitHub.
+
+
+\subsection{Debrief}
+
+We've written quite a complicated bit of code without ever having to tackle the \textit{whole} problem in one go. If I just asked you to write a bit of code that can take \textit{any} positive integer and convert it into a Roman numeral you probably wouldn't know where to start (I certainly wouldn't).
+\\
+
+But with TDD we break down the problem into tiny chunks that are much easier to work out:
+
+\begin{itemize}
+    \item \textbf{Red}: we write a failing test, which forces us to think about what we actually want the code to do in a \textit{specific} instance.
+    \item \textbf{Green}: write some code that gets the test work – but no more than that. We're not trying to solve the whole problem in one go.
+    \item \textbf{Refactor}: start spotting patterns in your code. Try to simplify the code using those patterns. If you still get a \textbf{green} then your idea has worked. But we're not having to spot the \textit{whole} pattern in one go, just a bit at a time, making small improvements as they occur to us.
+\end{itemize}
+
+We also now have code that is fully tested. We know that it works and we can feel completely free to refactor some more: if the tests still pass then it still does what we think it does. If, later on, we want the code to do something else, then we can add some more tests and get it working for those too. Again, if all the tests pass, we've not broken what it used to do. And if we later find bugs in our code, we can add tests for those too and, once we've fixed them, be sure that they never come back.
+\\
+
+Of course, we've only guaranteed that our code passes the (necessarily) finite set of tests that we've written. It's perfectly possible it might not work for \textit{all} possible scenarios. For example, what happens for \texttt{0}? But that brings up the questions what \textit{should} happen for \texttt{0}? We'll need another test if that's a value that might get passed in.
+\\
+
+This highlights the main issue with TDD: you have to write \textit{good} tests and they have to be \textit{representative} of how the code will be used. This is not a trivial task. As with most things in programming, it comes with practice. Lots of it.
+
+
+
+\section{Git Hooks}
+
+Now that we're test-driven, we should be careful to never commit any code to Git \textit{if} any of our tests are failing.
+\\
+
+We can use \textbf{Git Hooks} to guarantee that we can't commit failing code. Hooks are custom bits of code that run at specific points in the Git life-cycle.
+\\
+
+We're interested in the \texttt{pre-commit} hook. If this bit of code returns an \textbf{error code} (any number except \texttt{0}) then Git won't allow the commit to run.
+\\
+
+When all of your PHPUnit tests succeed you get back a \texttt{0} exit code, but if any fail you'll get back a non-zero exit code. That means all we need to put in our hook is code that runs PHPUnit.
+\\
+
+Hooks live in the \texttt{.git/hooks} directory inside your project. So we need to create a file called \texttt{.git/hooks/pre-commit} and then put the following inside:
+
+\code{.git/hooks/pre-commit}{bash}{16-tdd/figures/34-hook.sh}
+
+This is just the command that we've been running manually.
+\\
+
+We also need to give this file execution permissions, otherwise it can't be run:
+
+\begin{minted}{bash}
+    chmod +x .git/hooks/pre-commit
+\end{minted}
+
+Now, whenever you try to commit anything to Git the tests will run and if any of them fail the commit will fail. As long as you've used TDD, it's now not possible to commit broken code.
+
+% git bisect?
+
+\section{Additional Resources}
+
+\begin{itemize}[leftmargin=*]
+    \item \href{https://www.freecodecamp.org/news/test-driven-development-what-it-is-and-what-it-is-not-41fa6bca02a2/}{What is Test Driven Development?}
+    \item \href{https://www.codecademy.com/articles/tdd-red-green-refactor}{Red, Green, Refactor}
+    \item \href{https://www.sandimetz.com/99bottles}{99 Bottles of OOP}
+    \item \href{https://kentcdodds.com/blog/make-your-test-fail}{Make Your Test Fail}: a good example (in JS) of why it's important to get \textbf{red} before going for \textbf{green}
+    \item \href{https://git-scm.com/book/en/v2/Customizing-Git-Git-Hooks}{Git Hooks}
+\end{itemize}

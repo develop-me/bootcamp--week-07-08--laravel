@@ -1,0 +1,67 @@
+Laravel is a \textit{modern} object-oriented PHP framework designed for building database-driven websites and APIs. The ``modern'' bit is important, as many popular PHP frameworks have codebases that go back to the pre-2010 PHP days, when everything was horrible.
+\\
+
+Laravel was created by a chap called Taylor Otwell, who was previously a .NET developer. .NET had a lot of nice ideas, but at the time you had to pay a lot of money to use any of it. So he decided to create a PHP framework based on some of the better ideas.
+\\
+
+One of the core ideas behind Laravel is that it should be built on pre-existing libraries. Rather than having to write \textit{all} of the code from scratch, Laravel just joins together the best libraries and provides a wrapper for them so that everything is consistent. That means the more complicated bits of code (like file systems management or routing) are written by specialists in those areas.
+\\
+
+The other key idea behind Laravel is that it should make building websites and APIs as frictionless as possible. If there's a common thing that lots of sites need to do, then Laravel will have a quick and easy way to do it. This means that, once you get used to it, you can get a site up and running in a few minutes.
+
+\section{Key Features}
+
+Here are some of the key features of Laravel:
+
+\begin{itemize}
+    \item \textbf{Homestead}: a Vagrant configuration specifically designed for Laravel development
+    \item \textbf{Eloquent ORM}: an incredibly simple way to work with databases
+    \item \texttt{artisan}: a command line tool for doing all of the most common Laravel tasks
+    \item \textbf{Database migrations}: a quick and easy way to create and update database structures
+    \item \textbf{Scheduling} and \textbf{Job Queues}: easily setup tasks to run at a later point
+    \item Very good documentation: well written documentation is really important when using a framework
+    \item \href{https://laracasts.com}{Laracasts}: hundreds of hours of videos and an active community of developers
+\end{itemize}
+
+
+\begin{infobox}{Why Not Node?}
+    It's become very trendy to use Node for server-side code.
+    \\
+
+    However, there is no established framework (or combination of libraries) in the Node ecosystem that provide anything close to what Laravel offers. This means that two seemingly similar Node back-ends might be written completely differently. There are also certain essential bits of tooling, like database migrations, that are not currently well supported. In fact, Node is in a very similar sort of position to where PHP was pre-Laravel: lots of options, but none of them quite offering everything that you need. Give it a few more years and this will almost certainly change.
+    \\
+
+    Node is really great for doing stuff with web-sockets and streaming data (trying to use PHP for those is horrible). And if you enjoy functional programming then Node lets you write largely functional code (again not something PHP is good for). But if you want to quickly create a web app or API, you'll be ready to go much quicker using something like Laravel.
+\end{infobox}
+
+
+\section{Setup}
+
+Laravel provides an installer app that creates the app scaffolding for you. You'll need to install it using the following command:
+
+\begin{minted}{bash}
+    composer global require laravel/installer
+\end{minted}
+
+This adds the Laravel installer package to your computer so that you can run it from any directory. You only need to set this up on your computer once.
+
+
+\section{Creating a Project}
+
+To create a new Laravel project run:
+
+\begin{minted}{bash}
+    laravel new project-name
+\end{minted}
+
+Obviously you should call your project something more descriptive (and make sure it's a directory-friendly name – no spaces, all lowercase).
+
+
+\section{Additional Resources}
+
+\begin{itemize}[leftmargin=*]
+    \item \href{https://laravel.com/docs/master/installation#installation}{Laravel Installation}
+    \item \href{https://laracasts.com}{Laracasts}
+    \item \href{https://stitcher.io/blog/php-in-2019}{PHP in 2019}
+    \item \href{https://threadreaderapp.com/thread/1272822437181378561.html}{Tactics to write cleaner code in Laravel}
+\end{itemize}
