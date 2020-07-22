@@ -1,0 +1,3 @@
+[submodule "resources/finished-blog"]
+	path = resources/finished-blog
+	url = git@github.com:develop-me/bootcamp--laravel-project.git
