@@ -67,6 +67,8 @@ We've limited testing just to \texttt{RomanNumeral} so we don't get any noise.
 
 You should see that we get an error saying \texttt{Call to undefined method \\ App\textbackslash{}RomanNumeral::forNumber()}. This is a \textbf{red}, but not the kind that we want.
 
+\pagebreak
+
 \begin{infobox}{Failures vs Errors}
     Both failures \textit{and} errors result in \textbf{red} - code that's not doing what we want it to. However, we shouldn't start aiming for green until we have a \textbf{red} \textit{failure}. So sort any errors first (syntax errors, missing files).
 \end{infobox}
@@ -109,6 +111,8 @@ Let's get back to \textbf{red}:
 
 
 \php{tests/Unit/RomanNumeralTest.php}{16-tdd/figures/08-test3}
+
+\pagebreak
 
 \textbf{Run your tests}. \textbf{Red}. And let's get it working:
 
@@ -170,8 +174,7 @@ A dictionary is just a key-value pair that maps one value to another, e.g. \text
 \\
 
 Again, we've refactored our code and tested it. We can be sure that it does everything that it did before we made the changes.
-
-\pagebreak
+\\
 
 Let's keep going:
 
@@ -192,13 +195,13 @@ Add it to the top of the dictionary (hopefully a pattern might begin to appear):
 
 
 \textbf{Test}. \textbf{Red}.
-\\
+
+\pagebreak
 
 Add it to the top of the dictionary:
 
 \php{app/RomanNumeral.php}{16-tdd/figures/19-forNumber}
 
-\pagebreak
 
 \textbf{Test}. \textbf{Green}. An inkling of a pattern now, but let's make sure.
 
@@ -233,7 +236,8 @@ Let's move on:
 
 
 \textbf{Run your tests}. \textbf{Red} as a red thing.
-\\
+
+\pagebreak
 
 This one doesn't fit the pattern we've previously spotted, so add it to the dictionary:
 
@@ -241,8 +245,7 @@ This one doesn't fit the pattern we've previously spotted, so add it to the dict
 
 
 \textbf{Run your tests}. \textbf{Green}.
-
-\pagebreak
+\\
 
 Now for ten:
 
@@ -267,8 +270,7 @@ Guess what? It's eleven o'clock:\footnote{Actual time may vary}
 \\
 
 And if you wrote tests for \texttt{12} (\texttt{"XII"}) through to \texttt{19} (\texttt{"XIX"}) you'd find they would all be green too. Go for it – I can wait.
-
-\pagebreak
+\\
 
 But our luck runs out at 20:
 
@@ -304,7 +306,8 @@ Again, let's just add it to the dictionary:
 
 
 \textbf{Run your tests}. Still \textbf{green}! Nice.
-\\
+
+\pagebreak
 
 And we can refactor again. Our previous bit of code got us repeated \texttt{X}s, which suggests the repeated \texttt{I}s can be dealt with by adding it to our dictionary:
 
