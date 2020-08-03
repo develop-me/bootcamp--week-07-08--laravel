@@ -32,9 +32,9 @@ Before you begin you'll need to \href{https://portal.aws.amazon.com/gp/aws/devel
 To launch your server just follow these simple and easy to remember steps:
 
 \begin{itemize}
-    \item Login to AWS, go to ``EC2'', and make sure you're on the ``EU London'' region (in the top right).
+    \item Login to AWS, go to ``EC2'', and make sure you're on the ``Europe (London)'' region (in the top right).
     \item Launch Instance
-    \item Choose: ``Ubuntu Server 18.04 LTS (HVM), SSD Volume Type''
+    \item Choose: ``Ubuntu Server \textbf{20.04 LTS} (HVM), SSD Volume Type'' (you may need to search for ``Ubuntu'' to find this)
     \item Choose: ``T2.micro''
     \item Go to ``5. Add Tags'' in the tabs and add the tag:
         \begin{itemize}
@@ -188,11 +188,18 @@ Once this is installed, visit your IPv4 address in the browser. For example:
 You should see a ``Welcome to nginx!'' message.
 \\
 
-Now, let's install PHP,  MySQL and Git:
+Let's install MySQL, Git, and a few other important tools:
 
 \begin{minted}{bash}
-    sudo apt-get install -y php-fpm mysql-server php-mysql php-mbstring php-dom zip git
+    sudo apt-get install -y mysql-server git zip acl
 \end{minted}
+
+And PHP:
+
+\begin{minted}{bash}
+    sudo apt-get install -y php-fpm php-mysql php-mbstring php-dom
+\end{minted}
+
 
 And finally install Composer:
 
@@ -205,8 +212,6 @@ And finally install Composer:
     sudo mv composer.phar /usr/local/bin/composer
     # setup a shortcut so that you can use it in any directory
     sudo ln -s /usr/local/bin/composer /usr/bin/composer
-    # own the composer directory
-    sudo chown -R ubuntu ~/.composer
 \end{minted}
 
 You can check Composer has installed properly by running \texttt{composer}.
@@ -287,7 +292,7 @@ Substitute the email for the best email to contact you on. This helps your succe
 You should now be able to see this key-pair in the directory:
 
 \begin{minted}{bash}
-    cd ~/.ssh && ls
+    ls ~/.ssh
 \end{minted}
 
 Start \texttt{ssh-agent}:
@@ -328,6 +333,9 @@ On your repository, go to clone or download and, as usual, copy the code (ensure
     composer install
 \end{minted}
 
+\begin{infobox}{Running Composer on AWS}
+    You need to make sure you have an up-to-date \texttt{composer.lock} file when you run \texttt{composer install}. The free-tier AWS servers have very limited RAM and if Composer needs to work out all of the dependencies on the server it will easily eat through what little there is. So make sure you've always got the latest version of \texttt{composer.lock} committed to your Git repo before running \texttt{composer install}.
+\end{infobox}
 
 
 \subsection{Setting Up Laravel}
@@ -364,7 +372,7 @@ We'll also need to update the \texttt{location} entries:
     # run php with php-fpm
     location ~ \.php$ {
         include snippets/fastcgi-php.conf;
-        fastcgi_pass unix:/var/run/php/php7.2-fpm.sock;
+        fastcgi_pass unix:/var/run/php/php7.4-fpm.sock;
     }
 \end{minted}
 
@@ -501,7 +509,7 @@ Then restart Nginx:
 Next, we install \texttt{certbot} on our AWS EC2 instance, which we can use to have SSL certificates issued for us, with:
 
 \begin{minted}{bash}
-    sudo apt-get install -y certbot python-certbot-nginx
+    sudo apt-get install -y certbot python3-certbot-nginx
 \end{minted}
 
 Then we issue a certificate:
