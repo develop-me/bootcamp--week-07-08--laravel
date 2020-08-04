@@ -21,6 +21,6 @@ Read the [Retrieving Models](https://laravel.com/docs/master/eloquent#retrieving
 - Get back the owners in alphabetical order of their last names
 - Get back just the owners who have a telephone number starting with `0117`
 
-Read the [Database: Seeding](http://laravel.com/docs/master/seeding) documentation.
+Read the [Database: Seeding](http://laravel.com/docs/master/seeding), [Model Factories](https://laravel.com/docs/master/database-testing#writing-factories) and [Faker](https://github.com/fzaninotto/Faker) documentation.
 
 - Add 100 new owners to the DB using seeding, this is a useful ability for later when you will be refreshing your database and populating from scratch.
