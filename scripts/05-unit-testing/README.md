@@ -4,6 +4,7 @@
 - Easier to see what's going on than `dump`ing all over the place
 - Automated testing is useful as it saves manual testing
 - Laravel makes it really easy
+- Helps us avoid regressions
 
 
 ### Running Tests
