@@ -8,6 +8,8 @@
 
 1) Create a new static method on your Owner model (in `app/Owner.php`) called `haveWeBananas()`:
 
+    **Hint**: See the Read-Only Chapter 8 of Week 6 for more on `static` methods and properties
+
     ```php
     public static function haveWeBananas($number){
         if ($number == 0){
