@@ -3,7 +3,7 @@
 ## Creating a VM
 
 1. Create a new directory called `mysql`
-1. Get setup with a Vagrant box with the following `Vagrantfile`:
+1. Get setup with a Vagrant box with the following `Vagrantfile` inside your new directory:
 
 ```ruby
 Vagrant.configure("2") do |config|
