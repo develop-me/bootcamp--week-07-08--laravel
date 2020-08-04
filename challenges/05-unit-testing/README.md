@@ -8,13 +8,16 @@
 
 1) Create a new static method on your Owner model (in `app/Owner.php`) called `haveWeBananas()`:
 
+    **Hint**: See the Read-Only Chapter 8 of Week 6 for more on `static` methods and properties
+
     ```php
-    public static function haveWeBananas($number){
-        if ($number == 0){
-            return 'No we have no bananas';
-        }else{
-            return 'Yes we have '.$number.' bananas';
+    public static function haveWeBananas($number)
+    {
+        if ($number === 0) {
+            return "No we have no bananas";
         }
+
+        return "Yes we have {$number} bananas";
     }
     ```
 
@@ -25,17 +28,17 @@
 1) Now modify your test to check if the output from `haveWeBananas()` function is correct for 0 bananas and 2 bananas:
 
     ```php
-    $this->assertSame(Animal::haveWeBananas(0), 'No we have no bananas');
+    $this->assertSame(Animal::haveWeBananas(0), "No we have no bananas");
 
-    $this->assertSame(Animal::haveWeBananas(2), 'Yes we have 2 bananas');
+    $this->assertSame(Animal::haveWeBananas(2), "Yes we have 2 bananas");
     ```
 
 1) What about 1 banana? or -12 bananas?
 
     ```php
-    $this->assertSame(Animal::haveWeBananas(1), 'Yes we have 1 banana');
+    $this->assertSame(Animal::haveWeBananas(1), "Yes we have 1 banana");
 
-    $this->assertSame(Animal::haveWeBananas(-12), 'Yes we have -12 bananas');
+    $this->assertSame(Animal::haveWeBananas(-12), "Yes we have -12 bananas");
     ```
 
 ### Testing Model methods
