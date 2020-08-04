@@ -19,6 +19,7 @@ We need to have some way of keeping track of all of the owners of the animals. S
     - `first_name`: the first name of the owner
     - `last_name`: the last name of the owner
     - `telephone`: the phone number of the owner (`string` of length 11)
+    - `email`: the email address of the owner
 
     You'll need to pick sensible types (and lengths) for the fields
 

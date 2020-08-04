@@ -13,14 +13,15 @@
 
 - Create instance
     - Go to EC2
-    - **EU London Region**
+    - **Europe (London) Region**
     - Launch Instance
-    - Pick Ubuntu 18.04
+    - Pick Ubuntu **20.04**
     - Pick T2.micro
     - Go to "5. Add Tags"
         - Key: Name
         - Value: my-server-name
     - Go to "6. Configure Security Group"
+        - **Keep SSH**
         - Add HTTPS
         - Add HTTP
     - Launch
@@ -59,13 +60,13 @@
     - `sudo apt-get update -y`
     - `sudo apt-get install -y nginx`
     - Go to site, e.g. `http://ec2-3-8-125-57.eu-west-2.compute.amazonaws.com`
-    - `sudo apt-get install -y php-fpm mysql-server php-mysql php-mbstring php-dom zip git`
+    - `sudo apt-get install -y mysql-server zip git acl`
+    - `sudo apt-get install -y php-fpm php-mysql php-mbstring php-dom`
     - Composer
         - `cd ~``
         - `sudo curl -sS https://getcomposer.org/installer | sudo php`
         - `sudo mv composer.phar /usr/local/bin/composer`
         - `sudo ln -s /usr/local/bin/composer /usr/bin/composer`
-        - `sudo chown -R ubuntu ~/.composer`
         - Run `composer` to check
 
 - Ownership
@@ -107,7 +108,7 @@
             # run php with php-fpm
             location ~ \.php$ {
                 include snippets/fastcgi-php.conf;
-                fastcgi_pass unix:/var/run/php/php7.2-fpm.sock;
+                fastcgi_pass unix:/var/run/php/php7.4-fpm.sock;
             }
         ```
 
@@ -151,7 +152,7 @@
     - Need a proper domain
     - `sudo nano /etc/nginx/sites-available/default`
     - `server_name <YOUR.DOMAIN>;`
-    - `sudo apt-get install certbot python-certbot-nginx`
+    - `sudo apt-get install certbot python3-certbot-nginx`
     - `sudo certbot --nginx`
     - Demonstrate site with HTTPS
 

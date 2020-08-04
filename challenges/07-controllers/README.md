@@ -13,5 +13,8 @@
 
 ## Tricksy
 
+- Add unit tests for your Routes, ensure a `200` response from Routes that should exist, and `404` from those that shouldn't. Consider coverage for `/`, `/owners`, `/owners/1` and `/owners/999999`
+- Add unit tests for your views to ensure the correct Blade template is invoked with e.g. `assertViewIs('welcome');` to check the `welcome.blade.php` template is used [(docs here)](https://laravel.com/docs/master/http-tests#assert-view-is)
+- Add **Feature** tests for your Controller and Blade templates to go from a `get()` on a Route all the way to seeing certain content in the response from the Blade template with `assertSeeText()` [(docs here)](https://laravel.com/docs/master/http-tests#assert-see-text)
 - Update your site to paginate the owners so that it only display 5 per page
     - [Pagination](http://laravel.com/docs/master/pagination#paginating-eloquent-results)

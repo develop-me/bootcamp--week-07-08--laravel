@@ -26,3 +26,5 @@ Remember, you're building an app for a veterinary clinic.
         "Blah blah blah"
     }}@endsection
     ```
+- Add unit tests for your `/` homepage Route, ensure a `200` response from Routes that should exist, and `404` from a route (URL) that shouldn't exist [(see docs here)](https://laravel.com/docs/master/http-tests#introduction). You'll need to change `use PHPUnit\Framework\TestCase;` to `use Tests\TestCase;`.
+- Add unit tests for your views to ensure the correct Blade template is invokes with e.g. `assertViewIs('welcome');` [(see docs here)](https://laravel.com/docs/master/http-tests#assert-view-is)

@@ -23,4 +23,4 @@ Read the [Retrieving Models](https://laravel.com/docs/master/eloquent#retrieving
 
 Read the [Database: Seeding](http://laravel.com/docs/master/seeding) documentation.
 
-- Add 100 new owners to the DB using seeding
+- Add 100 new owners to the DB using seeding, this is a useful ability for later when you will be refreshing your database and populating from scratch.
