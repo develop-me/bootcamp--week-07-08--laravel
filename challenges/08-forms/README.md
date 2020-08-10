@@ -11,10 +11,10 @@
 
 - Create an Edit owner form at an appropriate URL
 
-    - **You should be able to reuse your existing owner form**
-    - You'll probably want to use the ternary operator in your template so that if there is no `old()` input the form displays the values from the appropriate `owner`
+  - **You should be able to reuse your existing owner form**
+  - You'll probably want to use the ternary operator in your template so that if there is no `old()` input the form displays the values from the appropriate `owner`
 
 - Add a search form to your [navigation bar](https://getbootstrap.com/docs/4.4/components/navbar/#forms). It should submit the query as a `GET` request. It should then search all of your owners to match against first or last name. You'll want to use a [`like` clause](https://laravel.com/docs/master/queries#where-clauses). It should display the matching users in a list.
-    - **You should already have a template for listing owners that you can reuse**
+  - **You should already have a template for listing owners that you can reuse**
 
 - Add some *client*-side validation logic to your forms
