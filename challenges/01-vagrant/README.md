@@ -11,6 +11,7 @@ Vagrant.configure("2") do |config|
     config.vm.synced_folder ".", "/home/vagrant/code"
 end
 ```
+
 1. Finally turn on/create your Vagrant machine with `vagrant up`
 
 ## Using the VM
