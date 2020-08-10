@@ -82,15 +82,17 @@
 
 ## Planning and creating tables
 
-1. Plan out a relational database for our vets practice on paper
+1. Plan out a relational database for our vets practice on paper (read the start of the One-to-Many Relationships chapter of the notes for more about relational databases).
 
     You'll want to be able to store information on *animals* and *owners*, this should be done with two tables.
 
-    Think about what data the vets might want to store, the field names and suitable data types.
+    Consider 1 owner who has 3 animals, how would this relationship be represented.
+
+    Think about what other data the vets might want to store, the field names and suitable data types.
 
 1. Show it to the instructor or Teaching Assistant.
 
-1. Write your `CREATE TABLE` queries (best done in a code editor) and run them on the MySQL prompt.
+1. Write your `CREATE TABLE` queries (best done in a code editor) and run them on the MySQL prompt to create your tables.
 
 ### Tricksy
 
@@ -129,7 +131,6 @@
 ---
 
 ## Foreign Keys
-
 
 1. Setup `FOREIGN KEY`s on your database, either by recreating the tables:
 
