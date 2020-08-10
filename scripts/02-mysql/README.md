@@ -1,9 +1,9 @@
-## Databases
+# Databases
 
 - Intro to databases
 - Accessing
-    - SSH into your virtual VM:
-        `vagrant ssh`
+  - SSH into your virtual VM:
+  `vagrant ssh`
     - access MySQL with the root user account
         `mysql -u root -p`
     - Password is `root`
@@ -19,9 +19,11 @@
 - ```sql
     USE `homestead`;
     ```
+
 - ```sql
     SHOW TABLES;
     ```
+
 - ```sql
     CREATE TABLE `graduates` (
     `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -31,6 +33,7 @@
     PRIMARY KEY (`id`)
     ) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=1;
     ```
+
 - **Always use snake case for table and column names**
 - ```sql
     INSERT INTO `graduates` (`id`, `full_name`, `location`, `age`) VALUES
