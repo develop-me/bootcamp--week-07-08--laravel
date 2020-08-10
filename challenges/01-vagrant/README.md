@@ -16,6 +16,6 @@ end
 ## Using the VM
 
 1. Create a file (use your imagination) in your `mysql` directory
-1. Use `vagrant ssh` to access the VM
-1. Navigate to `/home/vagrant/code`
-1. Check that the directory contains the right files
+1. Use `vagrant ssh` to access the VM (on Windows you may need to use password `vagrant` at the prompt)
+1. Navigate to `/home/vagrant/code` (with `cd`)
+1. Check that the directory contains the right files with `ls`
