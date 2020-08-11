@@ -14,6 +14,8 @@ end
 
 1. Finally turn on/create your Vagrant machine with `vagrant up`
 
+Note: after creating a Vagrant box (after doing `vagrant up`) you don’t want to rename the folder your Vagrantfile is in OR move/rename any of the parent folders (e.g. week-7 to week7).
+
 ## Using the VM
 
 1. Create a file (use your imagination) in your `mysql` directory
