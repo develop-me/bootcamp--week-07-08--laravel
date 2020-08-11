@@ -36,11 +36,9 @@ Next, we'll add some address fields to the `owners` table. We'll do it as a sepa
 1) Add the following columns:
 
     - `address_1`: the first line of the owner's address
-    - `address_2`: the second line of the owner's address (should be optional)
+    - `address_2`: the second line of the owner's address (should be optional, [have a look at the `nullable()` column modifier in the documentation](https://laravel.com/docs/master/migrations#column-modifiers))
     - `town`: the town/city of the owner's address
     - `postcode`: the postcode of the owner's address
-
-    Make sure they're all `nullable()`
 
 1) Make sure you write an appropriate `down()` method
 1) Run your migration with `artisan migrate`
