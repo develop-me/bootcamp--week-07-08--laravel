@@ -1,7 +1,7 @@
 # Challenges
 
 - Use `artisan` tinker to create five `Owner`s
-    - Phone numbers should just be entered as a series of 11 digits (e.g. 01174927728)
+    - Phone numbers should just be entered as a continuous series of digits with no spaces (e.g. 01174927728)
 - Use MySQL to view your `owners` table
 - Add a `fullName` method to the `Owner` class which displays the full name of the owner
 - Add a `fullAddress` method to the `Owner` class which displays the full address of the owner
