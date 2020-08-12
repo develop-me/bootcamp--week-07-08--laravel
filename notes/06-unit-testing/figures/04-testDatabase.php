@@ -9,7 +9,7 @@ public function testDatabase()
     ]);
 
     // get the first article back from the database
-    $articleFromDB = Article::all()->first();
+    $articleFromDB = Article::first();
 
     // check the titles match
     $this->assertSame("Hello", $articleFromDB->title);

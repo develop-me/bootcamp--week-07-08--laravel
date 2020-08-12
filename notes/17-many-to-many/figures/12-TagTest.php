@@ -1,7 +1,7 @@
 <?php
 
 // get the first tag from the database
-$tagFromDB = Tag::all()->first();
+$tagFromDB = Tag::first();
 
 // check we get a tag
 $this->assertInstanceOf(Tag::class, $tagFromDB);
