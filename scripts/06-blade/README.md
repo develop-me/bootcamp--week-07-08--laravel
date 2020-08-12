@@ -79,7 +79,7 @@
 
 ## Partials
 
-- Pull out `<nav>` into partial
+- Pull out `<nav>` into partial in `_parts/nav.blade.php` and include back in with `@include("_parts/nav")`
 
 
 ## Loops & Moustaches
