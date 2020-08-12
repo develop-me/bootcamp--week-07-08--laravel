@@ -130,7 +130,7 @@ Sometimes you'll need to update database tables that already exist.
 First, you'll need to create a new migration. Say we wanted to add users to our \texttt{articles} table to keep track of who wrote what article. We'd use:
 
 \begin{minted}{bash}
-    aristan make:migration add_users_to_articles_table --table=articles
+    artisan make:migration add_users_to_articles_table --table=articles
 \end{minted}
 
 It's important to give your migration a descriptive name (using snake-case). Notice that you can use the \texttt{--table} option to specify a table: this will automatically generate much of the migration code for us.
