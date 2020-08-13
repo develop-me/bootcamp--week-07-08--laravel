@@ -63,7 +63,7 @@ First update the route to use a method instead of putting all the code in the ro
 
 Next, add the \texttt{show} method to the \texttt{Articles} controller:
 
-\php{routes/web.php}{09-controllers/figures/06-show}
+\php{app/Http/Controllers/Articles.php}{09-controllers/figures/06-show}
 
 The value from the URL parameter (the \texttt{\{article\}} bit in the route), gets passed in as the first argument to the method. So we can use this to find the relevant article and then pass it in.
 \\
