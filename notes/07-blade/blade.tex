@@ -72,9 +72,9 @@ Sometimes it can be useful to split up your templates further. For example, as o
 
 \pagebreak
 
-Let's create a file \texttt{resources/views/_partials/nav.blade.php} and move our navigation markup into it:
+Let's create a file \texttt{resources/views/\_partials/nav.blade.php} and move our navigation markup into it:
 
-\code{resources/views/_partials/nav.blade.php}{html}{07-blade/figures/05-nav.blade.php}
+\code{resources/views/\_partials/nav.blade.php}{html}{07-blade/figures/05-nav.blade.php}
 
 Now, in \texttt{app.blade.php} we can use this file:
 
@@ -119,9 +119,9 @@ We use the \texttt{@foreach} directive to loop over all of our articles. Each on
 Let's put the code for a single list item into its own partial.
 \\
 
-In \texttt{resources/views/_partials/articles/list-item.blade.php}:
+In \texttt{resources/views/\_partials/articles/list-item.blade.php}:
 
-\code{resources/views/_partials/articles/list-item.blade.php}{html}{07-blade/figures/07-list-item.blade.php}
+\code{resources/views/\_partials/articles/list-item.blade.php}{html}{07-blade/figures/07-list-item.blade.php}
 
 Now we can include this from \texttt{welcome.blade.php} and pass in the \texttt{\$article}:
 
