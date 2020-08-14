@@ -89,6 +89,25 @@ Once Vagrant has finished loading:
     \end{minted}
 \end{infobox}
 
+\section{Laravel, Homestead and Git}
+
+Laravel comes with a \texttt{.gitignore} file that ignores some of the key files for Laravel and Homestead like \texttt{/vendor}, \texttt{.env} and \texttt{Homestead.yaml}.
+\\
+
+These files contain sensitive data (e.g. database connection details), are unique to each environment (e.g. IP addresses and domain names) or are Composer packages that don't need to be version managed.
+\\
+
+However:
+
+\begin{infobox}{Don't track your \texttt{.vagrant} folder}
+    If you're using a Vagrant Homestead box locally (you almost certainly are) than a key entry is missing from your \texttt{.gitignore} file; the \texttt{.vagrant} directory.
+    \\
+    
+    This can cause problems as this folder contains files that should be unique for each Vagrant box and would cause issues if setting the project up again on your machine or for someone else using your repository to clone the Laravel project.
+    \\
+
+    Add \texttt{.vagrant} to the \texttt{.gitignore} file.
+\end{infobox}
 
 \section{Additional Resources}
 
