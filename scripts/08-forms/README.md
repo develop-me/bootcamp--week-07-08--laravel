@@ -116,7 +116,7 @@
 
 
 ## Errors
-- output error message:
+- output error message JUST AFTER field (`<input>` or `<textarea>`):
 
     ```php
     @error('title')
