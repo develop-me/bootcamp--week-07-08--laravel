@@ -8,6 +8,7 @@ Over the course of the next two weeks were going to be building an app to help u
 1) Setup Homestead
 1) Run `vagrant up`
 1) Verify your Homestead is working by visiting [homestead.test](http://homestead.test) or whatever domain you set above [192.168.10.10](http://192.168.10.10) on Windows
+1) add `.vagrant` to your `.gitignore` file to ensure this folder isn't tracked if you use Git on the project
 
 ## Challenges
 
