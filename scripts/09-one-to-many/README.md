@@ -60,7 +60,7 @@
 - Add method:
 
     ```php
-    use App\Comment;
+    use App\Models\Comment;
     ```
 
     ```php

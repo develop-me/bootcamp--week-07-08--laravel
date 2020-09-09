@@ -1,3 +1,3 @@
 <?php
 
-use App\Tag;
+use App\Models\Tag;

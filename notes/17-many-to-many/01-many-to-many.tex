@@ -97,15 +97,15 @@ As a general rule, if you're creating multiple tables, you should always drop th
 
 First, we need to tell the \texttt{Tag} model not to worry about setting the timestamp columns, otherwise we'll get a MySQL error when we try to add a tag. We do this by setting the \texttt{public} property \texttt{timestamps} to \texttt{false}:
 
-\php{app/Tag.php}{17-many-to-many/figures/03-timestamps}
+\php{app/Models/Tag.php}{17-many-to-many/figures/03-timestamps}
 
 Next we should let Eloquent know about the relationship between articles and tags. In the \texttt{Tag} model add an \texttt{articles} method and use the \texttt{belongsToMany()} relationship method:
 
-\php{app/Tag.php}{17-many-to-many/figures/04-tag-relationship}
+\php{app/Models/Tag.php}{17-many-to-many/figures/04-tag-relationship}
 
 We'll also need to tell the \texttt{Article} model about tags. Again we'll use a plural name for the method. And many-to-many relationships are symmetrical, so we use the \textit{same} relationship method:
 
-\php{app/Article.php}{17-many-to-many/figures/05-article-relationship}
+\php{app/Models/Article.php}{17-many-to-many/figures/05-article-relationship}
 
 
 \section{TDD}
@@ -136,12 +136,12 @@ To keep stuff really simple, let's first write a method that takes a \textit{sin
 
 And get it \textbf{red}:
 
-\php{app/Tag.php}{17-many-to-many/figures/08-fromString}
+\php{app/Models/Tag.php}{17-many-to-many/figures/08-fromString}
 
 
 \textbf{Run your tests}. \textbf{Red}. Let's get it \textbf{green}, but in the most minimal way possible:
 
-\php{app/Tag.php}{17-many-to-many/figures/09-fromString}
+\php{app/Models/Tag.php}{17-many-to-many/figures/09-fromString}
 
 \textbf{Run your tests}. \textbf{Green}. Obviously it needs to work for \textit{any} string, so let's add another test:
 
@@ -149,7 +149,7 @@ And get it \textbf{red}:
 
 \textbf{Run your tests}. Unsurprisingly it's \textbf{red}. Let's get it \textbf{green} again:
 
-\php{app/Tag.php}{17-many-to-many/figures/11-fromString}
+\php{app/Models/Tag.php}{17-many-to-many/figures/11-fromString}
 
 
 \textbf{Run your tests}. Back to \textbf{green}. But our method isn't done. It should store the tag \textit{in the database}. Let's add another assertion:
@@ -158,7 +158,7 @@ And get it \textbf{red}:
 
 \textbf{Run your tests}. \textbf{Red}. Let's update the method to store the tag in the database:
 
-\php{app/Tag.php}{17-many-to-many/figures/13-fromString}
+\php{app/Models/Tag.php}{17-many-to-many/figures/13-fromString}
 
 \textbf{Run your tests}. \textbf{Green} again. But, we're still not done. We need to only add a tag to the database if it \textit{doesn't} already exist. Let's add a test for this:
 
@@ -169,7 +169,7 @@ And get it \textbf{red}:
 
 Let's update our \texttt{fromString()} method to get this green again:
 
-\php{app/Tag.php}{17-many-to-many/figures/15-fromString}
+\php{app/Models/Tag.php}{17-many-to-many/figures/15-fromString}
 
 
 \textbf{Run your tests}. \textbf{Green} again. We're now checking if the tag already exists in the database. If it does then we return the version from the database, otherwise we create a new tag.
@@ -182,7 +182,7 @@ That's our \texttt{fromString()} method finished. Let's get \texttt{fromStrings(
 
 \textbf{Run your tests}. Should be \textbf{red}. Let's fix that:
 
-\php{app/Tag.php}{17-many-to-many/figures/17-fromStrings}
+\php{app/Models/Tag.php}{17-many-to-many/figures/17-fromStrings}
 
 
 \textbf{Run your tests}. Hurrah \textbf{green}! Looks like everything is working.
@@ -194,7 +194,7 @@ We might later discover that sometimes tags have whitespace around them, so we c
 Finished versions of both classes are on GitHub:
 
 \begin{itemize}
-    \item \href{https://github.com/develop-me/bootcamp--laravel-project/blob/develop/app/Tag.php}{\texttt{Tag} class}
+    \item \href{https://github.com/develop-me/bootcamp--laravel-project/blob/develop/app/Models/Tag.php}{\texttt{Tag} class}
     \item \href{https://github.com/develop-me/bootcamp--laravel-project/blob/develop/tests/Unit/TagTest.php}{\texttt{TagTest} class}
 \end{itemize}
 
@@ -214,7 +214,7 @@ Then we'll need to update the methods. First, we'll change the \texttt{\$request
 
 You'll notice we use the same logic for tags in both methods. It would be good to get rid of the repetition. We can add a method to our \texttt{Article} model:
 
-\php{app/Article.php}{17-many-to-many/figures/20-Article-setTags}
+\php{app/Models/Article.php}{17-many-to-many/figures/20-Article-setTags}
 
 And then update the \texttt{Articles} controller:
 

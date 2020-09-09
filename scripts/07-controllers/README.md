@@ -34,7 +34,7 @@
 - Can now pass in our articles from the controller - then we could reuse the template for listing *any* set of articles
 
     ```php
-    use App\Article;
+    use App\Models\Article;
     ```
 
     ```php

@@ -98,14 +98,14 @@ Now we've updated the database structure we need to tell our Eloquent models abo
 
 Let's update our Article model to let it know that it can have comments:
 
-\php{app/Article.php}{11-one-to-many/figures/02-Article}
+\php{app/Models/Article.php}{11-one-to-many/figures/02-Article}
 
 Now we can easily access a collection of \texttt{Comment} objects for an article object instance using its new \texttt{comments} property.\footnote{Even though we created a method - Eloquent creates the property for us}
 \\
 
 We need to setup the other side of the relationship in the \texttt{Comment} model (which we created earlier):
 
-\php{app/Comment.php}{11-one-to-many/figures/03-Comment}
+\php{app/Models/Comment.php}{11-one-to-many/figures/03-Comment}
 
 Now all of our \texttt{Comment} object instances will have an \texttt{article} property that gives back the related \texttt{Article} object.
 \\
@@ -146,7 +146,7 @@ We'll use route model binding to get the article from the URL. Then we need to g
 
 Passing the data in when we create the comment counts as mass assignment, so we need to make sure we update the \texttt{Comment} model's \texttt{fillable} property so we don't get a mass assignment vulnerability error:
 
-\php{app/Comment.php}{11-one-to-many/figures/10-fillable}
+\php{app/Models/Comment.php}{11-one-to-many/figures/10-fillable}
 
 
 \subsection{Validation}

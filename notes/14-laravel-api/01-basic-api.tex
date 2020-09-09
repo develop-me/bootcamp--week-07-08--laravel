@@ -35,7 +35,7 @@ Rather than using the \texttt{"Controller@method"} syntax, we've passed an array
 Now if you use Postman to make a \texttt{GET} request to \texttt{http://homestead.test/\textbf{api/}articles} you should get back an empty \texttt{200} response (the controller method exists, but it's not doing anything just yet).
 \\
 
-We're going to be using \texttt{App\textbackslash{}Article} in our API controller, so let's include a \texttt{use} statement at the top of the file:
+We're going to be using \texttt{App\textbackslash{}Models\textbackslash{}Article} in our API controller, so let's include a \texttt{use} statement at the top of the file:
 
 \php{app/Http/Controllers/API/Articles.php}{14-laravel-api/figures/02-use}
 

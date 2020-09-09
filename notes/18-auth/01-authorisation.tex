@@ -55,9 +55,9 @@ This will setup all of the cryptographic jiggerypokery that's required. Make a n
     Client secret: QtE4syo8QFwHE110mUMEj2zaJ3jgF3RYmF1JjZmU
 \end{minted}
 
-Next, we need to tell Laravel that our users can use API tokens. In the \texttt{User} model (\texttt{App/User.php}) add the \texttt{HasApiTokens} trait:
+Next, we need to tell Laravel that our users can use API tokens. In the \texttt{User} model (\texttt{app/Models/User.php}) add the \texttt{HasApiTokens} trait:
 
-\php{app/User.php}{18-auth/figures/01-HasApiTokens}
+\php{app/Models/User.php}{18-auth/figures/01-HasApiTokens}
 
 
 We'll also need to update \texttt{AuthServiceProvider.php} to use the Passport routes. This saves you having to write them yourself:
@@ -166,7 +166,7 @@ Make sure you migrate the database changes:
 
 Next, we'll need to update our \texttt{User} model to make this new column fillable.
 
-\php{app/User.php}{18-auth/figures/07-User}
+\php{app/Models/User.php}{18-auth/figures/07-User}
 
 Now let's update our existing user to have the role of \texttt{"author"} and generate a new user with the role \texttt{"subscriber"}.
 

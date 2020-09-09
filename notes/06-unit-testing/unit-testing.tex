@@ -63,7 +63,7 @@ PHPUnit provides a \href{https://phpunit.readthedocs.io/en/9.0/assertions.html}{
 First, let's make sure PHP knows which \texttt{Article} class to use. At the top of \texttt{ArticleTest}:
 
 \begin{minted}{php}
-    use App\Article;
+    use App\Models\Article;
 \end{minted}
 
 Let's test our \texttt{truncate} method on our \texttt{Article} model by adding the following to \texttt{ArticleTest}:

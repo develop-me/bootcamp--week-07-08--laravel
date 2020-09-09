@@ -1,3 +1,3 @@
 <?php
 
-use App\Article;
+use App\Models\Article;

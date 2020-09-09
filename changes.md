@@ -32,7 +32,7 @@
 
 - Add Forms material
 - Add login form material
-- add `use App\Article;` to controller notes
+- add `use App\Models\Article;` to controller notes
 - TDD material
 - Make sure validation is still covered
 - Update routes to use array instead of "@" for controller/method
