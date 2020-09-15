@@ -21,7 +21,9 @@
 - Controller brings together bits of our app: models, views, etc. - it controls the app
 - A route points at a controller method, which returns a response
 - Make `Articles` controller: `artisan make:controller Articles`
-- Update route `Route::get('/', "Articles@index")`
+- Update route
+    - `use App\Http\Controllers\Articles`
+    - `Route::get('/', [Articles::class, "index"])`
     - Run `index` method of `Articles` controller when root route is visited
 - Update `Articles` controller:
 
@@ -51,7 +53,7 @@
 - Rename it `articles.blade.php`
 
 - Next, show an article
-- `Route::get("/articles/{article}", "Articles@show");`
+- `Route::get("/articles/{article}", [Articles::class, "show"]);`
 - Update controller:
 
     ```php

@@ -1,11 +1,11 @@
 <?php
 
 Route::group(["prefix" => "articles"], function () {
-    Route::get('create', "Articles@create");
+    Route::get('create', [Articles::class, "create"]);
 
     // a *post* request
     // needs to go to a different controller method
-    Route::post('create', "Articles@createPost");
+    Route::post('create', [Articles::class, "createPost"]);
 
-    Route::get('{article}', "Articles@show");
+    Route::get('{article}', [Articles::class, "show"]);
 });

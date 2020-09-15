@@ -55,7 +55,7 @@
 - Add route for POST:
 
     ```php
-    Route::post('/articles/{article}', "Articles@commentPost");
+    Route::post('/articles/{article}', [Articles::class, "commentPost"]);
     ```
 - Add method:
 
