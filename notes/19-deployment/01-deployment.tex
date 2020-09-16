@@ -265,7 +265,7 @@ In Nano add some basic HTML:
     <h1>Hello, world!</h1>
 \end{minted}
 
-Then press \texttt{Ctrl+o} to save and then \texttt{Ctrl+x} to exit.
+Then press \texttt{Ctrl+o} followed by Enter to save and then \texttt{Ctrl+x} to exit.
 \\
 
 Once again, check your server in the browser. You should now see ``Hello, World!'', as Nginx is serving up your \texttt{index.html} file.
@@ -355,16 +355,16 @@ Open the Nginx config file in a text editor:\footnote{It's good practice to use 
     sudo nano /etc/nginx/sites-available/default
 \end{minted}
 
-First, add \texttt{index.php} to the acceptable index files:
-
-\begin{minted}{nginx}
-    index index.php index.html index.htm;
-\end{minted}
-
-Scroll down to \texttt{root} and change it to:
+First change \texttt{root} to:
 
 \begin{minted}{nginx}
     root /var/www/<repo-name>/public;
+\end{minted}
+
+Then scroll down and add \texttt{index.php} to the acceptable index files:
+
+\begin{minted}{nginx}
+    index index.php index.html index.htm;
 \end{minted}
 
 We'll also need to update the \texttt{location} entries:
@@ -460,7 +460,7 @@ There are plenty of \href{https://generatepasswords.org}{online password generat
 
 \subsection{Configure Laravel}
 
-Update your \texttt{.env} file with the details of your database (the name of the database and password you created as well as changing user to root):
+Update your \texttt{.env} file with the details of your database:
 
 \begin{minted}{bash}
     nano .env
@@ -491,7 +491,7 @@ Success, everything is setup! You should now be able to make calls to your API.
 Nowadays it is considered good practice to use HTTPS on \textit{all} websites, as it can prevent a number of security issues.
 \\
 
-First step, we'll need to set up a real domain to point to our server. If you don't have one to use ask the instructor to set you up a \texttt{something.developme.space} one.
+First step, we'll need to set up a real domain to point to our server. If you don't have one to use ask the instructor to set you up a \texttt{something.developme.space} one. They'll need your \textbf{Public IP Address} (e.g. \texttt{18.135.204.183}).
 \\
 
 Now update the Nginx config to use this domain, edit the config file:
@@ -503,6 +503,9 @@ Now update the Nginx config to use this domain, edit the config file:
 Change the \texttt{server\_name}:
 
 \begin{minted}{nginx}
+    # e.g.
+    # server_name myapp.developme.space;
+    # no protocol on the front
     server_name <YOUR.DOMAIN>;
 \end{minted}
 
