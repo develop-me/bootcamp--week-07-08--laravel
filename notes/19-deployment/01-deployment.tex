@@ -116,7 +116,13 @@ For an Ubuntu instance the username is \texttt{ubuntu} and the domain can be fou
     ec2-3-8-39-24.eu-west-2.compute.amazonaws.com
 \end{minted}
 
-Next, we need to tell SSH to use the key we just created whenever it tries to connect to that server. In \texttt{\textasciitilde/.ssh/config}:
+Next, we need to tell SSH to use the key we just created whenever it tries to connect to that server. First, open \texttt{\textasciitilde/.ssh/config} in VS Code:
+
+\begin{minted}{bash}
+    code ~/.ssh/config
+\end{minted}
+
+Then add the following:
 
 \begin{minted}{text}
     Host ec2-3-8-199-58.eu-west-2.compute.amazonaws.com
@@ -324,7 +330,7 @@ You should now be able to connect to Git from the server.
 
 \subsection{Copy Your Repository to the Server}
 
-On your repository, go to clone or download and, as usual, copy the code (ensure it says clone with SSH):
+On your GitHub repository, go to clone or download and, as usual, copy the code (ensure it says clone with SSH):
 
 \begin{minted}{bash}
     cd /var/www
@@ -414,7 +420,7 @@ You're getting an error because you are missing the \texttt{.env} file that cont
     php artisan key:generate
 \end{minted}
 
-Check the page in your browser. The page should now display a \textit{Laravel} error message saying that we've not setup a MySQL database yet.
+Check the page in your browser. Hopefully you'll see the Laravel welcome page.
 
 
 \subsection{Setting Up the Database}
