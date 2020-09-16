@@ -12,27 +12,43 @@
     - remove both in `down` but backwards
 - Add `public $timestamps = false;` to `Tag`
 - Add relationships: `belongsToMany()`
-- Need to accept an array of tags
-- Use TDD to write `fromString` static method
-    - Create test file
-    - Setup with database stuff:
-        - `use Tests\TestCase`
-        - `use Illuminate\Foundation\Testing\RefreshDatabase;`
-    - First test: single tag called "Test"
-        - `assertInstanceOf(Tag::class, $tag)`
-        - `assertSame("Test", $tag->name)`
-    - Next test: single tag called "Hammock"
-    - Next test: check in DB
-    - Next test: check doesn't duplicate tags
-- Use TDD to write `fromStrings` static method
-    - First test, check it's a `Collection`
-    - Check, first is "Test", second is "Hammock"
-- Other tests later: trim tags, make sure unique
+- Need to accept an array of tags: **demonstrate in Postman**
+
+    ```json
+    {
+        "title": "Agent Smith: Misunderstood?",
+        "content": "Dodge this",
+        "tags": ["dated", "references", "aplenty"]
+    }
+    ```
+
+- Add `Tag::fromStrings`:
+
+    ```php
+    public static function fromStrings(array $strings) : Collection
+    {
+        return collect($strings)->map(fn($str) => trim($str))
+                                ->unique()
+                                ->map(fn($str) => Tag::firstOrCreate(["name" => $str]));
+    }
+    ```
+- Add `Article->setTags()`
+
+    ```php
+    public function setTags(array $strings) : Article
+    {
+      $tags = Tag::fromStrings($strings);
+
+      // we're on an article instance, so use $this
+      // pass in collection of IDs
+      $this->tags()->sync($tags->pluck("id"));
+
+      // return $this in case we want to chain
+      return $this;
+    }
+    ```
+
 - Don't need new routes, just update article `POST` and `PUT`
-- Add `use App\Tag` to `Articles` controller
-- Switch to `$request->only('title', 'article')`
-- Use `Tag::fromStrings()`
-- Use `sync` method: `$article->tags()->sync($tags->pluck("id")->all())`
-- Move repeated logic into `Article` model
+- Update Articles `update` and `store` methods to use `$article->setTags()`
 - Add `tags` validation to `ArticleRequest`
 - Update both article `Resources` to include tags array: `->pluck("name")`

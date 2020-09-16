@@ -6,7 +6,7 @@ class Articles extends Controller
 
   public function store(ArticleRequest $request)
   {
-    $data = $request->only(["title", "article"]);
+    $data = $request->all();
 
     // use the new method
     $article = Article::create($data)->setTags($request->get("tags"));
@@ -18,7 +18,8 @@ class Articles extends Controller
 
   public function update(ArticleRequest $request, Article $article)
   {
-    $data = $request->only(["title", "article"]);
+    // update the article first
+    $data = $request->all();
     $article->fill($data)->save();
 
     // use the new method - can't chain as save returns a bool
