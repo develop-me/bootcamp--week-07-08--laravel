@@ -1,3 +1,5 @@
+# Day 2: Morning
+
 ## One-to-Many
 - We want to add comments
 - Naive approaches to storing comments: serialized array, comments columns

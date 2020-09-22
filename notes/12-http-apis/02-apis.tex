@@ -141,9 +141,9 @@ An \textbf{API driven} web app splits the database and back-end from the front-e
 This means that you only have to write the main bit of your app once in the back-end: the various front-ends are just UIs using API requests to do everything.
 \\
 
-\img{10cm}{13-http-apis/img/api-01}{1em}{A web app talks to the API using HTTP requests}
-\img{10cm}{13-http-apis/img/api-02}{1em}{A completely separate iOS app can use the same API}
-\img{10cm}{13-http-apis/img/api-03}{1em}{And an Android app can use the same API too}
+\img{10cm}{12-http-apis/img/api-01}{1em}{A web app talks to the API using HTTP requests}
+\img{10cm}{12-http-apis/img/api-02}{1em}{A completely separate iOS app can use the same API}
+\img{10cm}{12-http-apis/img/api-03}{1em}{And an Android app can use the same API too}
 
 
 \pagebreak
@@ -152,7 +152,7 @@ This means that you only have to write the main bit of your app once in the back
 
 \href{https://www.getpostman.com}{Postman} is a free app designed for testing out RESTful APIs.\footnote{For Mac there is an alternative app called \href{https://paw.cloud}{Paw}, which is much better, but not free.}
 
-\img{14cm}{13-http-apis/img/postman}{0em}{Postman}
+\img{14cm}{12-http-apis/img/postman}{0em}{Postman}
 
 APIs are not designed for people, so when you're testing them with Postman you need to get used to writing/reading JSON. Remember, it's just a slightly stricter JS object/array syntax.
 
@@ -161,25 +161,25 @@ APIs are not designed for people, so when you're testing them with Postman you n
 \begin{itemize}[leftmargin=*]
     \item Make sure you set the \texttt{Accept: application/json} header
 
-        \img{12cm}{13-http-apis/img/headers}{1em}{\textbf{Always} set this header}
+        \img{12cm}{12-http-apis/img/headers}{1em}{\textbf{Always} set this header}
 
     \pagebreak
 
     \item Make sure you use ``raw'' and then ``JSON (application/json)'' for the Body
 
-        \img{12cm}{13-http-apis/img/raw}{1em}{Make sure you use JSON for the Body}
+        \img{12cm}{12-http-apis/img/raw}{1em}{Make sure you use JSON for the Body}
 
     \item Duplicate tabs rather than creating new ones or editing the one you already have
 
-        \img{9cm}{13-http-apis/img/duplicate}{1em}{It's easier to duplicate tabs}
+        \img{9cm}{12-http-apis/img/duplicate}{1em}{It's easier to duplicate tabs}
 
     \item Use ``Two Pane View'' (\texttt{Cmd + Alt + V} or icon in the bottom right)
 
-        \img{5cm}{13-http-apis/img/split}{1em}{In two pane view you don't have to scroll to see the response}
+        \img{5cm}{12-http-apis/img/split}{1em}{In two pane view you don't have to scroll to see the response}
 
     \item Make sure you don't have any errors in your JSON before submitting data
 
-        \img{12cm}{13-http-apis/img/error}{1em}{If there's an error in your JSON you'll get confusing validation errors}
+        \img{12cm}{12-http-apis/img/error}{1em}{If there's an error in your JSON you'll get confusing validation errors}
 
     \item Use Collections to save routes you're likely to use more than once
 \end{itemize}

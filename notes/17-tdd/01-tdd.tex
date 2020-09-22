@@ -38,7 +38,7 @@ We'll need two classes, \texttt{RomanNumeral} and \texttt{RomanNumeralTest}.
 
 Put the following in \texttt{app/RomanNumeral.php}:
 
-\php{app/RomanNumeral.php}{16-tdd/figures/01-RomanNumeral}
+\php{app/RomanNumeral.php}{17-tdd/figures/01-RomanNumeral}
 
 
 Now, create a test:
@@ -49,12 +49,12 @@ Now, create a test:
 
 And update that file to look like this:
 
-\php{tests/Unit/RomanNumeralTest.php}{16-tdd/figures/02-RomanNumeralTest}
+\php{tests/Unit/RomanNumeralTest.php}{17-tdd/figures/02-RomanNumeralTest}
 
 
 Right, let's get our first fail. In \texttt{RomanNumeralTest}:
 
-\php{tests/Unit/RomanNumeralTest.php}{16-tdd/figures/03-test1}
+\php{tests/Unit/RomanNumeralTest.php}{17-tdd/figures/03-test1}
 
 Now run your tests:
 
@@ -75,14 +75,14 @@ You should see that we get an error saying \texttt{Call to undefined method \\ A
 
 Now add an empty method to \texttt{RomanNumeral}:
 
-\php{app/RomanNumeral.php}{16-tdd/figures/04-forNumber}
+\php{app/RomanNumeral.php}{17-tdd/figures/04-forNumber}
 
 Now, \textbf{run your tests} again. This time you should see that you get a failure saying \texttt{Failed asserting that null is identical to \textquotesingle{}I\textquotesingle{}}. This is \textit{good}, according to TDD we can't start trying to solve the problem in \texttt{RomanNumeral} \textit{until} we have a failing test. Start with \textbf{red}.
 \\
 
 Let's get our test passing. In \texttt{RomanNumeral}:
 
-\php{app/RomanNumeral.php}{16-tdd/figures/05-forNumber}
+\php{app/RomanNumeral.php}{17-tdd/figures/05-forNumber}
 
 \textbf{Run your tests}. Our first \textbf{green}!
 \\
@@ -95,14 +95,14 @@ But, remember the rules of TDD: write the \textit{smallest amount of code} that 
 
 We can't really refactor our code at the moment, it's about as simple as it can be. So let's get back to \textbf{red}. Add a new test:
 
-\php{tests/Unit/RomanNumeralTest.php}{16-tdd/figures/06-test2}
+\php{tests/Unit/RomanNumeralTest.php}{17-tdd/figures/06-test2}
 
 \textbf{Run your tests}. Totes \textbf{red}.
 \\
 
 Let's fix that:
 
-\php{app/RomanNumeral.php}{16-tdd/figures/07-forNumber}
+\php{app/RomanNumeral.php}{17-tdd/figures/07-forNumber}
 
 \textbf{Run your tests}. \textbf{Green}! Perhaps not the most elegant code in the world, but it passes all our tests (and \textit{only} those tests), so it's good enough for TDD.
 \\
@@ -110,13 +110,13 @@ Let's fix that:
 Let's get back to \textbf{red}:
 
 
-\php{tests/Unit/RomanNumeralTest.php}{16-tdd/figures/08-test3}
+\php{tests/Unit/RomanNumeralTest.php}{17-tdd/figures/08-test3}
 
 \pagebreak
 
 \textbf{Run your tests}. \textbf{Red}. And let's get it working:
 
-\php{app/RomanNumeral.php}{16-tdd/figures/09-forNumber}
+\php{app/RomanNumeral.php}{17-tdd/figures/09-forNumber}
 
 
 \textbf{Run your tests}. \textbf{Green.}
@@ -124,7 +124,7 @@ Let's get back to \textbf{red}:
 
 Now you've maybe noticed a pattern? We're just repeating \texttt{I} the number of times stored in \texttt{\$number}. And PHP has a way to repeat a string a specified number of times, so let's refactor:
 
-\php{app/RomanNumeral.php}{16-tdd/figures/10-forNumber}
+\php{app/RomanNumeral.php}{17-tdd/figures/10-forNumber}
 
 \textbf{Run your tests}. Still \textbf{green}!
 \\
@@ -138,7 +138,7 @@ It's important that we didn't write it like this initially. We should only write
 
 Next test:
 
-\php{tests/Unit/RomanNumeralTest.php}{16-tdd/figures/11-test4}
+\php{tests/Unit/RomanNumeralTest.php}{17-tdd/figures/11-test4}
 
 
 \textbf{Run your tests}. \textbf{Red} again.
@@ -147,17 +147,17 @@ Next test:
 \texttt{IV} doesn't fit the previous pattern, so let's give it its own \texttt{if} statement:
 
 
-\php{app/RomanNumeral.php}{16-tdd/figures/12-forNumber}
+\php{app/RomanNumeral.php}{17-tdd/figures/12-forNumber}
 
 
 Next test:
 
-\php{tests/Unit/RomanNumeralTest.php}{16-tdd/figures/13-test5}
+\php{tests/Unit/RomanNumeralTest.php}{17-tdd/figures/13-test5}
 
 \textbf{Run your tests}. \textbf{Red} again. Let's fix it:
 
 
-\php{app/RomanNumeral.php}{16-tdd/figures/14-forNumber}
+\php{app/RomanNumeral.php}{17-tdd/figures/14-forNumber}
 
 
 \textbf{Run your tests}. Back to \textbf{green}.
@@ -165,7 +165,7 @@ Next test:
 
 Two \texttt{if} statements is starting to feel a bit much, but there isn't a clear pattern. In situations like this you could use a \texttt{switch} statement. \textit{Or} you could use a \textbf{dictionary}:
 
-\php{app/RomanNumeral.php}{16-tdd/figures/15-forNumber}
+\php{app/RomanNumeral.php}{17-tdd/figures/15-forNumber}
 
 \textbf{Run your tests}. \textbf{Green}!
 \\
@@ -178,7 +178,7 @@ Again, we've refactored our code and tested it. We can be sure that it does ever
 
 Let's keep going:
 
-\php{tests/Unit/RomanNumeralTest.php}{16-tdd/figures/16-test6}
+\php{tests/Unit/RomanNumeralTest.php}{17-tdd/figures/16-test6}
 
 
 \textbf{Test}. \textbf{Red}.
@@ -186,12 +186,12 @@ Let's keep going:
 
 Add it to the top of the dictionary (hopefully a pattern might begin to appear):
 
-\php{app/RomanNumeral.php}{16-tdd/figures/17-forNumber}
+\php{app/RomanNumeral.php}{17-tdd/figures/17-forNumber}
 
 
 \textbf{Test}. \textbf{Green}. Can't see a pattern, so move on.
 
-\php{tests/Unit/RomanNumeralTest.php}{16-tdd/figures/18-test7}
+\php{tests/Unit/RomanNumeralTest.php}{17-tdd/figures/18-test7}
 
 
 \textbf{Test}. \textbf{Red}.
@@ -200,12 +200,12 @@ Add it to the top of the dictionary (hopefully a pattern might begin to appear):
 
 Add it to the top of the dictionary:
 
-\php{app/RomanNumeral.php}{16-tdd/figures/19-forNumber}
+\php{app/RomanNumeral.php}{17-tdd/figures/19-forNumber}
 
 
 \textbf{Test}. \textbf{Green}. An inkling of a pattern now, but let's make sure.
 
-\php{tests/Unit/RomanNumeralTest.php}{16-tdd/figures/20-test8}
+\php{tests/Unit/RomanNumeralTest.php}{17-tdd/figures/20-test8}
 
 
 \textbf{Test}. \textbf{Red}.
@@ -213,7 +213,7 @@ Add it to the top of the dictionary:
 
 Add it to the top of the dictionary:
 
-\php{app/RomanNumeral.php}{16-tdd/figures/21-forNumber}
+\php{app/RomanNumeral.php}{17-tdd/figures/21-forNumber}
 
 
 \textbf{Test}. \textbf{Green}.
@@ -221,7 +221,7 @@ Add it to the top of the dictionary:
 
 OK, there's definitely something going on here. The last three values are just \texttt{V} with \texttt{I} repeated. So \texttt{6} is just \texttt{V + I}, \texttt{7} is \texttt{V + II}, \&tc. And we've already got some code for adding the \texttt{I} bit. So let's refactor:
 
-\php{app/RomanNumeral.php}{16-tdd/figures/22-forNumber}
+\php{app/RomanNumeral.php}{17-tdd/figures/22-forNumber}
 
 
 \textbf{Run your tests}. \textbf{Green} times are here again.
@@ -232,7 +232,7 @@ We spotted a pattern, refactored, and then checked that everything still works b
 
 Let's move on:
 
-\php{tests/Unit/RomanNumeralTest.php}{16-tdd/figures/23-test9}
+\php{tests/Unit/RomanNumeralTest.php}{17-tdd/figures/23-test9}
 
 
 \textbf{Run your tests}. \textbf{Red} as a red thing.
@@ -241,7 +241,7 @@ Let's move on:
 
 This one doesn't fit the pattern we've previously spotted, so add it to the dictionary:
 
-\php{app/RomanNumeral.php}{16-tdd/figures/24-forNumber}
+\php{app/RomanNumeral.php}{17-tdd/figures/24-forNumber}
 
 
 \textbf{Run your tests}. \textbf{Green}.
@@ -249,7 +249,7 @@ This one doesn't fit the pattern we've previously spotted, so add it to the dict
 
 Now for ten:
 
-\php{tests/Unit/RomanNumeralTest.php}{16-tdd/figures/25-test10}
+\php{tests/Unit/RomanNumeralTest.php}{17-tdd/figures/25-test10}
 
 
 \textbf{Run your tests}. \textbf{Red} as\textellipsis{} a different, but equally red, thing.
@@ -257,14 +257,14 @@ Now for ten:
 
 Again, this doesn't fit any pattern we've previously spotted, so add it to the dictionary:
 
-\php{app/RomanNumeral.php}{16-tdd/figures/26-forNumber}
+\php{app/RomanNumeral.php}{17-tdd/figures/26-forNumber}
 
 \textbf{Run your tests}. Purest \textbf{green}.
 \\
 
 Guess what? It's eleven o'clock:\footnote{Actual time may vary}
 
-\php{tests/Unit/RomanNumeralTest.php}{16-tdd/figures/27-test11}
+\php{tests/Unit/RomanNumeralTest.php}{17-tdd/figures/27-test11}
 
 \textbf{Run your tests}. Our first \textit{free} \textbf{green}! These are always nice – it suggests you're on the right track.
 \\
@@ -274,7 +274,7 @@ And if you wrote tests for \texttt{12} (\texttt{"XII"}) through to \texttt{19} (
 
 But our luck runs out at 20:
 
-\php{tests/Unit/RomanNumeralTest.php}{16-tdd/figures/28-test20}
+\php{tests/Unit/RomanNumeralTest.php}{17-tdd/figures/28-test20}
 
 
 \textbf{Run your tests}. \textbf{Red} as a doornail.\footnote{A red doornail}
@@ -282,14 +282,14 @@ But our luck runs out at 20:
 
 For now, let's just add it to the dictionary:
 
-\php{app/RomanNumeral.php}{16-tdd/figures/29-forNumber}
+\php{app/RomanNumeral.php}{17-tdd/figures/29-forNumber}
 
 \textbf{Run your tests}. \textbf{Green}zo.
 \\
 
 And let's try 30:
 
-\php{tests/Unit/RomanNumeralTest.php}{16-tdd/figures/30-test30}
+\php{tests/Unit/RomanNumeralTest.php}{17-tdd/figures/30-test30}
 
 
 \textbf{Run your tests}. \textbf{Red} as a radish.
@@ -297,12 +297,12 @@ And let's try 30:
 
 Again, let's just add it to the dictionary:
 
-\php{app/RomanNumeral.php}{16-tdd/figures/31-forNumber}
+\php{app/RomanNumeral.php}{17-tdd/figures/31-forNumber}
 
 
 \textbf{Run your tests}. \textbf{Green}. But, again, we can see a pattern here: we've just got an extra \texttt{X} for every additional \texttt{10}. Let's refactor:
 
-\php{app/RomanNumeral.php}{16-tdd/figures/32-forNumber}
+\php{app/RomanNumeral.php}{17-tdd/figures/32-forNumber}
 
 
 \textbf{Run your tests}. Still \textbf{green}! Nice.
@@ -311,7 +311,7 @@ Again, let's just add it to the dictionary:
 
 And we can refactor again. Our previous bit of code got us repeated \texttt{X}s, which suggests the repeated \texttt{I}s can be dealt with by adding it to our dictionary:
 
-\php{app/RomanNumeral.php}{16-tdd/figures/33-forNumber}
+\php{app/RomanNumeral.php}{17-tdd/figures/33-forNumber}
 
 
 \textbf{Run your tests}. Stiller \textbf{green}!\footnote{Green steel?} A double refactoring. No special cases for \texttt{I} anymore.
@@ -381,7 +381,7 @@ When all of your PHPUnit tests succeed you get back a \texttt{0} exit code, but 
 
 Hooks live in the \texttt{.git/hooks} directory inside your project. So we need to create a file called \texttt{.git/hooks/pre-commit} and then put the following inside:
 
-\code{.git/hooks/pre-commit}{bash}{16-tdd/figures/34-hook.sh}
+\code{.git/hooks/pre-commit}{bash}{17-tdd/figures/34-hook.sh}
 
 This is just the command that we've been running manually.
 \\

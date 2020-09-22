@@ -3,7 +3,7 @@ Tags and articles have a more complex relationship than comments and articles. A
 
 We can't reference the article or tag ID from the other table in this case, as that way we could only reference a single item. In this case we need a \textbf{pivot table}. The pivot table \textit{just} stores the relationship between an article and a tag using an \texttt{article\_id} and a \texttt{tag\_id} column:
 
-\img{\textwidth}{17-many-to-many/img/many-to-many.eps}{1em}{Many-to-many relationships. Simples!}
+\img{\textwidth}{16-many-to-many/img/many-to-many.eps}{1em}{Many-to-many relationships. Simples!}
 
 It is possible to store additional information about the relationship on a pivot table, which Eloquent makes available on the model's \texttt{pivot} property, but in our case this won't be necessary.
 
@@ -81,14 +81,14 @@ We'll need a \texttt{Tag} model shortly, so let's create that at the same time a
 
 The database migration for the tags is going to be more complicated than for comments as we'll need to create \textit{two} tables: a termlist table for tags and the pivot table. We can create more than one table in a single migration, just by calling \texttt{Schema::create()} twice:
 
-\php{database/migrations/<timestamp>\_create\_tags\_table.php}{17-many-to-many/figures/01-migration-up}
+\php{database/migrations/<timestamp>\_create\_tags\_table.php}{16-many-to-many/figures/01-migration-up}
 
 Notice that we've called the pivot table \texttt{article\_tag}. That's because Eloquent can automatically find pivot tables if they're named using the singular version of the two tables being joined together, in alphabetical order, with an underscore between them. You can call it whatever you like, but you'd need to let Laravel know if you chose something else.
 \\
 
 We're not done yet. If we create two tables we need to make sure we update the \texttt{down()} method so that both tables are removed if we rollback the migration. It's important that we remove the tables in the opposite order from how they were created: if we try and drop the \texttt{tags} table before the pivot table, the foreign key constraints in the pivot table would all fail (as there would be no valid \texttt{tag\_id}s to point to):
 
-\php{database/migrations/<timestamp>\_create\_tags\_table.php}{17-many-to-many/figures/02-migration-down}
+\php{database/migrations/<timestamp>\_create\_tags\_table.php}{16-many-to-many/figures/02-migration-down}
 
 As a general rule, if you're creating multiple tables, you should always drop them in reverse order.
 
@@ -97,15 +97,15 @@ As a general rule, if you're creating multiple tables, you should always drop th
 
 First, we need to tell the \texttt{Tag} model not to worry about setting the timestamp columns, otherwise we'll get a MySQL error when we try to add a tag. We do this by setting the \texttt{public} property \texttt{timestamps} to \texttt{false}:
 
-\php{app/Models/Tag.php}{17-many-to-many/figures/03-timestamps}
+\php{app/Models/Tag.php}{16-many-to-many/figures/03-timestamps}
 
 Next we should let Eloquent know about the relationship between articles and tags. In the \texttt{Tag} model add an \texttt{articles} method and use the \texttt{belongsToMany()} relationship method:
 
-\php{app/Models/Tag.php}{17-many-to-many/figures/04-tag-relationship}
+\php{app/Models/Tag.php}{16-many-to-many/figures/04-tag-relationship}
 
 We'll also need to tell the \texttt{Article} model about tags. Again we'll use a plural name for the method. And many-to-many relationships are symmetrical, so we use the \textit{same} relationship method:
 
-\php{app/Models/Article.php}{17-many-to-many/figures/05-article-relationship}
+\php{app/Models/Article.php}{16-many-to-many/figures/05-article-relationship}
 
 
 \pagebreak
@@ -129,7 +129,7 @@ So, we'll want some way to turn an array of strings (which we'll get in the \tex
 
 The best place to put this logic is probably as a \texttt{static} method on the \texttt{Tag} model:
 
-\php[fontsize=\scriptsize]{app/Models/Tag.php}{17-many-to-many/figures/06-Tag}
+\php[fontsize=\scriptsize]{app/Models/Tag.php}{16-many-to-many/figures/06-Tag}
 
 We take an array of strings and turn it into a \texttt{Collection}. We then use \texttt{map} to remove any whitespace from either side of each string. Next we make sure that there aren't any duplicate strings. Finally we use the \texttt{Model}'s \texttt{firstOrCreate} method to find a matching \texttt{Tag} in the database or create a new one if one doesn't exist. By the end of this we should have a collection containing all the relevant \texttt{Tag} models from the database.
 
@@ -140,7 +140,7 @@ When dealing with many-to-many relationships, it can be tricky to make sure that
 
 \pagebreak
 
-\php{app/Models/Article.php}{17-many-to-many/figures/07-Article-setTags}
+\php{app/Models/Article.php}{16-many-to-many/figures/07-Article-setTags}
 
 We accept an array of strings, then use our \texttt{Tag::fromStrings} method to turn that into a collection of \texttt{Tag} models. Next we use the \texttt{sync} method on the \texttt{Article} model to add any new tags and remove any unused tags from the database.
 
@@ -152,21 +152,21 @@ We won't need to add any new routes for tags because they get added as part of t
 
 We'll need to update the methods. We'll use our new \texttt{\$article->setTags()} method to do all the necessary work:
 
-\php{app/Http/Controllers/API/Articles.php}{17-many-to-many/figures/08-Articles-tags-redux}
+\php{app/Http/Controllers/API/Articles.php}{16-many-to-many/figures/08-Articles-tags-redux}
 
 
 \section{Validation}
 
 We'll need to add validation rules for tags to \texttt{ArticleRequest}. We'll use the \texttt{array} validation type for the \texttt{tags} field. We can also use the \texttt{.*} notation to add validation for the items inside the \texttt{tags} array. In this case we want them to be strings with a maximum length of 30 (we used a \texttt{VARCHAR(30)} for tags):
 
-\php{app/Http/Requests/API/ArticleRequest.php}{17-many-to-many/figures/09-validation}
+\php{app/Http/Requests/API/ArticleRequest.php}{16-many-to-many/figures/09-validation}
 
 
 \section{Resource}
 
 Finally, let's update our article resources to include tags as an array. In \texttt{ArticleResource} and \texttt{ArticleListResource}:
 
-\php{app/Http/Resources/API/ArticleResource}{17-many-to-many/figures/10-resource}
+\php{app/Http/Resources/API/ArticleResource}{16-many-to-many/figures/10-resource}
 
 
 
