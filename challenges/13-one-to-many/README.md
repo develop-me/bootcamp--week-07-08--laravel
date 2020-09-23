@@ -87,7 +87,7 @@ This is the easiest option, but leads to a lot of repeated code
 
 This is the neatest option, but will [require research](http://laravel.com/docs/master/middleware)!
 
-Middleware sites between a request and the controller. A cleverly written piece of middleware can do all the work for you and keep your controller nice an neat.
+Middleware sits between a request and the controller. A cleverly written piece of middleware can do all the work for you and keep your controller nice an neat.
 
 You'll need to:
 
@@ -113,4 +113,4 @@ You'll need to:
 
     - [app/Http/Middleware/CheckArticle.php](https://github.com/develop-me/bootcamp--laravel-project/blob/develop/app/Http/Middleware/CheckArticle.php)
     - [app/Http/Kernel.php (Line 65)](https://github.com/develop-me/bootcamp--laravel-project/blob/develop/app/Http/Kernel.php#L65)
-    - [routes/api.php (Lines 15-27)](https://github.com/develop-me/bootcamp--laravel-project/blob/develop/routes/api.php#L15-L27)
+    - [routes/api.php (Line 21)](https://github.com/develop-me/bootcamp--laravel-project/blob/develop/routes/api.php#L21)
