@@ -2,6 +2,8 @@
 
 ## Many-to-Many
 
+### DB & Models
+
 - Symmetrical relationship
 - Need to use a pivot table
 - Termlists: use `name` column name
@@ -12,6 +14,11 @@
     - remove both in `down` but backwards
 - Add `public $timestamps = false;` to `Tag`
 - Add relationships: `belongsToMany()`
+
+**Challenges: 14-many-to-many/01-models**
+
+### Controllers
+
 - Need to accept an array of tags: **demonstrate in Postman**
 
     ```json
@@ -52,3 +59,5 @@
 - Update Articles `update` and `store` methods to use `$article->setTags()`
 - Add `tags` validation to `ArticleRequest`
 - Update both article `Resources` to include tags array: `->pluck("name")`
+
+**Challenges: 14-many-to-many/02-controllers**
