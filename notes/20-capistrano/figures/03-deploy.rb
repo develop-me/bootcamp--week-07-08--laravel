@@ -69,7 +69,7 @@ namespace :deploy do
     task :php_reload do
         on roles(:app) do
             info "Restarting PHP-FPM"
-            execute "sudo service php7.2-fpm reload"
+            execute "sudo service php7.4-fpm reload"
         end
     end
 
