@@ -1,6 +1,9 @@
 # Day 2: Morning
 
 ## One-to-Many
+
+### DB & Models
+
 - We want to add comments
 - Naive approaches to storing comments: serialized array, comments columns
 - Talk about relational databases
@@ -9,8 +12,10 @@
 - Write migration
     `artisan make:model Comment -m`
 - Discuss foreign keys
-    - Data integrity: can't add invalid relationships
+    - Data integrity **really important**
+    - Means we can't add invalid relationships
     - Cascading guarantees can't end up with invalid relationships
+
     ```php
     // create the article_id column
     $table->foreignId("article_id")->unsigned();
@@ -43,6 +48,7 @@
     ```
 
 - Demonstrate adding comment with `tinker`:
+
     ```php
     $comment->article_id = 1;
     $comment->save();
@@ -53,51 +59,134 @@
     $article->title;
     ```
 
-- Add form to bottom of `article.blade.php` (see **resources/comments-form.blade.php**)
-- Add route for POST:
+- Demonstrate accessing comments for an article:
 
     ```php
-    Route::post('/articles/{article}', [Articles::class, "commentPost"]);
-    ```
-- Add method:
-
-    ```php
-    use App\Models\Comment;
+    $article->comments
     ```
 
+**Challenges: 13-one-to-many/01-models**
+
+
+## Controllers
+
+- Create an `API\Comments` controller
+- The URL structure should express the data hierarchy
+- Create the routes as a sub-group of `/articles/{article}`
+
     ```php
-    public function commentPost(Request $request, Article $article)
+    Route::group(["prefix" => "articles"], function () {
+      // ...etc
+
+      Route::group(["prefix" => "{article}"], function () {
+        // ...etc
+
+        Route::group(["prefix" => "comments"], function () {
+          Route::get("", [Comments::class, "index"]);
+          Route::post("", [Comments::class, "store"]);
+
+          Route::group(["prefix" => "{comment}"], function () {
+            Route::get("", [Comments::class, "show"]);
+            Route::put("", [Comments::class, "update"]);
+            Route::delete("", [Comments::class, "destroy"]);
+          });
+        });
+      });
+    });
+    ```
+
+- Create a CommentResource
+
+    ```php
+    public function toArray($request)
     {
-      // create a new comment, passing in the data from the request JSON
-      $comment = new Comment($request->all());
-
-      // this syntax is a bit odd, but it's in the documentation
-      // stores the comment in the DB while setting the article_id
-      $article->comments()->save($comment);
-
-      // return the stored comment
-      return redirect("/articles/{$article->id}");
+      return [
+        "id" => $this->id,
+        "email" => $this->email,
+        "comment" => $this->comment,
+      ];
     }
     ```
 
-- Discuss adding validation `CommentRequest` - but no need to show
-- Add list of comments to `article.blade.php`
+- Add the `index` method to controller
+    - Get the article with Route Model Binding
+    - Use comments property
+    - Test with Postman
 
-    ```html
-    {{ /* if an article has comments list them */ }}
-    @if($article->comments->isNotEmpty())
-      <div class="list-group">
-        @foreach ($comments as $comment)
-          <div class="d-flex w-100 justify-content-between">
-            <h5 class="mb-1">{{ $comment->email }}</h5>
-          </div>
-
-          <p class="mb-1">{{ $comment->comment }}</p>
-        @endforeach
-      </div>
-    @else
-      <p class="alert alert-secondary">No comments found</p>
-    @endif
-
-    @include("articles/comments/form")
+    ```php
+    public function index(Article $article)
+    {
+      return CommentResource::collection($article->comments);
+    }
     ```
+
+- Add the `show` method to controller
+    - Need the article for Route Model Binding, but don't use it
+    - Test with Postman
+
+    ```php
+    public function show(Article $article, Comment $comment)
+    {
+      return new CommentResource($comment);
+    }
+    ```
+
+- Add the `destroy` method to controller
+    - Need the article for Route Model Binding, but don't use it
+    - Test with Postman
+
+    ```php
+    public function destroy(Article $article, Comment $comment)
+    {
+        $comment->delete();
+        return response(null, 204);
+    }
+    ```
+
+- Add `fillable` properties to `Comment`
+- Add the `store` method to controller
+    - get Article with Route Model Binding
+    - use `associate`
+    - save
+    - test with Postman
+
+    ```php
+    public function store(Request $request, Article $article)
+    {
+      $data = $request->all();
+      $comment = new Comment($data);
+      $comment->article()->associate($article);
+      $comment->save();
+      return new CommentResource($comment);
+    }
+    ```
+
+- Add the `update` method to controller
+    - Need the article for Route Model Binding, but don't use it - already associated
+    - Test with Postman
+
+    ```php
+    public function update(Request $request, Article $article, Comment $comment)
+    {
+      $data = $request->all();
+      $comment->fill($data);
+      $comment->save();
+      return new CommentResource($comment);
+    }
+    ```
+
+- Add validation
+
+    ```php
+    return [
+      // required, use email validation rule
+      // and VARCHAR(100), so make sure no longer than 100
+      "email" => ["required", "email", "max:100"],
+
+      // required and a string
+      "comment" => ["required", "string"],
+    ];
+    ```
+
+
+**Challenges: 13-one-to-many/02-controllers**

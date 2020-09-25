@@ -115,38 +115,128 @@ We can use \texttt{artisan tinker} to get a bit of a better idea of how the ORM 
 \php{}{15-one-to-many/figures/04-tinker}
 
 
-\section{Adding Comments}
+\section{Working With Comments}
 
-First, we'll need a form. Create the following in \\ \texttt{resources/views/comments/form.blade.php}:
+Let's create a separate controller to deal with comments:
 
-\code{resources/views/comments/form.blade.php}{php}{15-one-to-many/figures/05-comments-form.blade.php}
+\begin{minted}{bash}
+    artisan make:controller API\\Comments --api
+\end{minted}
 
-You'll notice we've put all of the CSRF and validation logic in there already.
+We'll add the code to this in a bit, but let's sort the routing first.
+
+
+\subsection{Routing}
+
+The first thing we need to consider is our URL structure. Comments \textit{belong} to articles, so we should make this hierarchy clear in our URL structure. If we used the following endpoints it wouldn't be clear that a comments belonged to a specific article:
+
+\begin{minted}{text}
+    /api/comments
+    /api/comments/12
+\end{minted}
+
+We could instead do something like the following:
+
+\begin{minted}{text}
+    /api/articles/4/comments
+    /api/articles/4/comments/12
+\end{minted}
+
+It is now clear that the comment(s) we are dealing with belongs to the article with an ID of \texttt{4}. We can use router groups to show this hierarchy clearly in our routing:
+
+\php{routes/api.php}{15-one-to-many/figures/05-routes}
+
+We put all of our comments routes inside the existing articles groups. We can see the data hierarchy by just looking at the indentation of the routes file.
 \\
 
-Next, include this in the article template:
-
-\code{resources/views/article.blade.php}{html}{15-one-to-many/figures/06-article.blade.php}
-
-When we submit this form it's going to \texttt{POST} to \texttt{/articles/{article}}, so next we'll need to setup a route:
-
-\php{routes/web.php}{15-one-to-many/figures/07-routes}
+For the controller methods, we've used the same structure as for articles, just pointing at the \texttt{Comments} controller instead.
 
 
-Now we'll need to update the \texttt{Articles} controller. First, let the controller know about the \texttt{Comment} model:
+\subsection{Resource}
 
-\php{app/Http/Controllers/Articles.php}{15-one-to-many/figures/08-Articles-use}
+Before we add the methods, let's create a \texttt{CommentResource} so that our comment JSON is formatted nicely:
 
-Next, let's add the controller method:
+\begin{minted}{bash}
+    artisan make:resource API\\CommentResource
+\end{minted}
 
-\php{app/Http/Controllers/Articles.php}{15-one-to-many/figures/09-store}
+And then update the \texttt{toArray} method:
 
-We'll use route model binding to get the article from the URL. Then we need to get the request data and create a new comment using it. However, we can't use the \texttt{Comment::create()} method, as we need to make sure it has a valid \texttt{article\_id} property, otherwise MySQL won't let us store it. Instead we'll pass the data in as the first argument when we create a new \texttt{Comment} object: this assigns the properties, as with \texttt{create()}, but doesn't save it to the database. Then we store it in the database using the article model.
+\php{app/Http/Resources/API/CommentResource.php}{15-one-to-many/figures/06-resource}
+
+We don't need to return the article information, as we must already know about the specific article if we're trying to get its comments.
+
+\subsection{Controller}
+
+First, make sure you \texttt{use} the resource in the \texttt{Comments} controller:
+
+\php{app/Http/Controllers/API/Comments.php}{15-one-to-many/figures/07-use}
+
+
+Now, let's add the \texttt{index} method:
+
+\php{app/Http/Controllers/API/Comments.php}{15-one-to-many/figures/08-index}
+
+It's a bit different from the one we wrote for articles because we only want to return comments that belong to the article specified in the URL. We can get the article using Route Model Binding and then we can get the relevant comments using the \texttt{Article} model's \texttt{comments} property (which we set up earlier).\footnote{It's a \textit{property}, not a \textit{method} – even though we created the relationship using a method}.
 \\
 
-Passing the data in when we create the comment counts as mass assignment, so we need to make sure we update the \texttt{Comment} model's \texttt{fillable} property so we don't get a mass assignment vulnerability error:
+Check the route works using Postman.
+\\
 
-\php{app/Models/Comment.php}{15-one-to-many/figures/10-fillable}
+Next, let's get the \texttt{show} method working:
+
+\php{app/Http/Controllers/API/Comments.php}{15-one-to-many/figures/09-show}
+
+This one is almost identical to the articles controller, except we need to include the \texttt{Article} as the first parameter that uses Route Model Binding – even though we don't actually use it anywhere. That's just how Route Model Binding works: it's a bit magical, but it's very handy.
+\\
+
+Check the route works using Postman.
+\\
+
+Let's get do \texttt{destroy} method next:
+
+\php{app/Http/Controllers/API/Comments.php}{15-one-to-many/figures/10-destroy}
+
+Also very similar to the one for articles and, again, we need to include the \texttt{Article} parameter, even though we don't actually use it.
+
+\begin{infobox}{Stray Comments}
+    You might have realised that there's nothing in our code to stop you viewing/deleting a comment via the wrong article.
+    \\
+
+    For example, say we have a comment with the ID \texttt{12} that belongs to an article with the ID \texttt{3}. Currently we could make a \texttt{GET} or \texttt{DELETE} request to \\ \texttt{/api/articles/17/comments/12} and, as long as there was an article with ID of \texttt{17} it would still work – even though comment \texttt{12} doesn't belong to article \texttt{17}.
+    \\
+
+    You can use \href{http://laravel.com/docs/master/middleware}{Middleware} to get around this issue in a way that doesn't mess up your controllers, but it's an extra layer of complexity that we'll ignore for now.
+\end{infobox}
+
+Next, we'll want to be able to create and update comments. To do this we'll need to make sure we can add the relevant properties to the \texttt{Comment} model, so we need to make sure we update the \texttt{fillable} property so we don't get a mass assignment vulnerability error:
+
+\php{app/Models/Comment.php}{15-one-to-many/figures/11-fillable}
+
+Now we can add the \texttt{store} method:
+
+\php{app/Models/Comment.php}{15-one-to-many/figures/12-store}
+
+Again, it's very similar to the one for articles. There are two differences: we're using Route Model Binding to get the relevant article and we \texttt{associate} the \texttt{Comment} with the \texttt{Article} before saving it – this adds the relevant article ID, which the database needs because of the foreign key constraint.
+\\
+
+Check the route works using Postman – make sure you submit valid data, we've not got validation yet.
+\\
+
+Finally, we can get the \texttt{update} method working:
+
+\php{app/Models/Comment.php}{15-one-to-many/figures/13-update}
+
+As with the others, it's very similar to the articles version.
+\\
+
+In this case we again need to get the article with Route Model Binding, even though we don't actually use it – the comment is already associated with the article, so we don't need to update it.
+\\
+
+We just get the relevant comment, use \texttt{fill()} with the request data and then save it.
+\\
+
+Check the route works using Postman and then we we can add some validation.
 
 
 \subsection{Validation}
@@ -154,29 +244,23 @@ Passing the data in when we create the comment counts as mass assignment, so we 
 We \textit{always} need to add validation to any data sent to the server. First, use \texttt{artisan} to create a \texttt{CommentRequest}:
 
 \begin{minted}{bash}
-    artisan make:request CommentRequest
+    artisan make:request API\\CommentRequest
 \end{minted}
 
 Then update the \texttt{authorize()} and \texttt{rules()} methods:
 
-\php{app/Http/Requests/CommentRequest.php}{15-one-to-many/figures/11-CommentRequest}
+\php{app/Http/Requests/API/CommentRequest.php}{15-one-to-many/figures/14-CommentRequest}
 
-You'll also need to update the \texttt{Articles} controller to use the validated request. First let the controller know where to find the \texttt{CommentRequest} class:
+You'll also need to update the \texttt{Comments} controller to use the validated request. First let the controller know where to find the \texttt{CommentRequest} class:
 
-\php{app/Http/Controllers/Articles.php}{15-one-to-many/figures/11-use}
+\php{app/Http/Controllers/API/Comments.php}{15-one-to-many/figures/15-use}
 
 Then update the type-hinting to use \texttt{CommentRequest} instead of \texttt{Request}:
 
-\php{app/Http/Controllers/Articles.php}{15-one-to-many/figures/12-request-type-hint}
+\php{app/Http/Controllers/API/Comments.php}{15-one-to-many/figures/16-request-type-hint}
 
-\pagebreak
+Finally, check your \texttt{POST} and \texttt{PUT} routes to make sure you can't submit any invalid data.
 
-
-\subsection{Displaying the Comments}
-
-Finally, let's update our article page to display the comments:
-
-\code{resources/views/article.blade.php}{php}{15-one-to-many/figures/13-comments-list.blade.php}
 
 \section{Additional Resources}
 
