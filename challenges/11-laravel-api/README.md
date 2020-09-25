@@ -2,7 +2,7 @@
 
 ---
 
-## Basic API (Chapters 19)
+## Basic API
 
 **Check your results in Postman as you're going along**
 

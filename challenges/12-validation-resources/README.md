@@ -2,16 +2,16 @@
 
 ---
 
-## API Details (Chapter 20)
+## API Details
 
 **Check your results in Postman as you're going along**
 
-### Validation (Section 20.1)
+### Validation
 
 - Add validation to your API
 - Make sure you get a `422` error if you pass in invalid data
 
-### API Resources (Section 20.2)
+### API Resources
 
 - Add resources to your `/api/owners` routes so that they return:
     - `id`
@@ -28,7 +28,7 @@
     - `biteyness`
     - `owner`: the *name* of the owner
 
-### CORS (Section 20.3)
+### CORS
 
 - Check it's working by adding an `Origin` header to one of your requests
 
