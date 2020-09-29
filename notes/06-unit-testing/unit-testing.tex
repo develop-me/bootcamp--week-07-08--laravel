@@ -130,9 +130,11 @@ To use this separate test database edit your \texttt{phpunit.xml} file to uncomm
     <!-- <server name="DB_DATABASE" value=":memory:"/> -->
     <server name="MAIL_MAILER" value="array"/>
     ....
+\end{minted}
 
-    Change to:
+Change to:
 
+\begin{minted}{xml}
     ....
     <server name="CACHE_DRIVER" value="array"/>
     <server name="DB_CONNECTION" value="sqlite"/>
