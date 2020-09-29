@@ -8,13 +8,13 @@ That's where \textbf{Object Relational Mapper}s (ORM) come in. An ORM lets you w
 
 \section{Models}
 
-\textbf{Models} are PHP classes that extend Eloquent's \texttt{Model} class. By default they live in the \texttt{App} namespace. Each model represents a different type of thing that your app works with. It usually maps to a table in the database.
+\textbf{Models} are PHP classes that extend Eloquent's \texttt{Model} class. By default they live in the \texttt{App\textbackslash{}Models} namespace\footnote{Pre Laravel 8.0 they lived in the \texttt{App} namespace}. Each model represents a different type of thing that your app works with. It usually maps to a table in the database.
 
 \pagebreak
 
-For example, when we ran \texttt{artisan make:model} earlier, we created an \texttt{Article} model class. Have a look in \texttt{app/Article.php}:
+For example, when we ran \texttt{artisan make:model} earlier, we created an \texttt{Article} model class. Have a look in \texttt{app/Models/Article.php}:
 
-\php{app/Article.php}{05-eloquent/figures/04-Article}
+\php{app/Models/Article.php}{05-eloquent/figures/04-Article}
 
 All the work is being done by that \texttt{extends Model} bit. It's Eloquent that is going to do almost all the work for us.
 

@@ -20,7 +20,11 @@ You can define your own methods in your controller for handling different reques
 First, let's update our routes to use the \texttt{Articles} controller:
 
 \begin{minted}{php}
-    Route::get('/', "Articles@index");
+    use App\Http\Controllers\Articles;
+\end{minted}
+
+\begin{minted}{php}
+    Route::get('/', [Articles::class, "index"]);
 \end{minted}
 
 This is telling Laravel to run the \texttt{index} method of the \texttt{Articles} controller when the user visits the root route (\texttt{/}).

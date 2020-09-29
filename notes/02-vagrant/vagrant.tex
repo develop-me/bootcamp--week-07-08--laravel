@@ -109,9 +109,22 @@ You can get back to your own machine by running:
 
 This should take you back to the command-line you're familiar with on your own machine.
 
+\pagebreak
+
+\begin{infobox}{Containers}
+    An alternative to Vagrant is to use \textbf{containers}. The most popular way of using containers is with \textbf{Docker}.
+    \\
+
+    Vagrant works by creating an entire virtual machine: simulating everything down to the hardware. The idea of containers is that each different bit of your app runs in its own container: one container for PHP, one for MySQL, one for storage, one for your code. These sit on top of your operating system, so there's no need to simulate an entire machine. This makes the separate parts more isolated and has various performance advantages over a full virtual machine.
+    \\
+
+    Although containers are very popular at the moment, unless you're planning on using containers in your production environment, you probably shouldn't use containers for your development environment either.
+\end{infobox}
+
 \section{Additional Resources}
 
 \begin{itemize}[leftmargin=*]
     \item \href{https://www.vagrantup.com}{Vagrant}
     \item \href{https://app.vagrantup.com/boxes/search}{Vagrant Boxes}
+    \item \href{https://www.backblaze.com/blog/vm-vs-containers/}{VMs vs Containers}
 \end{itemize}

@@ -1,0 +1,271 @@
+It's very common that we'll need to store relationships between different types of things. For example an article can have comments and tags. And while comments belong to a specific article, tags can belong to multiple articles. We need some way to store these relationships in our database and to deal with them in Laravel.
+\\
+
+A naive approach\footnote{This was what I did my first time building a database. I then learnt the proper way to do it and spent the following two months rewriting the whole thing in secret and updating the site without telling the client.} to storing comments for an article might be to add a \texttt{comments} column and then store an array of comments. But there isn't an \texttt{ARRAY} type in SQL, so you'd have to \textbf{serialize}\footnote{Turning a data structure into data that can be stored/transferred. This is actually what WordPress does for quite a lot of its data.} it somehow. This is possible, but it will lead to a world of trouble later on.
+\\
+
+Another wrong-footed approach\footnote{Which I've seen in production software} would be to create a bunch of columns called \texttt{comment\_1}, \texttt{comment\_2}, \&c. This is arguably worse than the serialisation approach as it means the database structure limits the number of comments that can be stored - and we'd have to change the database structure if we wanted to store more comments\footnote{As I said, I've seen this in production software. And they charged the client for such database changes too!}. If we wanted to store more than just the comment text we'd also need \textit{multiple} columns for each comment: \texttt{comment\_text\_1}, \texttt{comment\_email\_1}, \&c.
+
+\pagebreak
+
+\section{Relational Databases}
+
+SQL is designed to be used with \textbf{Relational Database Management Systems} (RDBMS). The key word being \textit{relational}. Although each table in the database should represent one type of thing, the database allows us to map relationships between rows in one table to rows in another table. This is based on some \href{https://en.wikipedia.org/wiki/Relational\_algebra}{pretty rigorous mathematical logic}, so it's got well known performance characteristics.
+\\
+
+There are various types of relationship that we can store in SQL, but the two most common are:
+
+\begin{itemize}
+    \item \textbf{One-to-Many}: when some\footnote{Zero or more} of one type of thing belong to another type of thing, for example articles have lots of comments, but comments belong to a specific article.
+    \item \textbf{Many-to-Many}: when some of one type of thing related to some of another type of thing, for example articles can have lots of tags, and tags belong to lots of articles.
+\end{itemize}
+
+\begin{infobox}{Other Types of Relationships}
+    We won't be looking at the following types of relationship in any detail, but they're worth knowing about:
+
+    \begin{itemize}[leftmargin=*]
+        \item \textbf{One-to-One}: when two types of thing are linked directly. For example a \texttt{people} table might have a one-to-one link to an \texttt{addresses} table. However, in many cases these are actually one-to-\textit{many} relationships: e.g. two different people might share the same address.
+        \item \textbf{Has-Many-Through}: when some of one thing relate to another type of thing \textit{via} a third type of thing. For example if our blog had users we could find all the comments on articles that the user wrote: the comments belong to the article and the article belongs to a user. This isn't technically a new type of relationship: it's just two relationships strung together.
+        \item \textbf{Polymorphic Relationships}: sometimes it's useful to represent a hierarchy. Say that we had various type of blog post (e.g. \texttt{articles}, \texttt{links}, \texttt{videos}) and we stored each type in its own table as they require different values to be stored. We could have a parent \texttt{posts} table which stores the common information and allows us to get all of them out with one query. Relational algebra doesn't express this sort of relationship well, so it is not usually part of the RDBMS. This means it isn't brilliant from a performance perspective and the way it's stored in the database is dependent on the DB library that you're using.
+    \end{itemize}
+\end{infobox}
+
+
+\section{One-to-Many Relationships}
+
+Each article can have \textbf{many} comments, but each comment can only belong to \textbf{one} article. So this is a one-to-many relationship. One-to-many relationships are asymmetrical, in that one sort of thing effectively belongs to another sort of thing.
+\\
+
+We can store this relationship by creating an \texttt{article\_id} column on the \texttt{comments} table that references the ID of the article each comment belongs to. Under the hood, MySQL can really efficiently use this structure to join together related data.
+
+\img{10cm}{15-one-to-many/img/one-to-many.eps}{1em}{One-to-many relationships}
+
+
+\subsection{Database Migration}
+
+First, we'll need to create a new database migration. We should create a \texttt{Comment} model at the same time as we'll need to work with comments in the Laravel code. Run the following \texttt{artisan} command:
+
+\begin{minted}{bash}
+    artisan make:model Comment -m
+\end{minted}
+
+A comment belongs to an article and has an email address and the comment text. As well as adding the columns, we should also tell MySQL that the \texttt{article\_id} column points to the \texttt{id} column of the \texttt{articles} table. We do this by setting up a \textbf{foreign key} constraint.
+
+\begin{infobox}{Foreign Keys}
+    Setting up a foreign key constraint tells MySQL that a column on one table points to a column on another table (or even the same table).
+    \\
+
+    You \textit{could} create the \texttt{article\_id} column without creating a foreign key and everything would still work. However, by adding the foreign key we get certain data integrity guarantees:
+
+    \begin{itemize}
+        \item It's not possible to set an \texttt{article\_id} that doesn't exist
+        \item If an article is removed from the database, MySQL can remove all related comments automatically (this is known as \textbf{cascading} the delete operation)
+        \item We can also cascade update operations, which can be useful if you aren't using \texttt{AUTO\_INCREMENT} for IDs
+    \end{itemize}
+
+    Data integrity is \textit{really} important, so it's always worthwhile spending the extra bit of effort to create a foreign key.
+\end{infobox}
+
+Update the \texttt{up} method of the newly created database migration:
+
+\php{database/migrations/<timestamp>\_create\_comments\_table.php}{15-one-to-many/figures/01-migration}
+
+Don't forget to run \texttt{artisan migrate} once you've saved the migration file.
+
+\begin{infobox}{Downing Foreign Keys}
+    If you add a foreign key to an \textit{existing} table – in a \texttt{Schema::table()} as opposed to a \texttt{Schema::create()} – you'll need to update your \texttt{down} method to drop the foreign key:
+
+    \begin{minted}{php}
+        public function down()
+        {
+          Schema::table('comments', function (Blueprint $table) {
+            // removes foreign key constraint
+            // make sure it's in an array - for... reasons
+            $table->dropForeign(['article_id']);
+
+            // then drops the foreign id column
+            $table->dropColumn("article_id");
+          });
+        }
+    \end{minted}
+\end{infobox}
+
+
+\subsection{Eloquent Models}
+
+Now we've updated the database structure we need to tell our Eloquent models about the relationship between articles and comments. Then Eloquent can do its ORM magic and join up the different models.
+\\
+
+Let's update our Article model to let it know that it can have comments:
+
+\php{app/Models/Article.php}{15-one-to-many/figures/02-Article}
+
+Now we can easily access a collection of \texttt{Comment} objects for an article object instance using its new \texttt{comments} property.\footnote{Even though we created a method - Eloquent creates the property for us}
+\\
+
+We need to setup the other side of the relationship in the \texttt{Comment} model (which we created earlier):
+
+\php{app/Models/Comment.php}{15-one-to-many/figures/03-Comment}
+
+Now all of our \texttt{Comment} object instances will have an \texttt{article} property that gives back the related \texttt{Article} object.
+\\
+
+We can use \texttt{artisan tinker} to get a bit of a better idea of how the ORM relationships work:
+
+\php{}{15-one-to-many/figures/04-tinker}
+
+
+\section{Working With Comments}
+
+Let's create a separate controller to deal with comments:
+
+\begin{minted}{bash}
+    artisan make:controller API\\Comments --api
+\end{minted}
+
+We'll add the code to this in a bit, but let's sort the routing first.
+
+
+\subsection{Routing}
+
+The first thing we need to consider is our URL structure. Comments \textit{belong} to articles, so we should make this hierarchy clear in our URL structure. If we used the following endpoints it wouldn't be clear that a comments belonged to a specific article:
+
+\begin{minted}{text}
+    /api/comments
+    /api/comments/12
+\end{minted}
+
+We could instead do something like the following:
+
+\begin{minted}{text}
+    /api/articles/4/comments
+    /api/articles/4/comments/12
+\end{minted}
+
+It is now clear that the comment(s) we are dealing with belongs to the article with an ID of \texttt{4}. We can use router groups to show this hierarchy clearly in our routing:
+
+\php{routes/api.php}{15-one-to-many/figures/05-routes}
+
+We put all of our comments routes inside the existing articles groups. We can see the data hierarchy by just looking at the indentation of the routes file.
+\\
+
+For the controller methods, we've used the same structure as for articles, just pointing at the \texttt{Comments} controller instead.
+
+
+\subsection{Resource}
+
+Before we add the methods, let's create a \texttt{CommentResource} so that our comment JSON is formatted nicely:
+
+\begin{minted}{bash}
+    artisan make:resource API\\CommentResource
+\end{minted}
+
+And then update the \texttt{toArray} method:
+
+\php{app/Http/Resources/API/CommentResource.php}{15-one-to-many/figures/06-resource}
+
+We don't need to return the article information, as we must already know about the specific article if we're trying to get its comments.
+
+\subsection{Controller}
+
+First, make sure you \texttt{use} the resource in the \texttt{Comments} controller:
+
+\php{app/Http/Controllers/API/Comments.php}{15-one-to-many/figures/07-use}
+
+
+Now, let's add the \texttt{index} method:
+
+\php{app/Http/Controllers/API/Comments.php}{15-one-to-many/figures/08-index}
+
+It's a bit different from the one we wrote for articles because we only want to return comments that belong to the article specified in the URL. We can get the article using Route Model Binding and then we can get the relevant comments using the \texttt{Article} model's \texttt{comments} property (which we set up earlier).\footnote{It's a \textit{property}, not a \textit{method} – even though we created the relationship using a method}.
+\\
+
+Check the route works using Postman.
+\\
+
+Next, let's get the \texttt{show} method working:
+
+\php{app/Http/Controllers/API/Comments.php}{15-one-to-many/figures/09-show}
+
+This one is almost identical to the articles controller, except we need to include the \texttt{Article} as the first parameter that uses Route Model Binding – even though we don't actually use it anywhere. That's just how Route Model Binding works: it's a bit magical, but it's very handy.
+\\
+
+Check the route works using Postman.
+\\
+
+Let's get do \texttt{destroy} method next:
+
+\php{app/Http/Controllers/API/Comments.php}{15-one-to-many/figures/10-destroy}
+
+Also very similar to the one for articles and, again, we need to include the \texttt{Article} parameter, even though we don't actually use it.
+
+\begin{infobox}{Stray Comments}
+    You might have realised that there's nothing in our code to stop you viewing/deleting a comment via the wrong article.
+    \\
+
+    For example, say we have a comment with the ID \texttt{12} that belongs to an article with the ID \texttt{3}. Currently we could make a \texttt{GET} or \texttt{DELETE} request to \\ \texttt{/api/articles/17/comments/12} and, as long as there was an article with ID of \texttt{17} it would still work – even though comment \texttt{12} doesn't belong to article \texttt{17}.
+    \\
+
+    You can use \href{http://laravel.com/docs/master/middleware}{Middleware} to get around this issue in a way that doesn't mess up your controllers, but it's an extra layer of complexity that we'll ignore for now.
+\end{infobox}
+
+Next, we'll want to be able to create and update comments. To do this we'll need to make sure we can add the relevant properties to the \texttt{Comment} model, so we need to make sure we update the \texttt{fillable} property so we don't get a mass assignment vulnerability error:
+
+\php{app/Models/Comment.php}{15-one-to-many/figures/11-fillable}
+
+Now we can add the \texttt{store} method:
+
+\php{app/Models/Comment.php}{15-one-to-many/figures/12-store}
+
+Again, it's very similar to the one for articles. There are two differences: we're using Route Model Binding to get the relevant article and we \texttt{associate} the \texttt{Comment} with the \texttt{Article} before saving it – this adds the relevant article ID, which the database needs because of the foreign key constraint.
+\\
+
+Check the route works using Postman – make sure you submit valid data, we've not got validation yet.
+\\
+
+Finally, we can get the \texttt{update} method working:
+
+\php{app/Models/Comment.php}{15-one-to-many/figures/13-update}
+
+As with the others, it's very similar to the articles version.
+\\
+
+In this case we again need to get the article with Route Model Binding, even though we don't actually use it – the comment is already associated with the article, so we don't need to update it.
+\\
+
+We just get the relevant comment, use \texttt{fill()} with the request data and then save it.
+\\
+
+Check the route works using Postman and then we we can add some validation.
+
+
+\subsection{Validation}
+
+We \textit{always} need to add validation to any data sent to the server. First, use \texttt{artisan} to create a \texttt{CommentRequest}:
+
+\begin{minted}{bash}
+    artisan make:request API\\CommentRequest
+\end{minted}
+
+Then update the \texttt{authorize()} and \texttt{rules()} methods:
+
+\php{app/Http/Requests/API/CommentRequest.php}{15-one-to-many/figures/14-CommentRequest}
+
+You'll also need to update the \texttt{Comments} controller to use the validated request. First let the controller know where to find the \texttt{CommentRequest} class:
+
+\php{app/Http/Controllers/API/Comments.php}{15-one-to-many/figures/15-use}
+
+Then update the type-hinting to use \texttt{CommentRequest} instead of \texttt{Request}:
+
+\php{app/Http/Controllers/API/Comments.php}{15-one-to-many/figures/16-request-type-hint}
+
+Finally, check your \texttt{POST} and \texttt{PUT} routes to make sure you can't submit any invalid data.
+
+
+\section{Additional Resources}
+
+\begin{itemize}[leftmargin=*]
+    \item \href{http://laravel.com/docs/7.x/eloquent-relationships}{Laravel: Eloquent Relationships}
+    \item \href{https://mysql.programmingpedia.net/en/tutorial/9600/one-to-many}{One-to-Many Relationships}
+    \item \href{https://relinx.io/2020/09/14/old-good-database-design}{Old Good Database Design}
+\end{itemize}

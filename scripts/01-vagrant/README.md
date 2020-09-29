@@ -64,3 +64,10 @@ server {
 - Vagrantfile tour
     - change IP for each VM
     - change hostname
+
+## Containers
+
+- Briefly talk about containers/Docker
+    - Very popular
+    - Don't have to simulate the hardware, so faster
+    - But probably shouldn't use if not using containers in production

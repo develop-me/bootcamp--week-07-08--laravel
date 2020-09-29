@@ -1,4 +1,4 @@
-# Day 2: Morning
+# Day 3
 
 ## TDD
 
