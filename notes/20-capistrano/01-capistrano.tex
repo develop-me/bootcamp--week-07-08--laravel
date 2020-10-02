@@ -21,6 +21,9 @@ We'll be using Capistrano to deploy a Laravel website, but it can be used for de
 \section{Installing \texttt{bundle}}
 
 We need to use Ruby's package manager, \texttt{gem}, to install the \texttt{bundle} command:\footnote{Rather confusingly we install \texttt{bundle\textbf{r}} to do this}
+\\
+
+On your machine (not your AWS server) run:
 
 \begin{minted}{bash}
     gem install bundler
@@ -72,7 +75,7 @@ Create a file \texttt{deployment/deploy/production.rb} and put the following in 
 \code{deployment/deploy/production.rb}{ruby}{20-capistrano/figures/04-production.rb}
 
 
-\section{Sever Setup}
+\section{Server Setup}
 
 Capistrano creates its own directory structure on the server:
 
@@ -120,7 +123,7 @@ We also need to create the \texttt{storage} directories that Laravel uses:
 
     # create the sub-directories
     cd storage/framework
-    mkdir sessions view cache
+    mkdir sessions views cache
 \end{minted}
 
 

@@ -173,16 +173,16 @@ You will need to install the following software packages on the server:
     \item \textbf{SSH Keys}: for authentication
 \end{itemize}
 
-First update \texttt{apt-get}, used for installing Linux packages, so that it has the most up to date package versions:
+First update \texttt{apt}, used for installing Linux packages, so that it has the most up to date package versions:
 
 \begin{minted}{bash}
-    sudo apt-get update -y
+    sudo apt update -y
 \end{minted}
 
 First, let's install Nginx:
 
 \begin{minted}{bash}
-    sudo apt-get install -y nginx
+    sudo apt install -y nginx
 \end{minted}
 
 Once this is installed, visit your IPv4 address in the browser. For example:
@@ -197,13 +197,13 @@ You should see a ``Welcome to nginx!'' message.
 Let's install MySQL, Git, and a few other important tools:
 
 \begin{minted}{bash}
-    sudo apt-get install -y mysql-server git zip acl
+    sudo apt install -y mysql-server git zip acl
 \end{minted}
 
 And PHP:
 
 \begin{minted}{bash}
-    sudo apt-get install -y php-fpm php-mysql php-mbstring php-dom
+    sudo apt install -y php-fpm php-mysql php-mbstring php-dom
 \end{minted}
 
 
@@ -518,7 +518,7 @@ Then restart Nginx:
 Next, we install \texttt{certbot} on our AWS EC2 instance, which we can use to have SSL certificates issued for us, with:
 
 \begin{minted}{bash}
-    sudo apt-get install -y certbot python3-certbot-nginx
+    sudo apt install -y certbot python3-certbot-nginx
 \end{minted}
 
 Then we issue a certificate:
