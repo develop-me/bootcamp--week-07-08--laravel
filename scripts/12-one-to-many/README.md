@@ -15,12 +15,17 @@
     - Data integrity **really important**
     - Means we can't add invalid relationships
     - Cascading guarantees can't end up with invalid relationships
+    - Laravel 8.0
 
     ```php
     // create the article_id column
-    $table->foreignId("article_id")->unsigned();
+    $table->foreignId("article_id")->constrained()->onDelete("cascade");
+    ```
+    - Same as (older Laravel):
 
-    // set up the foreign key constraint
+    ```php
+    // laravel 8.0 method just assumes you've named everything in the standard way
+    $table->bigInteger("article_id")->unsigned(); 
     $table->foreign("article_id")->references("id")->on("articles")->onDelete("cascade");
     ```
 

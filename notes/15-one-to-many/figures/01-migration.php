@@ -10,14 +10,25 @@ public function up()
     $table->timestamps();
 
     // create the article_id column
-    $table->foreignId("article_id")->unsigned();
-
-    // set up the foreign key constraint
+    // add a foreign key constraint
+    // setup cascading on delete
     // this tells MySQL that the article_id column
     // references the id column on the articles table
     // we also want MySQL to automatically remove any
     // comments linked to articles that are deleted
-    $table->foreign("article_id")->references("id")
-          ->on("articles")->onDelete("cascade");
+    $table->foreignId("article_id")
+          ->constrained()
+          ->onDelete("cascade");
+
+    // in older version of Laravel this would have been written as 
+    /*
+    // create the column
+    $table->bigInteger("article_id)->unsigned();
+
+    // setup the foreign key 
+    $table->foreign("article_id")
+          ->references("id")->on("articles")
+          ->onDelete("cascade");
+    */
   });
 }

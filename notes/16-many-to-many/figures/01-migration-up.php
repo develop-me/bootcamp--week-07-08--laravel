@@ -16,13 +16,13 @@ public function up()
     $table->id();
 
     // create the article id column and foreign key
-    $table->foreignId("article_id")->unsigned();
-    $table->foreign("article_id")->references("id")
-          ->on("articles")->onDelete("cascade");
+    $table->foreignId("article_id")
+          ->constrained()
+          ->onDelete("cascade");
 
     // create the tag id column and foreign key
-    $table->foreignId("tag_id")->unsigned();
-    $table->foreign("tag_id")->references("id")
-          ->on("tags")->onDelete("cascade");
+    $table->foreignId("tag_id")
+          ->constrained()
+          ->onDelete("cascade");
   });
 }
