@@ -63,7 +63,7 @@ PHPUnit provides a \href{https://phpunit.readthedocs.io/en/9.0/assertions.html}{
 First, let's make sure PHP knows which \texttt{Article} class to use. At the top of \texttt{ArticleTest}:
 
 \begin{minted}{php}
-    use App\Article;
+    use App\Models\Article;
 \end{minted}
 
 Let's test our \texttt{truncate} method on our \texttt{Article} model by adding the following to \texttt{ArticleTest}:
@@ -118,11 +118,30 @@ You might want to use the same \texttt{Article} object in multiple tests. We can
 Sometimes we need to test things that involve the database. However, we don't want to pollute our normal database with test data. If we run the same test hundreds of times, we don't want to end up with the same test article hundreds of times. It's also harder to write tests if we don't know the state of the database before we start.
 \\
 
-For this reason we usually use a \textit{separate} database for testing. By default Laravel uses an \textbf{in-memory SQLite} database. You don't really need to worry about what that means as Laravel does all the work for us, but basically it's temporary and stored in memory (as opposed to on the hard-drive), so it's really fast.
+For this reason we usually use a \textit{separate} database for testing. Laravel can be configured to use an \textbf{in-memory SQLite} database. You don't really need to worry about what that means as Laravel does all the work for us, but basically it's temporary and stored in memory (as opposed to on the hard-drive), so it's really fast.
 \\
 
-Laravel automatically sets this up for us in the \texttt{phpunit.xml} file.
+To use this separate test database edit your \texttt{phpunit.xml} file to uncomment the \texttt{DB\_CONNECTION} and \texttt{DB\_DATABASE} lines:
 
+\begin{minted}{xml}
+    ....
+    <server name="CACHE_DRIVER" value="array"/>
+    <!-- <server name="DB_CONNECTION" value="sqlite"/> -->
+    <!-- <server name="DB_DATABASE" value=":memory:"/> -->
+    <server name="MAIL_MAILER" value="array"/>
+    ....
+\end{minted}
+
+Change to:
+
+\begin{minted}{xml}
+    ....
+    <server name="CACHE_DRIVER" value="array"/>
+    <server name="DB_CONNECTION" value="sqlite"/>
+    <server name="DB_DATABASE" value=":memory:"/>
+    <server name="MAIL_MAILER" value="array"/>
+    ....
+\end{minted}
 
 \subsection{Using the Test Database in Tests}
 
@@ -159,7 +178,6 @@ This is called a \texttt{trait}: it effectively adds a method to your class.
 \\
 
 Now we can write tests involving the database.
-
 
 \subsection{Writing Database Tests}
 

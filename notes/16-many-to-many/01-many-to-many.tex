@@ -1,0 +1,178 @@
+Tags and articles have a more complex relationship than comments and articles. An article can have any number of tags, but a tag can also belong to any number of articles. This is a many-to-many relationship. These relationships are symmetrical: neither side \textit{belongs} to to the other side.
+\\
+
+We can't reference the article or tag ID from the other table in this case, as that way we could only reference a single item. In this case we need a \textbf{pivot table}. The pivot table \textit{just} stores the relationship between an article and a tag using an \texttt{article\_id} and a \texttt{tag\_id} column:
+
+\img{\textwidth}{16-many-to-many/img/many-to-many.eps}{1em}{Many-to-many relationships. Simples!}
+
+It is possible to store additional information about the relationship on a pivot table, which Eloquent makes available on the model's \texttt{pivot} property, but in our case this won't be necessary.
+
+\pagebreak
+
+
+\begin{infobox}{Termlists}
+    It's quite common with databases to have tables which effectively just store a list of strings with an associated ID: e.g. countries, cities, genders, etc. These are sometimes referred to as \textbf{termlists} (because it's a list of terms):
+
+    \begin{center}
+        \begin{tabularx}{\textwidth} {| c | l |}
+             \hline
+             \texttt{id}   & \texttt{country} \\
+             \hline
+             1             & Algeria          \\
+             2             & Burkina Faso     \\
+             3             & Cambodia         \\
+             \textellipsis & \textellipsis    \\
+             \hline
+        \end{tabularx}
+        \quad
+        \begin{tabularx}{\textwidth} {| c | l |}
+             \hline
+             \texttt{id}   & \texttt{gender} \\
+             \hline
+             1             & Female          \\
+             2             & Male            \\
+             3             & Non-Binary      \\
+             \textellipsis & \textellipsis   \\
+             \hline
+        \end{tabularx}
+    \end{center}
+
+    It's a good idea to use the same column name for the string column for all your termlists. For example rather than having a \texttt{country} column in the \texttt{countries} table and a \texttt{gender} column in the \texttt{genders} table, you should always call the column something like \texttt{name}:
+
+    \begin{center}
+        \begin{tabularx}{\textwidth} {| c | l |}
+             \hline
+             \texttt{id}   & \texttt{name} \\
+             \hline
+             1             & Algeria       \\
+             2             & Burkina Faso  \\
+             3             & Cambodia      \\
+             \textellipsis & \textellipsis \\
+             \hline
+        \end{tabularx}
+        \quad
+        \begin{tabularx}{\textwidth} {| c | l |}
+             \hline
+             \texttt{id}   & \texttt{name} \\
+             \hline
+             1             & Female        \\
+             2             & Male          \\
+             3             & Non-Binary    \\
+             \textellipsis & \textellipsis \\
+             \hline
+        \end{tabularx}
+    \end{center}
+
+    You normally need to do similar sorts of things to all your termlists: e.g. list them, reorganise them, add items, remove items, etc. By giving them all the same structure you can reuse the same bits of code for all of them.
+    \\
+
+    Generally it's not very useful to store timestamps on termlist tables.
+\end{infobox}
+
+
+
+\section{Database Migration}
+
+We'll need a \texttt{Tag} model shortly, so let's create that at the same time as the database migration using \texttt{artisan}:
+
+\begin{minted}{bash}
+    artisan make:model Tag -m
+\end{minted}
+
+The database migration for the tags is going to be more complicated than for comments as we'll need to create \textit{two} tables: a termlist table for tags and the pivot table. We can create more than one table in a single migration, just by calling \texttt{Schema::create()} twice:
+
+\php{database/migrations/<timestamp>\_create\_tags\_table.php}{16-many-to-many/figures/01-migration-up}
+
+Notice that we've called the pivot table \texttt{article\_tag}. That's because Eloquent can automatically find pivot tables if they're named using the singular version of the two tables being joined together, in alphabetical order, with an underscore between them. You can call it whatever you like, but you'd need to let Laravel know if you chose something else.
+\\
+
+We're not done yet. If we create two tables we need to make sure we update the \texttt{down()} method so that both tables are removed if we rollback the migration. It's important that we remove the tables in the opposite order from how they were created: if we try and drop the \texttt{tags} table before the pivot table, the foreign key constraints in the pivot table would all fail (as there would be no valid \texttt{tag\_id}s to point to):
+
+\php{database/migrations/<timestamp>\_create\_tags\_table.php}{16-many-to-many/figures/02-migration-down}
+
+As a general rule, if you're creating multiple tables, you should always drop them in reverse order.
+
+
+\section{Eloquent Models}
+
+First, we need to tell the \texttt{Tag} model not to worry about setting the timestamp columns, otherwise we'll get a MySQL error when we try to add a tag. We do this by setting the \texttt{public} property \texttt{timestamps} to \texttt{false}:
+
+\php{app/Models/Tag.php}{16-many-to-many/figures/03-timestamps}
+
+Next we should let Eloquent know about the relationship between articles and tags. In the \texttt{Tag} model add an \texttt{articles} method and use the \texttt{belongsToMany()} relationship method:
+
+\php{app/Models/Tag.php}{16-many-to-many/figures/04-tag-relationship}
+
+We'll also need to tell the \texttt{Article} model about tags. Again we'll use a plural name for the method. And many-to-many relationships are symmetrical, so we use the \textit{same} relationship method:
+
+\php{app/Models/Article.php}{16-many-to-many/figures/05-article-relationship}
+
+
+\pagebreak
+
+
+\section{Tags from Strings}
+
+Next, we'll want to make it so we can submit tags when we create/update an article:
+
+\begin{minted}{json}
+    {
+        "title": "Agent Smith: Misunderstood?",
+        "content": "Dodge this",
+        "tags": ["dated", "references", "aplenty"]
+    }
+\end{minted}
+
+
+So, we'll want some way to turn an array of strings (which we'll get in the \texttt{Request}), into an array of \texttt{Tag} models.
+\\
+
+The best place to put this logic is probably as a \texttt{static} method on the \texttt{Tag} model:
+
+\php[fontsize=\scriptsize]{app/Models/Tag.php}{16-many-to-many/figures/06-Tag}
+
+We take an array of strings and turn it into a \texttt{Collection}. We then use \texttt{map} to remove any whitespace from either side of each string. Next we make sure that there aren't any duplicate strings. Finally we use the \texttt{Model}'s \texttt{firstOrCreate} method to find a matching \texttt{Tag} in the database or create a new one if one doesn't exist. By the end of this we should have a collection containing all the relevant \texttt{Tag} models from the database.
+
+
+\section{Syncing}
+
+When dealing with many-to-many relationships, it can be tricky to make sure that the relationships stay up to date: a user might add a few tags to an article but also remove a few at the same time. Juggling all of this manually can get very complicated. But, of course, Laravel has us covered with the \texttt{Model}'s \texttt{sync} method. We just need to pass this an array of \texttt{id}s and it will do all of the complex database wrangling for us.
+
+\pagebreak
+
+\php{app/Models/Article.php}{16-many-to-many/figures/07-Article-setTags}
+
+We accept an array of strings, then use our \texttt{Tag::fromStrings} method to turn that into a collection of \texttt{Tag} models. Next we use the \texttt{sync} method on the \texttt{Article} model to add any new tags and remove any unused tags from the database.
+
+
+\section{Controller Logic}
+
+We won't need to add any new routes for tags because they get added as part of the article \texttt{POST}/\texttt{PUT} request. But we will need to update the \texttt{store} and \texttt{update} methods in the \texttt{Articles} controller.
+\\
+
+We'll need to update the methods. We'll use our new \texttt{\$article->setTags()} method to do all the necessary work:
+
+\php{app/Http/Controllers/API/Articles.php}{16-many-to-many/figures/08-Articles-tags-redux}
+
+
+\section{Validation}
+
+We'll need to add validation rules for tags to \texttt{ArticleRequest}. We'll use the \texttt{array} validation type for the \texttt{tags} field. We can also use the \texttt{.*} notation to add validation for the items inside the \texttt{tags} array. In this case we want them to be strings with a maximum length of 30 (we used a \texttt{VARCHAR(30)} for tags):
+
+\php{app/Http/Requests/API/ArticleRequest.php}{16-many-to-many/figures/09-validation}
+
+
+\section{Resource}
+
+Finally, let's update our article resources to include tags as an array. In \texttt{ArticleResource} and \texttt{ArticleListResource}:
+
+\php{app/Http/Resources/API/ArticleResource}{16-many-to-many/figures/10-resource}
+
+
+
+\section{Additional Resources}
+
+\begin{itemize}[leftmargin=*]
+    \item \href{http://laravel.com/docs/master/eloquent-relationships#many-to-many}{Eloquent: Many to Many Relationships}
+    \item \href{http://laravel.com/docs/master/eloquent#other-creation-methods}{Laravel: \texttt{firstOrCreate}}
+\end{itemize}

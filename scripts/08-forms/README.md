@@ -5,7 +5,7 @@
 - going to create a form to create articles
 - new route:    
     ```php
-    Route::get('/articles/create', "Articles@create");
+    Route::get('/articles/create', [Articles::class, "create"]);
     ```
 - new Controller method:
     ```php
@@ -56,7 +56,7 @@
 
 - new route:
     ```php
-    Route::post('/articles/create', "Articles@createPost");
+    Route::post('/articles/create', [Articles::class, "createPost"]);
     ```
 - note `post` part
 - new Controller method structure:
@@ -116,7 +116,7 @@
 
 
 ## Errors
-- output error message:
+- output error message JUST AFTER field (`<input>` or `<textarea>`):
 
     ```php
     @error('title')

@@ -2,6 +2,10 @@
 
 ## Structure of Day
 - Laravel
+    - Alternatives
+        - Ruby on Rails (Laravel on-par features-wise, Ruby is slower)
+        - Node (not very mature ecosystem, Sails.js only real framework – still very new)
+        - Django
 - Homestead (setup a Vagrant box for Laravel + tools)
 - Models & Eloquent
 - Blade templating

@@ -116,7 +116,13 @@ For an Ubuntu instance the username is \texttt{ubuntu} and the domain can be fou
     ec2-3-8-39-24.eu-west-2.compute.amazonaws.com
 \end{minted}
 
-Next, we need to tell SSH to use the key we just created whenever it tries to connect to that server. In \texttt{\textasciitilde/.ssh/config}:
+Next, we need to tell SSH to use the key we just created whenever it tries to connect to that server. First, open \texttt{\textasciitilde/.ssh/config} in VS Code:
+
+\begin{minted}{bash}
+    code ~/.ssh/config
+\end{minted}
+
+Then add the following:
 
 \begin{minted}{text}
     Host ec2-3-8-199-58.eu-west-2.compute.amazonaws.com
@@ -167,16 +173,16 @@ You will need to install the following software packages on the server:
     \item \textbf{SSH Keys}: for authentication
 \end{itemize}
 
-First update \texttt{apt-get}, used for installing Linux packages, so that it has the most up to date package versions:
+First update \texttt{apt}, used for installing Linux packages, so that it has the most up to date package versions:
 
 \begin{minted}{bash}
-    sudo apt-get update -y
+    sudo apt update -y
 \end{minted}
 
 First, let's install Nginx:
 
 \begin{minted}{bash}
-    sudo apt-get install -y nginx
+    sudo apt install -y nginx
 \end{minted}
 
 Once this is installed, visit your IPv4 address in the browser. For example:
@@ -191,13 +197,13 @@ You should see a ``Welcome to nginx!'' message.
 Let's install MySQL, Git, and a few other important tools:
 
 \begin{minted}{bash}
-    sudo apt-get install -y mysql-server git zip acl
+    sudo apt install -y mysql-server git zip acl
 \end{minted}
 
 And PHP:
 
 \begin{minted}{bash}
-    sudo apt-get install -y php-fpm php-mysql php-mbstring php-dom
+    sudo apt install -y php-fpm php-mysql php-mbstring php-dom
 \end{minted}
 
 
@@ -259,7 +265,7 @@ In Nano add some basic HTML:
     <h1>Hello, world!</h1>
 \end{minted}
 
-Then press \texttt{Ctrl+o} to save and then \texttt{Ctrl+x} to exit.
+Then press \texttt{Ctrl+o} followed by Enter to save and then \texttt{Ctrl+x} to exit.
 \\
 
 Once again, check your server in the browser. You should now see ``Hello, World!'', as Nginx is serving up your \texttt{index.html} file.
@@ -324,7 +330,7 @@ You should now be able to connect to Git from the server.
 
 \subsection{Copy Your Repository to the Server}
 
-On your repository, go to clone or download and, as usual, copy the code (ensure it says clone with SSH):
+On your GitHub repository, go to clone or download and, as usual, copy the code (ensure it says clone with SSH):
 
 \begin{minted}{bash}
     cd /var/www
@@ -349,16 +355,16 @@ Open the Nginx config file in a text editor:\footnote{It's good practice to use 
     sudo nano /etc/nginx/sites-available/default
 \end{minted}
 
-First, add \texttt{index.php} to the acceptable index files:
-
-\begin{minted}{nginx}
-    index index.php index.html index.htm;
-\end{minted}
-
-Scroll down to \texttt{root} and change it to:
+First change \texttt{root} to:
 
 \begin{minted}{nginx}
     root /var/www/<repo-name>/public;
+\end{minted}
+
+Then scroll down and add \texttt{index.php} to the acceptable index files:
+
+\begin{minted}{nginx}
+    index index.php index.html index.htm;
 \end{minted}
 
 We'll also need to update the \texttt{location} entries:
@@ -414,7 +420,7 @@ You're getting an error because you are missing the \texttt{.env} file that cont
     php artisan key:generate
 \end{minted}
 
-Check the page in your browser. The page should now display a \textit{Laravel} error message saying that we've not setup a MySQL database yet.
+Check the page in your browser. Hopefully you'll see the Laravel welcome page.
 
 
 \subsection{Setting Up the Database}
@@ -454,7 +460,7 @@ There are plenty of \href{https://generatepasswords.org}{online password generat
 
 \subsection{Configure Laravel}
 
-Update your \texttt{.env} file with the details of your database (the name of the database and password you created as well as changing user to root):
+Update your \texttt{.env} file with the details of your database:
 
 \begin{minted}{bash}
     nano .env
@@ -485,7 +491,7 @@ Success, everything is setup! You should now be able to make calls to your API.
 Nowadays it is considered good practice to use HTTPS on \textit{all} websites, as it can prevent a number of security issues.
 \\
 
-First step, we'll need to set up a real domain to point to our server. If you don't have one to use ask the instructor to set you up a \texttt{something.developme.space} one.
+First step, we'll need to set up a real domain to point to our server. If you don't have one to use ask the instructor to set you up a \texttt{something.developme.space} one. They'll need your \textbf{Public IP Address} (e.g. \texttt{18.135.204.183}).
 \\
 
 Now update the Nginx config to use this domain, edit the config file:
@@ -497,6 +503,9 @@ Now update the Nginx config to use this domain, edit the config file:
 Change the \texttt{server\_name}:
 
 \begin{minted}{nginx}
+    # e.g.
+    # server_name myapp.developme.space;
+    # no protocol on the front
     server_name <YOUR.DOMAIN>;
 \end{minted}
 
@@ -509,7 +518,7 @@ Then restart Nginx:
 Next, we install \texttt{certbot} on our AWS EC2 instance, which we can use to have SSL certificates issued for us, with:
 
 \begin{minted}{bash}
-    sudo apt-get install -y certbot python3-certbot-nginx
+    sudo apt install -y certbot python3-certbot-nginx
 \end{minted}
 
 Then we issue a certificate:
@@ -558,4 +567,5 @@ Terminating an instance will delete the server including any files and setup on 
     \item \href{https://www.digitalocean.com/community/tutorials/how-to-install-linux-nginx-mysql-php-lemp-stack-ubuntu-18-04}{Digital Ocean: How To Install Linux, Nginx, MySQL, PHP (LEMP stack) on Ubuntu 18.04}
     \item \href{https://www.digitalocean.com/community/tutorials/how-to-install-and-configure-laravel-with-lemp-on-ubuntu-18-04}{How to Install and Configure Laravel with LEMP on Ubuntu 18.04}
     \item \href{https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/terminating-instances.html}{Terminating an EC2 Instance}
+    \item \href{https://adayinthelifeof.nl/2020/05/20/aws.html}{AWS services explained in one line each}
 \end{itemize}
