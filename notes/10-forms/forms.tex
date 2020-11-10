@@ -116,8 +116,6 @@ Then we get all the submitted data from the \texttt{Request} object. Next, we cr
     If a \texttt{POST} request returns a \texttt{view()} the user can refresh the page, which will resubmit any data, possibly leading to data duplication (or worse). If instead it returns a \texttt{redirect()}, when the user refreshes the page it will reload the page you've redirected to.
 \end{infobox}
 
-But, if you try to submit the form, you'll get an error.
-
 
 \subsection{Mass Assignment Vulnerability}
 
@@ -128,10 +126,9 @@ Imagine you have a \texttt{users} table that has an \texttt{admin} column for ke
 \\
 
 To stop this from happening, if you pass an Eloquent model an array of properties, it will only use the properties that you've listed in the model's \texttt{\$fillable} property. If you've not set this property and try to pass in an array of values you'll get a 500 error.
+\\
 
-\pagebreak
-
-We need to update the \texttt{Article} model to tell it which fields to expect:
+Make sure your \texttt{Article} model has all the expected properties in its \texttt{\$fillable} property:
 
 \php{app/Models/Article.php}{10-forms/figures/09-Article}
 
