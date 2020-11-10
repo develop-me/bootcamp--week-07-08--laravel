@@ -4,9 +4,9 @@ If we want to submit data to the site we'll need a form.
 Let's create a simple form for creating a new blog post.
 \\
 
-In \texttt{resources/views/form.blade.php}:
+In \texttt{resources/views/articles/form.blade.php}:
 
-\php{resources/views/form.blade.php}{10-forms/figures/01-form.blade}
+\php{resources/views/articles/form.blade.php}{10-forms/figures/01-form.blade}
 
 And add a route so that we can view it:
 
@@ -45,7 +45,7 @@ That's where \texttt{POST} comes in. If we tell a browser to submit a form using
 
 By default a \texttt{<form>} will submit data as a \texttt{GET} request. To get it to use \texttt{POST} we'll need to add the \texttt{method} attribute to our template:
 
-\html{resources/views/form.blade.php}{10-forms/figures/04-form}
+\html{resources/views/articles/form.blade.php}{10-forms/figures/04-form}
 
 
 \begin{infobox}{Form \texttt{action}}
@@ -84,7 +84,7 @@ Laravel doesn't want you to accidentally open your site up to this sort of attac
 
 To add a CSRF token we simple use the \texttt{@csrf} Blade shortcut somewhere in our form:
 
-\html{resources/views/form.blade.php}{10-forms/figures/07-csrf}
+\html{resources/views/articles/form.blade.php}{10-forms/figures/07-csrf}
 
 Now if we submit the form you'll refresh the current page. We need to update our \texttt{createPost} method to do something.
 

@@ -51,12 +51,15 @@ Now we can update our \texttt{welcome.blade.php} template so that we don't have 
     @foreach ($articles as $article)
 \end{minted}
 
-Now we can potentially reuse the \texttt{welcome.blade.php} template for \textit{any} page that needs to show a list of articles, not just the homepage. So we should probably rename the file \texttt{articles.blade.php} and update the \texttt{Articles} controller:
+Now we can potentially reuse the \texttt{welcome.blade.php} template for \textit{any} page that needs to show a list of articles, not just the homepage.
+\\
+
+So we should probably move it into the \texttt{resources/views/articles} directory, rename the file \texttt{index.blade.php}, and update the \texttt{Articles} controller:
 
 \php{app/Http/Controllers/Articles.php}{09-controllers/figures/04-articles}
 
 Next, let's get our page to show a specific article working properly (i.e. show the relevant article, rather than just some filler text).
-
+\\
 
 The data (properties) from the Article model are passed into the view with the variable name \texttt{article}.
 \\
@@ -72,7 +75,7 @@ Next, add the \texttt{show} method to the \texttt{Articles} controller:
 The value from the URL parameter (the \texttt{\{id\}} bit in the route), gets passed in as the first argument to the method. So we can use this to find the relevant article and then pass it in.
 \\
 
-Now we can update our \texttt{article.blade.php} template:
+Now we can update our \texttt{resources/views/articles/show.blade.php} template:
 
 \begin{minted}{html}
     @extends("app")
@@ -104,9 +107,7 @@ We can get Laravel to do quite a lot of work for us when it comes to fetching mo
 First, update the route to use \texttt{\{article\}} instead of \texttt{\{id\}} (it needs to match the model name):
 
 \begin{minted}{php}
-    Route::get('/articles/{article}', function () {
-        return view('article');
-    });
+    Route::get("/articles/{article}", [Articles::class, "show"]);
 \end{minted}
 
 Then in the \texttt{Articles} controller, instead of just having the \texttt{\$id} parameter, we replace it with \texttt{Article \$article}:
