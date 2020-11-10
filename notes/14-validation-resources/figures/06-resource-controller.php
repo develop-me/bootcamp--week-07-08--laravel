@@ -19,9 +19,8 @@ public function show(Article $article)
 
 public function update(Request $request, Article $article)
 {
-  $article = Article::find($id);
   $data = $request->all();
-  $article->fill($data)->save();
+  $article->update($data);
 
   // return the resource
   return new ArticleResource($article);
