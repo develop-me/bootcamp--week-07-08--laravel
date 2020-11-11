@@ -286,6 +286,18 @@ And once you're done:
 
 You may need to run \texttt{exit} a \textit{second} time to leave the Vagrant VM.
 
+\section{Database Design Considerations}
+
+Some database design tips when planning out a database.
+
+\begin{itemize}[leftmargin=*]
+    \item {Think of objects as tables (products, customers, orders)}
+    \item {every table should have an \texttt{id} field}
+    \item {Consider how different objects/tables relate to eachother (see One-to-Many and Many-to-Many chapters)}
+    \item {Reduce replication, don't have customer name stored in two places; takes more space, and need to remember to update in both places if the data needs to change}
+    \item {Think about data types for fields, and data length. How long is a name? A postcode? A phone number?}
+\end{itemize}
+
 \section{Additional Resources}
 
 \begin{itemize}[leftmargin=*]
