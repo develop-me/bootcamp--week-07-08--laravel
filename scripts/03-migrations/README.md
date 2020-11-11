@@ -1,23 +1,25 @@
 # Day 2
 
 ## Structure of Day
+
 - Laravel
-    - Alternatives
-        - Ruby on Rails (Laravel on-par features-wise, Ruby is slower)
-        - Node (not very mature ecosystem, Sails.js only real framework – still very new)
-        - Django
+  - Alternatives
+    - Ruby on Rails (Laravel on-par features-wise, Ruby is slower)
+    - Node (not very mature ecosystem, Sails.js only real framework - still very new)
+    - Django
 - Homestead (setup a Vagrant box for Laravel + tools)
 - Models & Eloquent
 - Blade templating
 - Routes & Controllers
 
 ## Setup
+
 - Going to set up a Laravel app boilerplate (template) and build it out into 2 apps
 - I'm going to build a blog app for demonstration
 - You're going to build an app for a Vets practice
 - Mention `composer global require laravel/installer` run once - refer to notes
 
-### Demo
+### Demo - get students to follow along for first part until `vagrant up`
 
 - `composer require laravel/homestead` to add package
 - Run `vendor/bin/homestead make`
@@ -28,6 +30,8 @@
     DB_USERNAME=root
     DB_PASSWORD=secret
     ```
+
+- If you can't see the file then reload directory in VS Code
 
 - Get vagrant box up and running: set memory to `512`
 - `vagrant up`
