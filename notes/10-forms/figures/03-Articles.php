@@ -2,5 +2,5 @@
 
 public function create()
 {
-    return view("form");
+    return view("articles/form");
 }

@@ -10,7 +10,8 @@
 ## URL Parameters
 
 - Add `/articles/{id}` route
-- Load generic `article.blade.php` - nothing specific to actual article
+- We'll put all the article templates in `/resources/views/articles`
+- Load generic `articles/show.blade.php` - nothing specific to actual article
 - Show working for `/articles/<anything>`
 - Can use this in a Controller
 
@@ -50,7 +51,7 @@
     ```php
     @foreach ($articles as $article)
     ```
-- Rename it `articles.blade.php`
+- Rename it `articles/index.blade.php`
 
 - Next, show an article
 - `Route::get("/articles/{article}", [Articles::class, "show"]);`
@@ -67,7 +68,7 @@
     }
     ```
 - ID passed in automatically from the URL parameter
-- update `article.blade.php` to use `$article`
+- update `articles/show.blade.php` to use `$article`
 
     ```html
     <h2 class="card-header">{{ $article->title }}</h2>

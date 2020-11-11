@@ -40,15 +40,22 @@ Now, visit \texttt{/about} if your browser and you should see the new page.
 Next, let's add a route for an article.
 \\
 
-First create the file \texttt{resources/views/article.blade.php}:
+We'll create a new template inside a \texttt{resources/views/articles} directory – this is where we'll put all of our \textit{article} related views.
+\\
 
-\code{resources/views/article.blade.php}{html}{08-routing/figures/02-article.blade.php}
+First create the file \texttt{resources/views/articles/show.blade.php}:
+
+\code{resources/views/articles/show.blade.php}{html}{08-routing/figures/02-article.blade.php}
 
 And then add another route to \texttt{routes/web.php}:
 
 \begin{minted}{php}
+    // for the URL /articles/<something>
     Route::get('/articles/{id}', function () {
-        return view('article');
+        // load the show.blade.php Blade template
+        // from resources/views/articles
+        // you can also use a . instead of /
+        return view('articles/show');
     });
 \end{minted}
 
