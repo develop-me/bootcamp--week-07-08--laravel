@@ -12,8 +12,7 @@
 
 ## Tricksy
 
-- Add `formattedPhoneNumber` method which formats the phone number appropriately
-    e.g. 0117 492 7728
+- Add `formattedPhoneNumber` method which formats the phone number appropriately for output e.g. 0117 492 7728 (don't change the source data in the database)
 
 Read the [Retrieving Models](https://laravel.com/docs/master/eloquent#retrieving-models) documentation. Then, in `artisan tinker`:
 
