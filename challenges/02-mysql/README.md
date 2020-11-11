@@ -82,7 +82,7 @@
 
 ## Planning and creating tables
 
-1. Plan out a relational database for our vets practice on paper (read the start of the One-to-Many Relationships chapter of the notes for more about relational databases).
+1. Plan out a relational database for our vets practice on paper (read the start of the One-to-Many Relationships chapter of the notes for more about relational databases and the Database Design Tips section).
 
     You'll want to be able to store information on *animals* and *owners*, this should be done with two tables.
 
@@ -119,7 +119,7 @@
     An example query to help you start:
 
     ```sql
-    SELECT * FROM animals JOIN owners ON animals.id = owners.animal_id;
+    SELECT * FROM animals JOIN owners ON animals.owner_id = owners.id;
     ```
 
 1. Use `SELECT table.field name AS another_name` to help tidy up the columns output.
@@ -157,4 +157,14 @@
         ON DELETE CASCADE;
     ```
 
-1. Populate your table's with foreign keys.
+1. Populate your table with new entries that use the foreign keys (by adding an animal with an owner ID).
+
+1. Check the foreign keys are in place with:
+
+    ```sql
+    DESCRIBE `table name`;
+    ```
+
+    And check for `MUL` on the field that has a foreign key.
+
+1. Verify the foreign keys are working by adding an animal with an owner ID that doesn't exist like `9999`.
