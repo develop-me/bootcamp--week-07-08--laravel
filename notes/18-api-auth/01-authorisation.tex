@@ -84,7 +84,7 @@ Run \texttt{tinker} (in \texttt{vagrant ssh} mode):
 Then use the \texttt{User} model's static \texttt{create} method to add a new user:
 
 \begin{minted}{php}
-    App\User::create([
+    App\Models\User::create([
         'name' => 'An Author',
         'email' => 'an.author@gmail.com',
         'password' => Hash::make('password'),
@@ -175,10 +175,10 @@ Now let's update our existing user to have the role of \texttt{"author"} and gen
 \end{minted}
 
 \begin{minted}{php}
-    App\User::where('email', 'an.author@gmail.com')
+    App\Models\User::where('email', 'an.author@gmail.com')
             ->update(['role' => 'author']);
 
-    App\User::create([
+    App\Models\User::create([
         'name' => 'A Subscriber',
         'role' => 'subscriber',
         'email' => 'a.subscriber@gmail.com',

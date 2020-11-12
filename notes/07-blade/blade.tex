@@ -126,7 +126,7 @@ In \texttt{resources/views/\_partials/articles/list-item.blade.php}:
 Now we can include this from \texttt{welcome.blade.php} and pass in the \texttt{\$article}:
 
 \begin{minted}{html}
-    @foreach (App\Article::all() as $article)
+    @foreach (App\Models\Article::all() as $article)
       {{ /* pass-through $article as "article" */ }}
       @include("_partials/articles/list-item", ["article" => $article])
     @endforeach

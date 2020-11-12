@@ -91,7 +91,7 @@
 
         { /* loop over all of the articles */ }
         { /* each article object goes into $article */ }
-        @foreach (App\Article::all() as $article)
+        @foreach (App\Models\Article::all() as $article)
           <a href="/articles/{{ $article->id }}" class="list-group-item list-group-item-action">
             <div class="d-flex w-100 justify-content-between">
 
@@ -109,7 +109,7 @@
       </div>
     ```
 - Explain `@foreach` directive
-- Wouldn't normally use `App\Article` like this in a template, we'll sort that in a bit
+- Wouldn't normally use `App\Models\Article` like this in a template, we'll sort that in a bit
 - Explain "moustaches" to output data
 
 ## Passing Data
