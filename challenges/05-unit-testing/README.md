@@ -21,7 +21,7 @@
     }
     ```
 
-1) Create a new Unit Test to test this method with `artisan make:test BananaTest --unit` and set it to use the Owner model with `App\Owner;`
+1) Create a new Unit Test to test this method with `artisan make:test BananaTest --unit` and set it to use the Owner model with `App\Models\Owner;`
 
 1) Run all your 1 tests with `vendor/bin/phpunit --testsuite Unit`
 
