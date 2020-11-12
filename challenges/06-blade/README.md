@@ -12,7 +12,7 @@ Remember, you're building an app for a veterinary clinic.
   - A footer
 - We want the `welcome.blade.php` file to just contain the contents of the `<main>` element. Create an `app.blade.php` file to contain the rest of the markup that will appear the same on every page (e.g. the `<head>`). Then update `welcome.blade.php` to extend this.
 - Break up your `app.blade.php` into appropriate partials, like one for the nav bar and one for the footer and use `@include` to include each subview
-- Use `App\Models\Owners::all()` and `@foreach` to list all of your owners on the front page
+- Use `App\Models\Owner::all()` and `@foreach` to list all of your owners on the front page
 - Break up `welcome.blade.php` into appropriate partials, for example you may want to use the markup for an owner in other places later, so this could be made reusable
 
 ## Reference
