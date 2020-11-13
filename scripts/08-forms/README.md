@@ -83,7 +83,7 @@
 
 - demo after removing `dd($data)`
 
-## Mass Assignment Vulnerability
+## Mass Assignment Vulnerability
 - discuss security issues
 - should already be on model:
     `protected $fillable = ["title", "content"];`
