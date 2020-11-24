@@ -47,10 +47,11 @@ This will create a file in \texttt{app/Http/Resources/API} with the boilerplate 
 \php{app/Http/Resources/API/ArticleResource.php}{14-validation-resources/figures/04-resource}
 
 Next, we need to update the \texttt{Articles} controller to use the resource for output.
+\\
 
 First, tell the controller where to find the \texttt{ArticleResource} class:
 
-\php{app/Http/Resources/API/ArticleResource.php}{14-validation-resources/figures/05-use}
+\php{app/Http/Controllers/API/Articles.php}{14-validation-resources/figures/05-use}
 
 Then we need to update all of the methods that return an article to use the resource:
 
