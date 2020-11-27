@@ -90,3 +90,5 @@
         $table->string('name', 150)->change();
     });
     ```
+
+**Go through new Laravel/Homestead as a group up until `vagrant up` stage**
