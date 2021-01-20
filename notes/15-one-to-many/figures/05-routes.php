@@ -2,8 +2,8 @@
 
 use App\Http\Controllers\API\ArticleController;
 
-// need to use the Comments controller
-use App\Http\Controllers\API\Comments;
+// need to use the CommentController
+use App\Http\Controllers\API\CommentController;
 
 // existing article routes
 // e.g. /api/articles
@@ -22,22 +22,22 @@ Route::group(["prefix" => "articles"], function () {
     // e.g. /api/articles/1/comments
     Route::group(["prefix" => "comments"], function () {
       // get all the article's comments
-      Route::get("", [Comments::class, "index"]);
+      Route::get("", [CommentController::class, "index"]);
 
       // create a new comment on the article
-      Route::post("", [Comments::class, "store"]);
+      Route::post("", [CommentController::class, "store"]);
 
       // specific comment routes
       // e.g. /api/articles/1/comments/2
       Route::group(["prefix" => "{comment}"], function () {
         // get a specific comment
-        Route::get("", [Comments::class, "show"]);
+        Route::get("", [CommentController::class, "show"]);
 
         // update a specific comment
-        Route::put("", [Comments::class, "update"]);
+        Route::put("", [CommentController::class, "update"]);
 
         // delete a specific comment
-        Route::delete("", [Comments::class, "destroy"]);
+        Route::delete("", [CommentController::class, "destroy"]);
       });
     });
   });
