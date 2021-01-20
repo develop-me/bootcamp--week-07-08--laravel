@@ -147,7 +147,7 @@ We accept an array of strings, then use our \texttt{Tag::fromStrings} method to 
 
 \section{Controller Logic}
 
-We won't need to add any new routes for tags because they get added as part of the article \texttt{POST}/\texttt{PUT} request. But we will need to update the \texttt{store} and \texttt{update} methods in the \texttt{ArticlesController}.
+We won't need to add any new routes for tags because they get added as part of the article \texttt{POST}/\texttt{PUT} request. But we will need to update the \texttt{store} and \texttt{update} methods in the \texttt{ArticleController}.
 \\
 
 We'll need to update the methods. We'll use our new \texttt{\$article->setTags()} method to do all the necessary work:
