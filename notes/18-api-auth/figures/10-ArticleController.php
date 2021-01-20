@@ -2,7 +2,7 @@
 
 use App\Http\Requests\ArticleStoreRequest;
 
-class Articles extends Controller
+class ArticleController extends Controller
 {
     // ...
   //

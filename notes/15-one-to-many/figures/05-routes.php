@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\API\Articles;
+use App\Http\Controllers\API\ArticleController;
 
 // need to use the Comments controller
 use App\Http\Controllers\API\Comments;
@@ -8,15 +8,15 @@ use App\Http\Controllers\API\Comments;
 // existing article routes
 // e.g. /api/articles
 Route::group(["prefix" => "articles"], function () {
-  Route::get("", [Articles::class, "index"]);
-  Route::post("", [Articles::class, "store"]);
+  Route::get("", [ArticleController::class, "index"]);
+  Route::post("", [ArticleController::class, "store"]);
 
   // specific article routes
   // e.g. /api/articles/1
   Route::group(["prefix" => "{article}"], function () {
-    Route::get("", [Articles::class, "show"]);
-    Route::put("", [Articles::class, "update"]);
-    Route::delete("", [Articles::class, "destroy"]);
+    Route::get("", [ArticleController::class, "show"]);
+    Route::put("", [ArticleController::class, "update"]);
+    Route::delete("", [ArticleController::class, "destroy"]);
 
     // new comments routes
     // e.g. /api/articles/1/comments

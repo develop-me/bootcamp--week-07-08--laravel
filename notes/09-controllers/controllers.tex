@@ -4,46 +4,46 @@ As our app gets more complicated, we don't want to have to put all of the logic 
 A \textbf{controller}'s job is to bring together all the other bits of code that make up an app: to \textit{control} what happens. In Laravel, controllers are called by the router: they take the request, do whatever it is that needs doing, and then return a response.
 \\
 
-First, we'll need a class. Run the following inside your Vagrant box to create an Articles controller:
+First, we'll need a class. Run the following inside your Vagrant box to create an Article controller:
 
 \begin{minted}{bash}
-    artisan make:controller Articles
+    artisan make:controller ArticleController
 \end{minted}
 
-This will create a file (\texttt{app/Http/Controllers/Articles.php}), which contains the boilerplate for a controller.
+This will create a file (\texttt{app/Http/Controllers/ArticleController.php}), which contains the boilerplate for a controller.
 
 \section{Controller Methods}
 
 You can define your own methods in your controller for handling different requests.
 \\
 
-First, let's update our routes to use the \texttt{Articles} controller:
+First, let's update our routes to use the \texttt{ArticleController} :
 
 \begin{minted}{php}
-    use App\Http\Controllers\Articles;
+    use App\Http\Controllers\ArticleController;
 \end{minted}
 
 \begin{minted}{php}
-    Route::get('/', [Articles::class, "index"]);
+    Route::get('/', [ArticleController::class, "index"]);
 \end{minted}
 
-This is telling Laravel to run the \texttt{index} method of the \texttt{Articles} controller when the user visits the root route (\texttt{/}).
+This is telling Laravel to run the \texttt{index} method of the \texttt{ArticleController} when the user visits the root route (\texttt{/}).
 \\
 
-If you try loading the site now you'll get a server error. We'll need to add the method to \texttt{Articles}:
+If you try loading the site now you'll get a server error. We'll need to add the method to \texttt{ArticleController}:
 
-\php{app/Http/Controllers/Articles.php}{09-controllers/figures/01-Articles}
+\php{app/Http/Controllers/ArticleController.php}{09-controllers/figures/01-ArticleController}
 
 This might just seem like we've made everything much more complicated for no obvious reason. But there are many advantages, one of which is that we can pass in data to the view much more easily.
 \\
 
-First, tell the \texttt{Articles} controller where to find your \texttt{Article} model class:
+First, tell the \texttt{ArticleController} where to find your \texttt{Article} model class:
 
-\php{app/Http/Controllers/Articles.php}{09-controllers/figures/02-use}
+\php{app/Http/Controllers/ArticleController.php}{09-controllers/figures/02-use}
 
 Then update your \texttt{index} method:
 
-\php{app/Http/Controllers/Articles.php}{09-controllers/figures/03-index}
+\php{app/Http/Controllers/ArticleController.php}{09-controllers/figures/03-index}
 
 Now we can update our \texttt{welcome.blade.php} template so that we don't have to fetch the articles in the template itself:
 
@@ -54,9 +54,9 @@ Now we can update our \texttt{welcome.blade.php} template so that we don't have 
 Now we can potentially reuse the \texttt{welcome.blade.php} template for \textit{any} page that needs to show a list of articles, not just the homepage.
 \\
 
-So we should probably move it into the \texttt{resources/views/articles} directory, rename the file \texttt{index.blade.php}, and update the \texttt{Articles} controller:
+So we should probably move it into the \texttt{resources/views/articles} directory, rename the file \texttt{index.blade.php}, and update the \texttt{ArticleController}:
 
-\php{app/Http/Controllers/Articles.php}{09-controllers/figures/04-articles}
+\php{app/Http/Controllers/ArticleController.php}{09-controllers/figures/04-ArticleController}
 
 Next, let's get our page to show a specific article working properly (i.e. show the relevant article, rather than just some filler text).
 \\
@@ -68,9 +68,9 @@ First update the route to use a method instead of putting all the code in the ro
 
 \php{routes/web.php}{09-controllers/figures/05-route}
 
-Next, add the \texttt{show} method to the \texttt{Articles} controller:
+Next, add the \texttt{show} method to the \texttt{ArticleController}:
 
-\php{app/Http/Controllers/Articles.php}{09-controllers/figures/06-show}
+\php{app/Http/Controllers/ArticleController.php}{09-controllers/figures/06-show}
 
 The value from the URL parameter (the \texttt{\{id\}} bit in the route), gets passed in as the first argument to the method. So we can use this to find the relevant article and then pass it in.
 \\
@@ -107,12 +107,12 @@ We can get Laravel to do quite a lot of work for us when it comes to fetching mo
 First, update the route to use \texttt{\{article\}} instead of \texttt{\{id\}} (it needs to match the model name):
 
 \begin{minted}{php}
-    Route::get("/articles/{article}", [Articles::class, "show"]);
+    Route::get("/articles/{article}", [ArticleController::class, "show"]);
 \end{minted}
 
-Then in the \texttt{Articles} controller, instead of just having the \texttt{\$id} parameter, we replace it with \texttt{Article \$article}:
+Then in the \texttt{ArticleController}, instead of just having the \texttt{\$id} parameter, we replace it with \texttt{Article \$article}:
 
-\php{app/Http/Controllers/Articles.php}{09-controllers/figures/07-rmb}
+\php{app/Http/Controllers/ArticleController.php}{09-controllers/figures/07-rmb}
 
 Now, Laravel is going to do some super-sneaky witchcraft.
 \\

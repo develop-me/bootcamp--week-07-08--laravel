@@ -26,13 +26,13 @@ This will create a file in \texttt{app/Http/Requests}. The \texttt{ArticleReques
 
 \php{app/Http/Requests/ArticleRequest.php}{10-forms/figures/10-validation}
 
-Next we need to  update the \texttt{Articles} controller to use our validated request instead of the standard \texttt{Request} object. First let it know where the \texttt{ArticleRequest} class lives:
+Next we need to  update the \texttt{ArticleController} to use our validated request instead of the standard \texttt{Request} object. First let it know where the \texttt{ArticleRequest} class lives:
 
-\php{app/Http/Controllers/Articles.php}{10-forms/figures/11-use}
+\php{app/Http/Controllers/ArticleController.php}{10-forms/figures/11-use}
 
 And then update the type-hinting on the \texttt{createPost} method to use the \texttt{ArticleRequest} class instead of \texttt{Request}:
 
-\php{app/Http/Controllers/Articles.php}{10-forms/figures/12-type-hint}
+\php{app/Http/Controllers/ArticleController.php}{10-forms/figures/12-type-hint}
 
 This works because \texttt{ArticleRequest} is a descendant of \texttt{Request}, so it has all of the same methods and properties.
 \\

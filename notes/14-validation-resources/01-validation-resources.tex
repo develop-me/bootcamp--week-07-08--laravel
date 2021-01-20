@@ -21,11 +21,11 @@ We could have tried to be clever and used inheritance here, but it's generally b
 
 Now update your API controller. First add a \texttt{use} statement:
 
-\php{app/Http/Controllers/API/Articles.php}{14-validation-resources/figures/02-use}
+\php{app/Http/Controllers/API/ArticleController.php}{14-validation-resources/figures/02-use}
 
 Then update the controller methods to use this instead of \texttt{Request}:
 
-\php{app/Http/Controllers/API/Articles.php}{14-validation-resources/figures/03-type-hint}
+\php{app/Http/Controllers/API/ArticleController.php}{14-validation-resources/figures/03-type-hint}
 
 
 \section{API Resources}
@@ -46,16 +46,16 @@ This will create a file in \texttt{app/Http/Resources/API} with the boilerplate 
 
 \php{app/Http/Resources/API/ArticleResource.php}{14-validation-resources/figures/04-resource}
 
-Next, we need to update the \texttt{Articles} controller to use the resource for output.
+Next, we need to update the \texttt{ArticleController} to use the resource for output.
 \\
 
 First, tell the controller where to find the \texttt{ArticleResource} class:
 
-\php{app/Http/Controllers/API/Articles.php}{14-validation-resources/figures/05-use}
+\php{app/Http/Controllers/API/ArticleController.php}{14-validation-resources/figures/05-use}
 
 Then we need to update all of the methods that return an article to use the resource:
 
-\php{app/Http/Controllers/API/Articles.php}{14-validation-resources/figures/06-resource-controller}
+\php{app/Http/Controllers/API/ArticleController.php}{14-validation-resources/figures/06-resource-controller}
 
 If you do an API call to any of these routes now you'll notice that the response is also wrapped in an outer \texttt{data} property by default. It is possible to change this, but it's actually quite useful once you start to deal with more complex APIs (e.g. so you can have a separate property to track pagination).
 \\
@@ -79,11 +79,11 @@ Finally we'll need to update the controller.
 
 First let the controller know about \texttt{ArticleListResource}:
 
-\php{app/Http/Controllers/API/Articles.php}{14-validation-resources/figures/08-use}
+\php{app/Http/Controllers/API/ArticleController.php}{14-validation-resources/figures/08-use}
 
 Then update the \texttt{index} method. We're returning a collection of articles, so we'll need to use the \texttt{Resource}'s \texttt{collection} method:
 
-\php{app/Http/Controllers/API/Articles.php}{14-validation-resources/figures/09-index-resource-controller}
+\php{app/Http/Controllers/API/ArticleController.php}{14-validation-resources/figures/09-index-resource-controller}
 
 
 
