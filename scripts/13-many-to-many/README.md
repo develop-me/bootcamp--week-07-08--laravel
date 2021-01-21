@@ -56,7 +56,7 @@
     ```
 
 - Don't need new routes, just update article `POST` and `PUT`
-- Update Articles `update` and `store` methods to use `$article->setTags()`
+- Update ArticleController `update` and `store` methods to use `$article->setTags()`
 - Add `tags` validation to `ArticleRequest`
 - Update both article `Resources` to include tags array: `->pluck("name")`
 
