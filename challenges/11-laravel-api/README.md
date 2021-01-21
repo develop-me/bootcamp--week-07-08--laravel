@@ -6,7 +6,7 @@
 
 ### `/api/owners`
 
-Create a new controller `API\\Owners`. Add RESTful API routes for:
+Create a new controller `API\\OwnerController`. Add RESTful API routes for:
 
 - Listing all of your owners
 - Showing a specific owner based on their ID
