@@ -8,6 +8,8 @@
 
 - Update your `store` and `update` methods on the `API\Owners\AnimalController` so that they can accept an array of treatments
 
+**Hint**: in the `store` method, make sure the animal is saved before setting treatments.
+
     ```json
     POST /api/owners/{owner}/animals
 
