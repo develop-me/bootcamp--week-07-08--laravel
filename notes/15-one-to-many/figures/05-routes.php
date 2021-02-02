@@ -3,7 +3,7 @@
 use App\Http\Controllers\API\ArticleController;
 
 // need to use the CommentController
-use App\Http\Controllers\API\CommentController;
+use App\Http\Controllers\API\Articles\CommentController;
 
 // existing article routes
 // e.g. /api/articles

@@ -120,8 +120,11 @@ We can use \texttt{artisan tinker} to get a bit of a better idea of how the ORM 
 Let's create a separate controller to deal with comments:
 
 \begin{minted}{bash}
-    artisan make:controller API\\CommentController --api
+    artisan make:controller API\\Articles\\CommentController --api
 \end{minted}
+
+It's not strictly necessary to add the controller within the Articles subfolder but this way it matches our routes hierarchy.
+\\
 
 We'll add the code to this in a bit, but let's sort the routing first.
 
@@ -170,12 +173,12 @@ We don't need to return the article information, as we must already know about t
 
 First, make sure you \texttt{use} the resource in the \texttt{CommentController}:
 
-\php{app/Http/Controllers/API/CommentController.php}{15-one-to-many/figures/07-use}
+\php{app/Http/Controllers/API/Articles/CommentController.php}{15-one-to-many/figures/07-use}
 
 
 Now, let's add the \texttt{index} method:
 
-\php{app/Http/Controllers/API/CommentController.php}{15-one-to-many/figures/08-index}
+\php{app/Http/Controllers/API/Articles/CommentController.php}{15-one-to-many/figures/08-index}
 
 It's a bit different from the one we wrote for articles because we only want to return comments that belong to the article specified in the URL. We can get the article using Route Model Binding and then we can get the relevant comments using the \texttt{Article} model's \texttt{comments} property (which we set up earlier).\footnote{It's a \textit{property}, not a \textit{method} – even though we created the relationship using a method}.
 \\
@@ -185,7 +188,7 @@ Check the route works using Postman.
 
 Next, let's get the \texttt{show} method working:
 
-\php{app/Http/Controllers/API/CommentController.php}{15-one-to-many/figures/09-show}
+\php{app/Http/Controllers/API/Articles/CommentController.php}{15-one-to-many/figures/09-show}
 
 This one is almost identical to the articles controller, except we need to include the \texttt{Article} as the first parameter that uses Route Model Binding – even though we don't actually use it anywhere. That's just how Route Model Binding works: it's a bit magical, but it's very handy.
 \\
@@ -195,7 +198,7 @@ Check the route works using Postman.
 
 Let's get do \texttt{destroy} method next:
 
-\php{app/Http/Controllers/API/CommentController.php}{15-one-to-many/figures/10-destroy}
+\php{app/Http/Controllers/API/Articles/CommentController.php}{15-one-to-many/figures/10-destroy}
 
 Also very similar to the one for articles and, again, we need to include the \texttt{Article} parameter, even though we don't actually use it.
 
@@ -253,11 +256,11 @@ Then update the \texttt{authorize()} and \texttt{rules()} methods:
 
 You'll also need to update the \texttt{CommentController} to use the validated request. First let the controller know where to find the \texttt{CommentRequest} class:
 
-\php{app/Http/Controllers/API/CommentController.php}{15-one-to-many/figures/15-use}
+\php{app/Http/Controllers/API/Articles/CommentController.php}{15-one-to-many/figures/15-use}
 
 Then update the type-hinting to use \texttt{CommentRequest} instead of \texttt{Request}:
 
-\php{app/Http/Controllers/API/CommentController.php}{15-one-to-many/figures/16-request-type-hint}
+\php{app/Http/Controllers/API/Articles/CommentController.php}{15-one-to-many/figures/16-request-type-hint}
 
 Finally, check your \texttt{POST} and \texttt{PUT} routes to make sure you can't submit any invalid data.
 

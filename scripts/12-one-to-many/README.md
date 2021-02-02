@@ -75,7 +75,7 @@
 
 ## Controllers
 
-- Create an `API\CommentController`
+- Create an `API\Articles\CommentController`
 - The URL structure should express the data hierarchy
 - Create the routes as a sub-group of `/articles/{article}`
 
