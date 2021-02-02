@@ -6,10 +6,10 @@
 
 ### Routing & Controllers
 
-- Update your `API\Animals` controller's `store` and `update` method so that they can accept an array of treatments
+- Update your `store` and `update` methods on the `API\Owners\AnimalController` so that they can accept an array of treatments
 
     ```json
-    POST /api/animals
+    POST /api/owners/{owner}/animals
 
     {
         "name": "Miss Kitty Fantastico",
@@ -19,5 +19,5 @@
     }
     ```
 
-- Add validation for treatments to the `/api/animals` routes
+- Add validation for treatments to the `/api/{owner}/animals` routes
 - Update your `Animals` resources to return treatments

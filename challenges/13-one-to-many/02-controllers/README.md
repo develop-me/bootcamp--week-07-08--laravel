@@ -4,6 +4,8 @@
 
 ### Routes & Controllers
 
+Create a new controller `API\\Owners\\AnimalController`.
+
 Make sure you test every request using Postman:
 
 - Add a `GET /api/owners/{owner}/animals` route that lists all the animals that belong to the specified owner
@@ -54,7 +56,7 @@ There are a few options for this:
 
 This is the easiest option, but leads to a lot of repeated code
 
-- Add a private method to the Animals controller
+- Add a private method to the AnimalController
 - Use it to check the owner on each request
 
 ### 2) With Middleware
