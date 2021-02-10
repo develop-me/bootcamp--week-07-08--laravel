@@ -286,16 +286,18 @@ And once you're done:
 
 You may need to run \texttt{exit} a \textit{second} time to leave the Vagrant VM.
 
+\pagebreak
+
 \section{Database Design Considerations}
 
-Some database design tips when planning out a database.
+Some things to think about when planning a database:
 
-\begin{itemize}[leftmargin=*]
-    \item {Think of objects as tables (products, customers, orders)}
-    \item {every table should have an \texttt{id} field}
-    \item {Consider how different objects/tables relate to eachother (see One-to-Many and Many-to-Many chapters)}
-    \item {Reduce replication, don't have customer name stored in two places; takes more space, and need to remember to update in both places if the data needs to change}
-    \item {Think about data types for fields, and data length. How long is a name? A postcode? A phone number?}
+\begin{itemize}
+    \item Think of objects as tables (products, customers, orders)
+    \item Every table should have an \texttt{id} field
+    \item Consider how different objects/tables relate to each other (see One-to-Many and Many-to-Many chapters)
+    \item Reduce replication: don't have customer name stored in two places – it takes more space and you need to remember to update in both places if the data needs to change
+    \item Think about data types and data length for fields. How long is a name? A postcode? A phone number? Is a phone number really a \textit{number}?
 \end{itemize}
 
 \section{Additional Resources}
