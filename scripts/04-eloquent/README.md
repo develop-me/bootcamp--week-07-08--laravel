@@ -28,6 +28,10 @@
 - Object instance represents a row of the table
 
 - Look at `id` after save
+- Show `new Article([/* data */])`
+    - Demonstrate mass assignment error
+    - Briefly explain issue: will cover in more detail with forms
+    - Add `$fillable` properties
 - Show
     - `Article::all()`
         - **Returns a `Collection`**: already worked with these last week

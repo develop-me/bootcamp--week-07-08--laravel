@@ -1,3 +1,3 @@
 <?php
 
-Route::get("/articles/{article}", [Articles::class, "show"]);
+Route::get("/articles/{id}", [ArticleController::class, "show"]);

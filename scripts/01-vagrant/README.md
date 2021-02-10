@@ -1,5 +1,12 @@
 # Day 1: Morning
 
+# Intro
+
+- introduce yourself
+- people often find backend scary, hope to show its not scary and enlighten a passion in it
+- speed
+- lots of new concepts but will see same patterns again next week
+
 ## Half-way reminder
 
 - code neatness

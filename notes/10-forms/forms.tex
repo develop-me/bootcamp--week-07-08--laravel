@@ -4,17 +4,17 @@ If we want to submit data to the site we'll need a form.
 Let's create a simple form for creating a new blog post.
 \\
 
-In \texttt{resources/views/form.blade.php}:
+In \texttt{resources/views/articles/form.blade.php}:
 
-\php{resources/views/form.blade.php}{10-forms/figures/01-form.blade}
+\php{resources/views/articles/form.blade.php}{10-forms/figures/01-form.blade}
 
 And add a route so that we can view it:
 
 \php{routes/web.php}{10-forms/figures/02-routes}
 
-Then in your \texttt{Articles} controller:
+Then in your \texttt{ArticleController}:
 
-\php{app/Http/Controllers/Articles.php}{10-forms/figures/03-Articles}
+\php{app/Http/Controllers/ArticleController.php}{10-forms/figures/03-ArticleController}
 
 Now visit \texttt{/articles/create} and you should see the form we just created.
 
@@ -45,7 +45,7 @@ That's where \texttt{POST} comes in. If we tell a browser to submit a form using
 
 By default a \texttt{<form>} will submit data as a \texttt{GET} request. To get it to use \texttt{POST} we'll need to add the \texttt{method} attribute to our template:
 
-\html{resources/views/form.blade.php}{10-forms/figures/04-form}
+\html{resources/views/articles/form.blade.php}{10-forms/figures/04-form}
 
 
 \begin{infobox}{Form \texttt{action}}
@@ -62,9 +62,9 @@ First, we need to create a \texttt{POST} route in the \texttt{articles} block:
 
 \php{routes/web.php}{10-forms/figures/05-post-route}
 
-Next, we need to create the \texttt{createPost} method in our \texttt{Articles} controller:
+Next, we need to create the \texttt{createPost} method in our \texttt{ArticleController}:
 
-\php{app/Http/Controllers/Articles.php}{10-forms/figures/06-createPost}
+\php{app/Http/Controllers/ArticleController.php}{10-forms/figures/06-createPost}
 
 Now, if you try submitting your form you'll get a rather cryptic\footnote{Yet beautiful} ``419 | Page Expired'' page.
 \\
@@ -84,7 +84,7 @@ Laravel doesn't want you to accidentally open your site up to this sort of attac
 
 To add a CSRF token we simple use the \texttt{@csrf} Blade shortcut somewhere in our form:
 
-\html{resources/views/form.blade.php}{10-forms/figures/07-csrf}
+\html{resources/views/articles/form.blade.php}{10-forms/figures/07-csrf}
 
 Now if we submit the form you'll refresh the current page. We need to update our \texttt{createPost} method to do something.
 
@@ -93,7 +93,7 @@ Now if we submit the form you'll refresh the current page. We need to update our
 
 Update the \texttt{createPost} method to the following:
 
-\php{app/Http/Controllers/Articles.php}{10-forms/figures/08-createPostUpdate}
+\php{app/Http/Controllers/ArticleController.php}{10-forms/figures/08-createPostUpdate}
 
 
 As you can see, first we need to accept the \texttt{Request} object: this represents the request that the user made, including the data they submitted. If we ask Laravel for this it will give it to us using similar witchcraft to Route Model Binding.
@@ -116,8 +116,6 @@ Then we get all the submitted data from the \texttt{Request} object. Next, we cr
     If a \texttt{POST} request returns a \texttt{view()} the user can refresh the page, which will resubmit any data, possibly leading to data duplication (or worse). If instead it returns a \texttt{redirect()}, when the user refreshes the page it will reload the page you've redirected to.
 \end{infobox}
 
-But, if you try to submit the form, you'll get an error.
-
 
 \subsection{Mass Assignment Vulnerability}
 
@@ -128,10 +126,9 @@ Imagine you have a \texttt{users} table that has an \texttt{admin} column for ke
 \\
 
 To stop this from happening, if you pass an Eloquent model an array of properties, it will only use the properties that you've listed in the model's \texttt{\$fillable} property. If you've not set this property and try to pass in an array of values you'll get a 500 error.
+\\
 
-\pagebreak
-
-We need to update the \texttt{Article} model to tell it which fields to expect:
+Make sure your \texttt{Article} model has all the expected properties in its \texttt{\$fillable} property:
 
 \php{app/Models/Article.php}{10-forms/figures/09-Article}
 

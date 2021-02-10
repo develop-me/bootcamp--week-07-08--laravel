@@ -84,7 +84,7 @@ Run \texttt{tinker} (in \texttt{vagrant ssh} mode):
 Then use the \texttt{User} model's static \texttt{create} method to add a new user:
 
 \begin{minted}{php}
-    App\User::create([
+    User::create([
         'name' => 'An Author',
         'email' => 'an.author@gmail.com',
         'password' => Hash::make('password'),
@@ -175,10 +175,10 @@ Now let's update our existing user to have the role of \texttt{"author"} and gen
 \end{minted}
 
 \begin{minted}{php}
-    App\User::where('email', 'an.author@gmail.com')
+    User::where('email', 'an.author@gmail.com')
             ->update(['role' => 'author']);
 
-    App\User::create([
+    User::create([
         'name' => 'A Subscriber',
         'role' => 'subscriber',
         'email' => 'a.subscriber@gmail.com',
@@ -208,9 +208,9 @@ But let's write a conditional outcome in the \texttt{authorize()} method:
 
 \php{app/Http/Requests/API/ArticleStoreRequest.php}{18-api-auth/figures/09-authorize}
 
-We'll need to tell the \texttt{store()} method in the \texttt{Articles} controller to use this new \texttt{Request}:
+We'll need to tell the \texttt{store()} method in the \texttt{ArticleController} to use this new \texttt{Request}:
 
-\php{app/Http/Controllers/API/Articles.php}{18-api-auth/figures/10-Articles}
+\php{app/Http/Controllers/API/ArticleController.php}{18-api-auth/figures/10-ArticleController}
 
 
 In Postman, make a \texttt{POST} request to \texttt{/oauth/token}, supplying the body as before, replacing the user details with the subscriber we generated above.

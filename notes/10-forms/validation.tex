@@ -26,13 +26,13 @@ This will create a file in \texttt{app/Http/Requests}. The \texttt{ArticleReques
 
 \php{app/Http/Requests/ArticleRequest.php}{10-forms/figures/10-validation}
 
-Next we need to  update the \texttt{Articles} controller to use our validated request instead of the standard \texttt{Request} object. First let it know where the \texttt{ArticleRequest} class lives:
+Next we need to  update the \texttt{ArticleController} to use our validated request instead of the standard \texttt{Request} object. First let it know where the \texttt{ArticleRequest} class lives:
 
-\php{app/Http/Controllers/Articles.php}{10-forms/figures/11-use}
+\php{app/Http/Controllers/ArticleController.php}{10-forms/figures/11-use}
 
 And then update the type-hinting on the \texttt{createPost} method to use the \texttt{ArticleRequest} class instead of \texttt{Request}:
 
-\php{app/Http/Controllers/Articles.php}{10-forms/figures/12-type-hint}
+\php{app/Http/Controllers/ArticleController.php}{10-forms/figures/12-type-hint}
 
 This works because \texttt{ArticleRequest} is a descendant of \texttt{Request}, so it has all of the same methods and properties.
 \\
@@ -49,11 +49,11 @@ First, let's update our template so that the data the user submitted doesn't get
 
 To the \texttt{title} \texttt{<input>}:
 
-\html{resources/views/form.blade.php}{10-forms/figures/13-old-title}
+\html{resources/views/articles/form.blade.php}{10-forms/figures/13-old-title}
 
 To the \texttt{content} \texttt{<textarea>}:
 
-\html{resources/views/form.blade.php}{10-forms/figures/14-old-content}
+\html{resources/views/articles/form.blade.php}{10-forms/figures/14-old-content}
 
 With a \texttt{textarea}, make sure you only put spaces/line-breaks \textit{inside} the template curly braces, otherwise they'll get added to the content of the \texttt{<textarea>}.
 
@@ -65,14 +65,14 @@ Next, let's get error messages and styling working.
 
 At the bottom of the \texttt{title} \texttt{<fieldset>}:
 
-\html{resources/views/form.blade.php}{10-forms/figures/15-error}
+\html{resources/views/articles/form.blade.php}{10-forms/figures/15-error}
 
 If there are any, this will output an error message for \texttt{title} with appropriate Bootstrap classes. Don't forget to add one for \texttt{content} too.
 \\
 
 We can also add relevant styling to our form fields:
 
-\html{resources/views/form.blade.php}{10-forms/figures/16-invalid}
+\html{resources/views/articles/form.blade.php}{10-forms/figures/16-invalid}
 
 This will add the Bootstrap \texttt{is-invalid} class \textit{if} the \texttt{title} field has an error.
 

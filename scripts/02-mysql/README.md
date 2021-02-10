@@ -77,6 +77,23 @@ mysql> exit
 vagrant@oli:~$ exit
 ~/Sites/homestead
 ```
+## Challenge
+
+## Debugging
+
+Show how to read error messages and fix queries:
+
+```sql
+SELECT * FROM `graduates';
+
+SELECT * FROM graduates WHERE first name = 'Josh Simons';
+
+SELECT * FROM graduates WHERE 'first name' = 'Josh Simons';
+
+SELECT * FROM graduates WHERE `first name` = 'Josh Simons';
+```
+
+<!---------- tricksy challenge so optional content -->
 
 ## "Relational" databases
 

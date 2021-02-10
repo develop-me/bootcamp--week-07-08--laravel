@@ -64,6 +64,66 @@ This can take a while the first time as it will need to download the appropriate
     These sort of configuration options go in the \texttt{.env} file. This file is specific to each computer that it runs on, so should not be copied or added to version control. Instead, when running on a new machine, you should copy the \texttt{.env.example} file and edit that. This will make sure that you don't accidentally copy across settings that are specific to another machine.
 \end{infobox}
 
+\section{Troubleshooting}
+
+Occasionally provisioning doesn't quite work as planned, here are some common issues.
+
+\subsection{Server Errors on First Run}
+
+This often happens if you moved the project directory and forgot to update the \texttt{Homestead.yaml} file.
+\\
+
+You can re-run the provisioning scripts with \texttt{vagrant provision}.
+\\
+
+However, when you run them the second time it can skip a few stages. So, if you get a 500 error on first run, run the following in the project directory:
+
+\begin{minted}{bash}
+    # reload vagrant and provision it
+    vagrant reload --provision # re-run provisioning scripts
+
+    # generate a new app key
+    php artisan key:generate
+\end{minted}
+
+\subsection{Homestead installer has installed more than 2 composer packages}
+
+This occurs if the Homstead installer is run from a directory that doesn't have an existing Laravel installation.
+\\
+
+Make sure you run the installation from the project directory. Below shows which packages should be installed although the version numbers may be different for you.
+
+\begin{minted}{bash}
+   Package operations: 2 installs, 0 updates, 0 removals
+   - Downloading symfony/yaml (v5.2.3)
+   - Installing symfony/yaml (v5.2.3): Extracting archive
+   - Installing laravel/homestead (v12.0.0): Extracting archive
+\end{minted}
+
+\subsection{Multiple VMs are running}
+
+Vagrant will allow you to run multiple VMs at once but sometimes this can cause conflicts as well as using extra CPU and memory.
+\\
+
+See all the VMs and their status with the \texttt{vagrant global-status} command:
+
+\begin{minted}{bash}
+    id       name     provider   state    directory
+    -------------------------------------------------------------------
+    f37bc49  blog     virtualbox running  /Users/username/code/blog
+    1a2b3c4d sql      virtualbox running  /Users/username/code/sql
+    e25a6e2a testing  virtualbox poweroff /Users/username/code/testing
+\end{minted}
+
+You can then shutdown a VM with:
+
+\begin{minted}{bash}
+# shutdown the sql VM using its id
+vagrant halt 1a2b3c4d
+\end{minted}
+
+
+\pagebreak
 
 \section{Getting Started}
 
@@ -76,19 +136,6 @@ Once Vagrant has finished loading:
 
 \img{8cm}{04-laravel/img/laravel.png}{0em}{Laravel up and running}
 
-
-\begin{infobox}{Server Errors on First Run}
-    Occasionally provisioning doesn't quite work as planned. This often happens if you moved the project directory and forgot to update \texttt{Homestead.yaml}. You can re-run the provisioning scripts with \texttt{vagrant provision}. However, when you run them the second time it can skip a few stages. So, if you get a 500 error on first run, run the following in the project directory:
-
-    \begin{minted}{bash}
-        # reload vagrant and provision it
-        vagrant reload --provision # re-run provisioning scripts
-
-        # generate a new app key
-        php artisan key:generate
-    \end{minted}
-\end{infobox}
-
 \section{Laravel, Homestead and Git}
 
 Laravel comes with a \texttt{.gitignore} file that ignores some of the key files for Laravel and Homestead like \texttt{/vendor}, \texttt{.env} and \texttt{Homestead.yaml}.
@@ -99,7 +146,7 @@ These files contain sensitive data (e.g. database connection details), are uniqu
 \begin{infobox}{Don't track your \texttt{.vagrant} folder}
     If you're using a Vagrant Homestead box locally (you almost certainly are) than a key entry is missing from your \texttt{.gitignore} file; the \texttt{.vagrant} directory.
     \\
-    
+
     This can cause problems as this folder contains files that should be unique for each Vagrant box and would cause issues if setting the project up again on your machine or for someone else using your repository to clone the Laravel project.
     \\
 

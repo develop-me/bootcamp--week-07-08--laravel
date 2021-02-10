@@ -10,7 +10,8 @@
 ## URL Parameters
 
 - Add `/articles/{id}` route
-- Load generic `article.blade.php` - nothing specific to actual article
+- We'll put all the article templates in `/resources/views/articles`
+- Load generic `articles/show.blade.php` - nothing specific to actual article
 - Show working for `/articles/<anything>`
 - Can use this in a Controller
 
@@ -20,12 +21,12 @@
 - don't want to put all our in routes file, big app might have hundreds!
 - Controller brings together bits of our app: models, views, etc. - it controls the app
 - A route points at a controller method, which returns a response
-- Make `Articles` controller: `artisan make:controller Articles`
+- Make `ArticleController`: `artisan make:controller ArticleController`
 - Update route
-    - `use App\Http\Controllers\Articles`
-    - `Route::get('/', [Articles::class, "index"])`
-    - Run `index` method of `Articles` controller when root route is visited
-- Update `Articles` controller:
+    - `use App\Http\Controllers\ArticleController`
+    - `Route::get('/', [ArticleController::class, "index"])`
+    - Run `index` method of `ArticleController` when root route is visited
+- Update `ArticleController`:
 
     ```php
     public function index()
@@ -50,10 +51,10 @@
     ```php
     @foreach ($articles as $article)
     ```
-- Rename it `articles.blade.php`
+- Rename it `articles/index.blade.php`
 
 - Next, show an article
-- `Route::get("/articles/{article}", [Articles::class, "show"]);`
+- `Route::get("/articles/{article}", [ArticleController::class, "show"]);`
 - Update controller:
 
     ```php
@@ -67,7 +68,7 @@
     }
     ```
 - ID passed in automatically from the URL parameter
-- update `article.blade.php` to use `$article`
+- update `articles/show.blade.php` to use `$article`
 
     ```html
     <h2 class="card-header">{{ $article->title }}</h2>

@@ -1,6 +1,6 @@
 # Challenges
 
-- Create an `Owners` controller
+- Create an `OwnerController`
 - Create an `index` method and route `/owners` to it, it should display a list of all the owners
   - Use the owner list template you already wrote for `welcome.blade.php`
   - Make sure you pass through the owners **from the controller**

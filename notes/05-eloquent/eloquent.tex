@@ -65,6 +65,29 @@ If you make another change to the article and then save it again you'll see that
     $article->updated_at; // updated timestamp from just now
 \end{minted}
 
+We can also set the properties of a model when we create it:
+
+\begin{minted}{php}
+    // pass in an associative array
+    $article = new Article([
+        "title" => "My incredible blog post",
+        "content" => "I ate a lemon with using the spoons. I regret my life choices",
+    ]);
+\end{minted}
+
+Give this a go and you'll see an error:
+
+\begin{minted}{text}
+    Illuminate/Database/Eloquent/MassAssignmentException with message 'Add [title] to fillable property to allow mass assignment on [App/Models/Article].'
+\end{minted}
+
+Passing in an array of data to a model is called ``mass assignment'' (because we're assigning lots of properties at once). This is a nice time-saver if you already have the data in an array, but can lead to security issues. We'll talk more about the security issues when we get onto forms. For now, just know that you'll need to make these properties \textit{fillable}:
+
+\php{app/Models/Article.php}{05-eloquent/figures/05-fillable}
+
+Now you can add the properties all in one go.
+
+
 
 \section{Reading Data}
 

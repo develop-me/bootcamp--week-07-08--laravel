@@ -75,7 +75,7 @@
 
 ## Controllers
 
-- Create an `API\Comments` controller
+- Create an `API\Articles\CommentController`
 - The URL structure should express the data hierarchy
 - Create the routes as a sub-group of `/articles/{article}`
 
@@ -87,13 +87,13 @@
         // ...etc
 
         Route::group(["prefix" => "comments"], function () {
-          Route::get("", [Comments::class, "index"]);
-          Route::post("", [Comments::class, "store"]);
+          Route::get("", [CommentController::class, "index"]);
+          Route::post("", [CommentController::class, "store"]);
 
           Route::group(["prefix" => "{comment}"], function () {
-            Route::get("", [Comments::class, "show"]);
-            Route::put("", [Comments::class, "update"]);
-            Route::delete("", [Comments::class, "destroy"]);
+            Route::get("", [CommentController::class, "show"]);
+            Route::put("", [CommentController::class, "update"]);
+            Route::delete("", [CommentController::class, "destroy"]);
           });
         });
       });

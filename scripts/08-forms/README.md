@@ -3,9 +3,9 @@
 ## Forms
 
 - going to create a form to create articles
-- new route:    
+- new route:
     ```php
-    Route::get('/articles/create', [Articles::class, "create"]);
+    Route::get('/articles/create', [ArticleController::class, "create"]);
     ```
 - new Controller method:
     ```php
@@ -56,7 +56,7 @@
 
 - new route:
     ```php
-    Route::post('/articles/create', [Articles::class, "createPost"]);
+    Route::post('/articles/create', [ArticleController::class, "createPost"]);
     ```
 - note `post` part
 - new Controller method structure:
@@ -84,8 +84,9 @@
 - demo after removing `dd($data)`
 
 ## Mass Assignment Vulnerability
-- add to model:
-    `protected $fillable = ["title", "article"];`
+- discuss security issues
+- should already be on model:
+    `protected $fillable = ["title", "content"];`
 
 
 ## Validation
@@ -105,7 +106,7 @@
     {
         return [
             "title" => ["required", "string"],
-            "article" => ["required", "string"],
+            "content" => ["required", "string"],
         ];
     }
     ```
