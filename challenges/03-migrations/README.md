@@ -5,10 +5,25 @@ Over the course of the next two weeks were going to be building an app to help u
 ## Setup
 
 1) Create a new Laravel project called `vet`
+
+    ```bash
+    laravel new vet # create new project
+    cd vet # go into project directory
+    ```
+
 1) Setup Homestead
+
+    - Make sure you're in the `vet` directory (run `pwd` if you're not sure)
+    - Run `composer require laravel/homestead`
+    - It should only install a couple of packages – if it's more than that, you've run it in the wrong place!
+    - Run `vendor/bin/homestead make`
+    - Edit your `Homestead.yaml` to reduce the `memory` requirements
+
 1) Run `vagrant up`
 1) Verify your Homestead is working by visiting [homestead.test](http://homestead.test) or whatever domain you set above [192.168.10.10](http://192.168.10.10) on Windows
 1) add `.vagrant` to your `.gitignore` file to ensure this folder isn't tracked if you use Git on the project
+
+**Note**: if you move the directory that your `Homestead.yaml` file is in, you'll need to re-run `vendor/bin/homestead make` – otherwise it won't link to your code properly. Alternatively, you can manually update the paths in your `Homestead.yaml` to point to the new location.
 
 ## Challenges
 

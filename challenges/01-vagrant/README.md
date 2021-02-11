@@ -14,7 +14,7 @@ end
 
 1. Finally turn on/create your Vagrant machine with `vagrant up`
 
-Note: after creating a Vagrant box (after doing `vagrant up`) you don’t want to rename the folder your Vagrantfile is in OR move/rename any of the parent folders (e.g. week-7 to week7).
+**Note**: if you need to move the directory that your `Vagrantfile` is in, make sure you run `vagrant halt` first. Once you've moved it, run `vagrant up` again. If you don't shutdown the machine in between, it can get confused.
 
 ## Using the VM
 
