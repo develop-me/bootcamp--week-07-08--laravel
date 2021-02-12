@@ -14,7 +14,7 @@ It is possible to store additional information about the relationship on a pivot
     It's quite common with databases to have tables which effectively just store a list of strings with an associated ID: e.g. countries, cities, genders, etc. These are sometimes referred to as \textbf{termlists} (because it's a list of terms):
 
     \begin{center}
-        \begin{tabularx}{\textwidth} {| c | l |}
+        \begin{tabularx}{\textwidth} { c | l }
              \hline
              \texttt{id}   & \texttt{country} \\
              \hline
@@ -24,8 +24,10 @@ It is possible to store additional information about the relationship on a pivot
              \textellipsis & \textellipsis    \\
              \hline
         \end{tabularx}
-        \quad
-        \begin{tabularx}{\textwidth} {| c | l |}
+
+        \bigskip
+
+        \begin{tabularx}{\textwidth} { c | l }
              \hline
              \texttt{id}   & \texttt{gender} \\
              \hline
@@ -40,7 +42,7 @@ It is possible to store additional information about the relationship on a pivot
     It's a good idea to use the same column name for the string column for all your termlists. For example rather than having a \texttt{country} column in the \texttt{countries} table and a \texttt{gender} column in the \texttt{genders} table, you should always call the column something like \texttt{name}:
 
     \begin{center}
-        \begin{tabularx}{\textwidth} {| c | l |}
+        \begin{tabularx}{\textwidth} { c | l }
              \hline
              \texttt{id}   & \texttt{name} \\
              \hline
@@ -50,8 +52,10 @@ It is possible to store additional information about the relationship on a pivot
              \textellipsis & \textellipsis \\
              \hline
         \end{tabularx}
-        \quad
-        \begin{tabularx}{\textwidth} {| c | l |}
+
+        \bigskip
+
+        \begin{tabularx}{\textwidth} { c | l }
              \hline
              \texttt{id}   & \texttt{name} \\
              \hline

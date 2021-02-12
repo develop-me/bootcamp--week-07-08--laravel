@@ -25,7 +25,7 @@
 
     ```php
     // laravel 8.0 method just assumes you've named everything in the standard way
-    $table->bigInteger("article_id")->unsigned(); 
+    $table->bigInteger("article_id")->unsigned();
     $table->foreign("article_id")->references("id")->on("articles")->onDelete("cascade");
     ```
 
