@@ -110,10 +110,45 @@ We'll also need to tell the \texttt{Article} model about tags. Again we'll use a
 
 \pagebreak
 
+\section{Syncing}
+
+Next, we'll want to make it so we can submit tags when we \texttt{POST}/\texttt{PUT} an article. Let's add a \texttt{tag\_ids} property to the JSON that we submit:
+
+\begin{minted}{json}
+    {
+        "title": "Agent Smith: Misunderstood?",
+        "content": "Dodge this",
+        "tag_ids": [1, 34, 58]
+    }
+\end{minted}
+
+We won't need to add any new routes for tags because they get added as part of the article \texttt{POST}/\texttt{PUT} request. But we will need to update the \texttt{store} and \texttt{update} methods in the \texttt{ArticleController}.
+\\
+
+When dealing with many-to-many relationships, it can be tricky to make sure that the relationships stay up to date: a user might add a few tags to an article but also remove a few at the same time. Juggling all of this manually can get very complicated.
+\\
+
+But, of course, Laravel has us covered with the \texttt{Model}'s \texttt{sync} method. We just need to pass this an array of \texttt{id}s and it will do all of the complex database wrangling for us.
+
+\php{app/Http/Contollers/ArticleController.php}{16-many-to-many/figures/06-sync}
+
+We should also add some validation, to make sure that this property is always present and that it's an array of integers. We'll use the \texttt{array} validation type for the \texttt{tag\_ids} field. We can also use the \texttt{.*} notation to add validation for the items \textit{inside} the \texttt{tag\_ids} array: in this case, checking that they're integers and also checking that they're valid \texttt{Tag} IDs.
+
+\php{app/Http/Requests/API/ArticleRequest.php}{16-many-to-many/figures/07-validation}
+
+We could also update our article resources to include tags as an array. In \texttt{ArticleResource} and \texttt{ArticleListResource}:
+
+\php{app/Http/Resources/API/ArticleResource}{16-many-to-many/figures/08-resource}
+
+However, passing an array of IDs is not ideal. The tags must already exist for them to have an ID. In many situations this might not be an issue. But in the case of tags, the user will probably just want to type stuff in and not have to worry about whether the tags exist or not.
+\\
+
+Ideally, we'd like to be able to pass in an array of \textit{tags} and Laravel would automatically create them if they don't already exist.
+
 
 \section{Tags from Strings}
 
-Next, we'll want to make it so we can submit tags when we create/update an article:
+So, let's try and get it so we can send something like this to our API:
 
 \begin{minted}{json}
     {
@@ -124,49 +159,36 @@ Next, we'll want to make it so we can submit tags when we create/update an artic
 \end{minted}
 
 
-So, we'll want some way to turn an array of strings (which we'll get in the \texttt{Request}), into an array of \texttt{Tag} models.
-\\
-
-The best place to put this logic is probably as a \texttt{static} method on the \texttt{Tag} model:
-
-\php[fontsize=\scriptsize]{app/Models/Tag.php}{16-many-to-many/figures/06-Tag}
-
-We take an array of strings and turn it into a \texttt{Collection}. We then use \texttt{map} to remove any whitespace from either side of each string. Next we make sure that there aren't any duplicate strings. Finally we use the \texttt{Model}'s \texttt{firstOrCreate} method to find a matching \texttt{Tag} in the database or create a new one if one doesn't exist. By the end of this we should have a collection containing all the relevant \texttt{Tag} models from the database.
-
-
-\section{Syncing}
-
-When dealing with many-to-many relationships, it can be tricky to make sure that the relationships stay up to date: a user might add a few tags to an article but also remove a few at the same time. Juggling all of this manually can get very complicated. But, of course, Laravel has us covered with the \texttt{Model}'s \texttt{sync} method. We just need to pass this an array of \texttt{id}s and it will do all of the complex database wrangling for us.
+We'll want some way to turn an array of strings (which we'll get in the \texttt{Request}), into an array of \texttt{Tag} models.
 
 \pagebreak
 
-\php{app/Models/Article.php}{16-many-to-many/figures/07-Article-setTags}
+The best place to put this logic is probably as a \texttt{static} method on the \texttt{Tag} model:
+
+\php[fontsize=\scriptsize]{app/Models/Tag.php}{16-many-to-many/figures/09-Tag}
+
+We take an array of strings and turn it into a \texttt{Collection}. We then use \texttt{map} to remove any whitespace from either side of each string. Next we make sure that there aren't any duplicate strings. Finally we use the \texttt{Model}'s \texttt{firstOrCreate} method to find a matching \texttt{Tag} in the database or create a new one if one doesn't exist. By the end of this we should have a collection containing all the relevant \texttt{Tag} models from the database.
+\\
+
+And let's move the logic to sync tags onto the \texttt{Article} model, then we can keep our controller a bit tidier:
+
+\php{app/Models/Article.php}{16-many-to-many/figures/10-Article-setTags}
 
 We accept an array of strings, then use our \texttt{Tag::fromStrings} method to turn that into a collection of \texttt{Tag} models. Next we use the \texttt{sync} method on the \texttt{Article} model to add any new tags and remove any unused tags from the database.
 
+\pagebreak
 
-\section{Controller Logic}
+We'll need to update the controller methods to use the new \texttt{\$article->setTags()} method:
 
-We won't need to add any new routes for tags because they get added as part of the article \texttt{POST}/\texttt{PUT} request. But we will need to update the \texttt{store} and \texttt{update} methods in the \texttt{ArticleController}.
-\\
+\php{app/Http/Controllers/API/ArticleController.php}{16-many-to-many/figures/11-ArticleController-tags-redux}
 
-We'll need to update the methods. We'll use our new \texttt{\$article->setTags()} method to do all the necessary work:
+Make sure you remove anything to do with \texttt{tag\_ids} from before.
 
-\php{app/Http/Controllers/API/ArticleController.php}{16-many-to-many/figures/08-ArticleController-tags-redux}
+\pagebreak
 
+Finally, let's update our validation rules for tags. Now we want them to be strings with a maximum length of 30 (we used a \texttt{VARCHAR(30)} for tags):
 
-\section{Validation}
-
-We'll need to add validation rules for tags to \texttt{ArticleRequest}. We'll use the \texttt{array} validation type for the \texttt{tags} field. We can also use the \texttt{.*} notation to add validation for the items inside the \texttt{tags} array. In this case we want them to be strings with a maximum length of 30 (we used a \texttt{VARCHAR(30)} for tags):
-
-\php{app/Http/Requests/API/ArticleRequest.php}{16-many-to-many/figures/09-validation}
-
-
-\section{Resource}
-
-Finally, let's update our article resources to include tags as an array. In \texttt{ArticleResource} and \texttt{ArticleListResource}:
-
-\php{app/Http/Resources/API/ArticleResource}{16-many-to-many/figures/10-resource}
+\php{app/Http/Requests/API/ArticleRequest.php}{16-many-to-many/figures/12-validation}
 
 
 
