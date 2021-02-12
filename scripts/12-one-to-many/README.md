@@ -174,8 +174,7 @@
     public function update(Request $request, Article $article, Comment $comment)
     {
       $data = $request->all();
-      $comment->fill($data);
-      $comment->save();
+      $comment->update($data);
       return new CommentResource($comment);
     }
     ```

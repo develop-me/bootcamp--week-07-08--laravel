@@ -236,7 +236,7 @@ As with the others, it's very similar to the articles version.
 In this case we again need to get the article with Route Model Binding, even though we don't actually use it – the comment is already associated with the article, so we don't need to update it.
 \\
 
-We just get the relevant comment, use \texttt{fill()} with the request data and then save it.
+We just get the relevant comment, and use \texttt{update()} with the request data.
 \\
 
 Check the route works using Postman and then we we can add some validation.

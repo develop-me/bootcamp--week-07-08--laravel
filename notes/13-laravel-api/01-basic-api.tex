@@ -93,7 +93,7 @@ Finally, we can get the \texttt{update} method working. This combines aspects of
 
 \php{app/Http/Controllers/API/ArticleController.php}{13-laravel-api/figures/08-update}
 
-We get the submitted data from the \texttt{\$request} object, then use the \texttt{fill()} method to update the article that we got from Route Model Binding. We then save the model and return it.
+We get the submitted data from the \texttt{\$request} object, then use the \texttt{update()} method to update and save the article that we got from Route Model Binding. We then return the model.
 
 \hr
 

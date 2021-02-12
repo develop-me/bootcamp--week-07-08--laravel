@@ -20,7 +20,7 @@ class ArticleController extends Controller
   {
     // update the article first
     $data = $request->all();
-    $article->fill($data)->save();
+    $article->update($data);
 
     // use the new method - can't chain as save returns a bool
     $article->setTags($request->get("tags"));

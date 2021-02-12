@@ -9,7 +9,7 @@ public function update(Request $request, Article $article)
 
     // update the article using the fill method
     // then save it to the database
-    $article->fill($data)->save();
+    $article->update($data);
 
     // return the updated version
     return $article;
